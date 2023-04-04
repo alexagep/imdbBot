@@ -11,6 +11,7 @@ const IMDB_API_KEY = process.env.imdbAPIKEY;
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
+const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
@@ -18,7 +19,7 @@ const staticKeyboard = {
   reply_markup: JSON.stringify({
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
-      ["🎭 Search Artist", "💰 Box Office"],
+      ["🎭 Coming Soon", "💰 Box Office"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -48,53 +49,41 @@ bot.onText(/Search Movie/, async (msg) => {
   bot.sendMessage(chatId, "Enter the movie title you want to search:");
 });
 
-bot.onText(/Search Artist/, async (msg) => {
+bot.onText(/Coming Soon/, async (msg) => {
   const chatId = msg.chat.id;
-  const artistName = msg.text;
-
-  // Perform the search functionality here
-
-  bot.sendMessage(
-    chatId,
-    "Please enter the name of the artist you want to search for:"
-  );
-
   try {
-    const response = await fetch(IMDB_ARTIST_NAME);
+    const response = await fetch(IMDB_COMING_SOON);
+    const data = await response.json();
+    // console.log(data);
+    const movies = data.items
+      .slice(0, 10)
+      .map(
+        (item, index) =>
+          `${index + 1}. ${item.title}\n\nrelease: ${
+            item.releaseState
+          }\ngenres: ${item.genres}\nstars: ${item.stars}`
+      )
+      .join("\n\n");
 
-    const artist = response.data;
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Next",
+              callback_data: `next_movies_${10}`,
+            },
+          ],
+        ],
+      },
+    };
 
-    console.log(artist);
-    // if (artist.Response === "True") {
-    //   const imdbUrl = `https://www.imdb.com/title/${movie.imdbID}`;
-    //   const keyboard = {
-    //     reply_markup: {
-    //       inline_keyboard: [
-    //         [
-    //           {
-    //             text: "More Info",
-    //             url: imdbUrl,
-    //           },
-    //         ],
-    //       ],
-    //     },
-    //   };
-    //   bot.sendMessage(
-    //     chatId,
-    //     `🎬 ${movie.Title} (${movie.Year})\n🌟 IMDb Rating: ${movie.imdbRating}`,
-    //     keyboard
-    //   );
-    // } else {
-    //   bot.sendMessage(
-    //     chatId,
-    //     "Sorry, I couldn't find that actor. Please try another name."
-    //   );
-    // }
+    bot.sendMessage(chatId, `Coming Soon:\n\n${movies}`, opts);
   } catch (error) {
-    console.error("Error fetching movie:", error);
+    console.error("Error fetching the box office:", error);
     bot.sendMessage(
       chatId,
-      "An error occurred while fetching the actor info. Please try again later."
+      "An error occurred while fetching the box office. Please try again later."
     );
   }
 });
@@ -165,10 +154,10 @@ bot.onText(/Box Office/, async (msg) => {
 
     bot.sendMessage(chatId, `Box Office:\n\n${movies}`);
   } catch (error) {
-    console.error("Error fetching top 250 movies:", error);
+    console.error("Error fetching the box office:", error);
     bot.sendMessage(
       chatId,
-      "An error occurred while fetching the top 250 movies. Please try again later."
+      "An error occurred while fetching the box office. Please try again later."
     );
   }
 });
@@ -182,7 +171,7 @@ bot.on("message", async (msg) => {
     !msg.text ||
     msg.text.startsWith("/") ||
     msg.text.startsWith("Search Movie") ||
-    msg.text.startsWith("Search Artist") ||
+    msg.text.startsWith("Coming Soon") ||
     msg.text.startsWith("Top250") ||
     msg.text.startsWith("🎥") ||
     msg.text.startsWith("🔝") ||
@@ -239,6 +228,8 @@ bot.on("callback_query", async (callbackQuery) => {
   const messageId = callbackQuery.message.message_id;
 
   const match = callbackQuery.data.match(/^next_(\d+)$/);
+  const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
+
   if (match) {
     const startIndex = parseInt(match[1], 10);
     const endIndex = startIndex + 50;
@@ -277,6 +268,49 @@ bot.on("callback_query", async (callbackQuery) => {
       bot.sendMessage(
         chatId,
         "An error occurred while fetching the top 250 movies. Please try again later."
+      );
+    }
+  } else if (matchCS) {
+    const startIndex = parseInt(matchCS[1], 10);
+    const endIndex = startIndex + 10;
+
+    try {
+      const response = await fetch(IMDB_COMING_SOON);
+      const data = await response.json();
+
+      const movies = data.items
+        .slice(startIndex, endIndex)
+        .map(
+          (item, index) =>
+            `${startIndex + index + 1}. ${item.title}\n\nrelease: ${
+              item.releaseState
+            }\ngenres: ${item.genres}\nstars: ${item.stars}`
+        )
+        .join("\n\n");
+
+      const opts = {
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: {
+          inline_keyboard: [],
+        },
+      };
+
+      if (endIndex < data.items.length) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Next",
+            callback_data: `next_movies_${endIndex}`,
+          },
+        ]);
+      }
+
+      bot.editMessageText(`Coming Soon:\n\n${movies}`, opts);
+    } catch (error) {
+      console.error("Error fetching coming soon movies:", error);
+      bot.sendMessage(
+        chatId,
+        "An error occurred while fetching the coming soon movies. Please try again later."
       );
     }
   } else if (callbackQuery.data === "search") {
