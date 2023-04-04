@@ -8,13 +8,18 @@ const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
 const IMDB_API_KEY = process.env.imdbAPIKEY;
 
-const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/k_t8o2kalg`;
+const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
+const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
+const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
-    keyboard: [["Search", "Top250"]],
+    keyboard: [
+      ["🎥 Search Movie", "🔝 Top250"],
+      ["🎭 Search Artist", "💰 Box Office"],
+    ],
     one_time_keyboard: false,
     resize_keyboard: true,
   }),
@@ -27,12 +32,71 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chatId, welcomeMessage, staticKeyboard);
 });
 
-bot.onText(/search/, async (msg) => {
+bot.onText(/\/search/, async (msg) => {
   const chatId = msg.chat.id;
 
   // Perform the search functionality here
 
   bot.sendMessage(chatId, "Enter the movie title you want to search:");
+});
+
+bot.onText(/Search Movie/, async (msg) => {
+  const chatId = msg.chat.id;
+
+  // Perform the search functionality here
+
+  bot.sendMessage(chatId, "Enter the movie title you want to search:");
+});
+
+bot.onText(/Search Artist/, async (msg) => {
+  const chatId = msg.chat.id;
+  const artistName = msg.text;
+
+  // Perform the search functionality here
+
+  bot.sendMessage(
+    chatId,
+    "Please enter the name of the artist you want to search for:"
+  );
+
+  try {
+    const response = await fetch(IMDB_ARTIST_NAME);
+
+    const artist = response.data;
+
+    console.log(artist);
+    // if (artist.Response === "True") {
+    //   const imdbUrl = `https://www.imdb.com/title/${movie.imdbID}`;
+    //   const keyboard = {
+    //     reply_markup: {
+    //       inline_keyboard: [
+    //         [
+    //           {
+    //             text: "More Info",
+    //             url: imdbUrl,
+    //           },
+    //         ],
+    //       ],
+    //     },
+    //   };
+    //   bot.sendMessage(
+    //     chatId,
+    //     `🎬 ${movie.Title} (${movie.Year})\n🌟 IMDb Rating: ${movie.imdbRating}`,
+    //     keyboard
+    //   );
+    // } else {
+    //   bot.sendMessage(
+    //     chatId,
+    //     "Sorry, I couldn't find that actor. Please try another name."
+    //   );
+    // }
+  } catch (error) {
+    console.error("Error fetching movie:", error);
+    bot.sendMessage(
+      chatId,
+      "An error occurred while fetching the actor info. Please try again later."
+    );
+  }
 });
 
 bot.onText(/\/menu/, (msg) => {
@@ -85,11 +149,47 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
+bot.onText(/Box Office/, async (msg) => {
+  const chatId = msg.chat.id;
+  try {
+    const response = await fetch(IMDB_BOX_OFFICE);
+    const data = await response.json();
+    console.log(data);
+    const movies = data.items
+      .map((movie, index) => {
+        return `${index + 1}. ${movie.title}\n\nweekend: ${
+          movie.weekend
+        }\ngross: ${movie.gross}\nweeks: ${movie.weeks}`;
+      })
+      .join("\n\n");
+
+    bot.sendMessage(chatId, `Box Office:\n\n${movies}`);
+  } catch (error) {
+    console.error("Error fetching top 250 movies:", error);
+    bot.sendMessage(
+      chatId,
+      "An error occurred while fetching the top 250 movies. Please try again later."
+    );
+  }
+});
+
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
 
-  if (!msg.text || msg.text.startsWith("/")) return;
+  console.log(movieTitle);
+  if (
+    !msg.text ||
+    msg.text.startsWith("/") ||
+    msg.text.startsWith("Search Movie") ||
+    msg.text.startsWith("Search Artist") ||
+    msg.text.startsWith("Top250") ||
+    msg.text.startsWith("🎥") ||
+    msg.text.startsWith("🔝") ||
+    msg.text.startsWith("🎭") ||
+    msg.text.startsWith("💰")
+  )
+    return;
 
   try {
     const response = await axios.get("http://www.omdbapi.com/", {

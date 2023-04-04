@@ -1,22 +1,25 @@
-var axios = require("axios");
-require("dotenv").config();
-const https = require('https');
-
-
-var instance = axios.create({
-  baseURL: "https://imdb-api.com/",
-  httpsAgent: new https.Agent({
-    rejectUnauthorized: false,
+const staticKeyboard = {
+  reply_markup: JSON.stringify({
+    keyboard: [["Search", "Top250"]],
+    one_time_keyboard: false,
+    resize_keyboard: true,
   }),
-});
-
-const IMDB_API_KEY = process.env.imdbAPIKEY;
+};
 
 
-async function getData() {
 
-  const data = await instance.get(`en/API/Top250Movies/k_t8o2kalg`);
-
-  console.log(data);
-}
-getData()
+const popupKeyboard = {
+  reply_markup: JSON.stringify({
+    inline_keyboard: [
+      [
+          { text: "Top 50 Movies", callback_data: `next_${0}` },
+          { text: "Search Movie", callback_data: "search" },
+      ],
+      [
+        { text: 'Casts', callback_data: 'casts' },
+        { text: 'Option 4', callback_data: 'option_4' },
+      ],
+      [{ text: 'Close', callback_data: 'close' }],
+    ],
+  }),
+};
