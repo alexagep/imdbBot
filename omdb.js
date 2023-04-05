@@ -11,6 +11,8 @@ const IMDB_API_KEY = process.env.imdbAPIKEY;
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
+const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/api/BoxOfficeAllTime/${IMDB_API_KEY}`;
+
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
@@ -20,6 +22,7 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office"],
+      ["💰📈 Box Office AllTime"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -27,6 +30,7 @@ const staticKeyboard = {
 };
 
 bot.onText(/\/start/, (msg) => {
+  console.log('****************');
   const chatId = msg.chat.id;
   const welcomeMessage =
     "Welcome to the IMDB Bot! Send me the title of a movie, and I will return its IMDb rating. Select an option:";
@@ -158,6 +162,30 @@ bot.onText(/Box Office/, async (msg) => {
     bot.sendMessage(
       chatId,
       "An error occurred while fetching the box office. Please try again later."
+    );
+  }
+});
+
+bot.onText(/Box Office AllTime/, async (msg) => {
+  const chatId = msg.chat.id;
+  try {
+    const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
+    const data = await response.json();
+    console.log(data);
+    const movies = data.items
+      .map((movie, index) => {
+        return `${index + 1}. ${movie.title}\n\nweekend: ${
+          movie.weekend
+        }\ngross: ${movie.gross}\nweeks: ${movie.weeks}`;
+      })
+      .join("\n\n");
+
+    bot.sendMessage(chatId, `Box Office allTime:\n\n${movies}`);
+  } catch (error) {
+    console.error("Error fetching the box office allTime:", error);
+    bot.sendMessage(
+      chatId,
+      "An error occurred while fetching the box office allTime. Please try again later."
     );
   }
 });

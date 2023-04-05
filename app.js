@@ -1,27 +1,36 @@
 const TelegramBot = require("node-telegram-bot-api");
-const IMDb = require("imdb-api");
+require("dotenv").config();
 
-const bot = new TelegramBot(process.env.telegramAPIKEY, {
+const bot = new TelegramBot("5604371068:AAGR-VofEj8CSuRHQZDFW7sD5nPz3kcc690", {
   polling: true,
 });
-const imdb = new IMDb({ apiKey: "YOUR_IMDB_API_KEY_HERE" });
 
-bot.onText(/\/movie (.+)/, async (msg, match) => {
-  const chatId = msg.chat.id;
-  const movieTitle = match[1];
+const staticKeyboard = {
+  reply_markup: JSON.stringify({
+    keyboard: [
+      ["🎥 Search Movie", "🔝 Top250"],
+      ["🎭 Coming Soon", "💰 Box Office"],
+      ["💰📈 Box Office AllTime"],
+    ],
+    one_time_keyboard: false,
+    resize_keyboard: true,
+  }),
+};
 
+bot.onText(/\/start/, (msg) => {
   try {
-    const movie = await imdb.get({ name: movieTitle });
-    const rating = movie.rating;
-
-    bot.sendMessage(chatId, `${movieTitle} has a rating of ${rating} on IMDb.`);
-  } catch (err) {
-    bot.sendMessage(
-      chatId,
-      `Sorry, I couldn't find a movie called "${movieTitle}" on IMDb.`
-    );
+    console.log("****************");
+    const chatId = msg.chat.id;
+    const welcomeMessage =
+      "Welcome to the IMDB Bot! Send me the title of a movie, and I will return its IMDb rating. Select an option:";
+    bot.sendMessage(chatId, welcomeMessage, staticKeyboard);
+  } catch (error) {
+    console.log(error);
   }
 });
 
+bot.on("message", (msg) => {
+  console.log("Received message:", msg.text);
+});
 
-bot.startPolling();
+console.log("Movie Rating Bot is running...");
