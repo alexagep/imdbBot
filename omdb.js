@@ -22,7 +22,7 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office"],
-      ["💰📈 Box Office AllTime"],
+      ["💰📈 BoxOffice AllTime"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -171,7 +171,7 @@ bot.onText(/Box Office/, async (msg) => {
 });
 
 //box office allTime
-bot.onText(/📈/, async (msg) => {
+bot.onText(/BoxOffice/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
