@@ -11,7 +11,7 @@ const IMDB_API_KEY = process.env.imdbAPIKEY;
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
-const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/api/BoxOfficeAllTime/${IMDB_API_KEY}`;
+const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
 
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
@@ -30,7 +30,7 @@ const staticKeyboard = {
 };
 
 bot.onText(/\/start/, (msg) => {
-  console.log('****************');
+  console.log("****************");
   const chatId = msg.chat.id;
   const welcomeMessage =
     "Welcome to the IMDB Bot! Send me the title of a movie, and I will return its IMDb rating. Select an option:";
@@ -127,6 +127,10 @@ bot.onText(/Top250/, async (msg) => {
               text: "Next",
               callback_data: `next_${50}`,
             },
+            // {
+            //   text: "Previous",
+            //   callback_data: `previous_${50}`,
+            // },
           ],
         ],
       },
@@ -166,21 +170,36 @@ bot.onText(/Box Office/, async (msg) => {
   }
 });
 
-bot.onText(/Box Office AllTime/, async (msg) => {
+//box office allTime
+bot.onText(/📈/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
     const data = await response.json();
     console.log(data);
     const movies = data.items
+      .slice(0, 25)
       .map((movie, index) => {
-        return `${index + 1}. ${movie.title}\n\nweekend: ${
-          movie.weekend
-        }\ngross: ${movie.gross}\nweeks: ${movie.weeks}`;
+        return `${index + 1}. ${movie.title}\n\ngross: ${
+          movie.worldwideLifetimeGross
+        }\nyear: ${movie.year}`;
       })
       .join("\n\n");
 
-    bot.sendMessage(chatId, `Box Office allTime:\n\n${movies}`);
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Next",
+              callback_data: `next_allTime_movies_${10}`,
+            },
+          ],
+        ],
+      },
+    };
+
+    bot.sendMessage(chatId, `Box Office allTime:\n\n${movies}`, opts);
   } catch (error) {
     console.error("Error fetching the box office allTime:", error);
     bot.sendMessage(
@@ -256,7 +275,9 @@ bot.on("callback_query", async (callbackQuery) => {
   const messageId = callbackQuery.message.message_id;
 
   const match = callbackQuery.data.match(/^next_(\d+)$/);
+  // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
+  const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
 
   if (match) {
     const startIndex = parseInt(match[1], 10);
@@ -346,7 +367,97 @@ bot.on("callback_query", async (callbackQuery) => {
       chatId,
       "Please enter the title of the movie you want to search for:"
     );
+  } else if (nextAllTime) {
+    const startIndex = parseInt(nextAllTime[1], 10);
+    const endIndex = startIndex + 25;
+
+    try {
+      const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
+      const data = await response.json();
+      const topMovies = data.items
+        .slice(startIndex, endIndex)
+        .map(
+          (item, index) =>
+            `${startIndex + index + 1}. ${item.title}\n\ngross: ${
+              item.worldwideLifetimeGross
+            }\nyear: ${item.year}`
+        )
+        .join("\n");
+
+      const opts = {
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: {
+          inline_keyboard: [],
+        },
+      };
+
+      if (endIndex < data.items.length) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Next",
+            callback_data: `next_allTime_movies_${endIndex}`,
+          },
+        ]);
+      }
+
+      bot.editMessageText(
+        `IMDb Top ${startIndex + 1}-${endIndex} Movies:\n\n${topMovies}`,
+        opts
+      );
+    } catch (error) {
+      console.error("Error fetching box office allTime:", error);
+      bot.sendMessage(
+        chatId,
+        "An error occurred while fetching the box office allTime. Please try again later."
+      );
+    }
   }
+  // else if (previousMatch) {
+  //   const startIndex = parseInt(previousMatch[1], 10);
+  //   const endIndex = startIndex - 50;
+
+  //   try {
+  //     const response = await fetch(IMDB_TOP_250_URL);
+  //     const data = await response.json();
+  //     const topMovies = data.items
+  //       .slice(startIndex, endIndex)
+  //       .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
+  //       .join("\n");
+
+  //     const opts = {
+  //       chat_id: chatId,
+  //       message_id: messageId,
+  //       reply_markup: {
+  //         inline_keyboard: [],
+  //       },
+  //     };
+
+  //     if (endIndex < data.items.length) {
+  //       opts.reply_markup.inline_keyboard.push([
+  //         {
+  //           text: "Next",
+  //           callback_data: `next_${endIndex}`,
+  //         },
+  //         {
+  //           text: "Previous",
+  //           callback_data: `prev_${endIndex}`,
+  //         }
+  //       ]);
+  //     }
+
+  //     bot.editMessageText(
+  //       `IMDb Top ${startIndex + 1}-${endIndex} Movies:\n\n${topMovies}`,
+  //       opts
+  //     );
+  //   } catch (error) {
+  //     console.error("Error fetching top 250 movies:", error);
+  //     bot.sendMessage(
+  //       chatId,
+  //       "An error occurred while fetching the top 250 movies. Please try again later."
+  //     );
+  //   }
+  // }
 });
 
 console.log("Movie Rating Bot is running...");
