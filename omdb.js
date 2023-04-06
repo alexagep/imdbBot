@@ -242,7 +242,8 @@ bot.on("message", async (msg) => {
         movieTitle,
         movie[0].title
       );
-      if (similarityScore >= 0.5) {
+      console.log(similarityScore);
+      if (similarityScore >= 0.37) {
         const movieId = movie[0].id;
 
         const ratingsResp = await fetch(
