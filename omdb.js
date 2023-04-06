@@ -21,7 +21,7 @@ const staticKeyboard = {
   reply_markup: JSON.stringify({
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
-      ["🎭 Coming Soon", "💰 Box Office"],
+      ["🎭 Coming Soon", "💰 Box Office Weekend"],
       ["💰📈 Box Office AllTime"],
     ],
     one_time_keyboard: false,
@@ -84,10 +84,10 @@ bot.onText(/Coming Soon/, async (msg) => {
 
     bot.sendMessage(chatId, `Coming Soon:\n\n${movies}`, opts);
   } catch (error) {
-    console.error("Error fetching the box office:", error);
+    console.error("Error fetching the Coming Soon:", error);
     bot.sendMessage(
       chatId,
-      "An error occurred while fetching the box office. Please try again later."
+      "An error occurred while fetching the Coming Soon. Please try again later."
     );
   }
 });
@@ -146,7 +146,8 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
-bot.onText(/^Box Office$/, async (msg) => {
+//box office weekend
+bot.onText(/Box Office Weekend/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE);
@@ -171,7 +172,7 @@ bot.onText(/^Box Office$/, async (msg) => {
 });
 
 //box office allTime
-bot.onText(/^Box Office allTime$/, async (msg) => {
+bot.onText(/Box Office AllTime/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
