@@ -289,7 +289,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const topMovies = data.items
         .slice(startIndex, endIndex)
         .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
-        .join("\n");
+        .join("\n\n");
 
       const opts = {
         chat_id: chatId,
