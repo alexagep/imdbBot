@@ -22,7 +22,7 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office"],
-      ["💰📈 BoxOffice AllTime"],
+      ["💰📈 Box Office AllTime"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -146,7 +146,7 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
-bot.onText(/Box Office/, async (msg) => {
+bot.onText(/^Box Office$/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE);
@@ -171,7 +171,7 @@ bot.onText(/Box Office/, async (msg) => {
 });
 
 //box office allTime
-bot.onText(/BoxOffice/, async (msg) => {
+bot.onText(/^Box Office allTime$/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
@@ -382,7 +382,7 @@ bot.on("callback_query", async (callbackQuery) => {
               item.worldwideLifetimeGross
             }\nyear: ${item.year}`
         )
-        .join("\n");
+        .join("\n\n");
 
       const opts = {
         chat_id: chatId,
