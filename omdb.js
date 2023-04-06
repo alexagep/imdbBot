@@ -1,6 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const axios = require("axios");
 const fetch = require("node-fetch");
+const stringSimilarity = require("string-similarity");
 
 require("dotenv").config();
 
@@ -214,7 +215,7 @@ bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
 
-  console.log(movieTitle);
+  // console.log(movieTitle);
   if (
     !msg.text ||
     msg.text.startsWith("/") ||
@@ -229,33 +230,52 @@ bot.on("message", async (msg) => {
     return;
 
   try {
-    const response = await axios.get("http://www.omdbapi.com/", {
-      params: {
-        apikey: OMDB_API_KEY,
-        t: movieTitle,
-      },
-    });
+    const response = await fetch(
+      `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
+    );
+    const data = await response.json();
 
-    const movie = response.data;
-    if (movie.Response === "True") {
-      const imdbUrl = `https://www.imdb.com/title/${movie.imdbID}`;
-      const keyboard = {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "More Info",
-                url: imdbUrl,
-              },
-            ],
-          ],
-        },
-      };
-      bot.sendMessage(
-        chatId,
-        `🎬 ${movie.Title} (${movie.Year})\n🌟 IMDb Rating: ${movie.imdbRating}`,
-        keyboard
+    const movie = data.results;
+
+    if (movie.length > 0) {
+      const similarityScore = stringSimilarity.compareTwoStrings(
+        movieTitle,
+        movie[0].title
       );
+      if (similarityScore >= 0.5) {
+        const movieId = movie[0].id;
+
+        const ratingsResp = await fetch(
+          `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+        );
+
+        const ratings = await ratingsResp.json();
+
+        const imdbUrl = `https://www.imdb.com/title/${movieId}`;
+        const keyboard = {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: "More Info",
+                  url: imdbUrl,
+                },
+              ],
+            ],
+          },
+        };
+
+        bot.sendMessage(
+          chatId,
+          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 metacritic Rating: ${ratings.metacritic}/100\n🍅 rottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+          keyboard
+        );
+      } else {
+        bot.sendMessage(
+          chatId,
+          "Sorry, I couldn't find that movie. Please try another title."
+        );
+      }
     } else {
       bot.sendMessage(
         chatId,
