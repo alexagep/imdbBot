@@ -18,6 +18,8 @@ const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
+const limitMessage = 'You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.'
+
 const staticKeyboard = {
   reply_markup: JSON.stringify({
     keyboard: [
@@ -215,7 +217,6 @@ bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
 
-  // console.log(movieTitle);
   if (
     !msg.text ||
     msg.text.startsWith("/") ||
@@ -243,7 +244,7 @@ bot.on("message", async (msg) => {
         movie[0].title
       );
       console.log(similarityScore);
-      if (similarityScore >= 0.37) {
+      if (similarityScore >= 0.30) {
         const movieId = movie[0].id;
 
         const ratingsResp = await fetch(
@@ -268,7 +269,7 @@ bot.on("message", async (msg) => {
 
         bot.sendMessage(
           chatId,
-          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 metacritic Rating: ${ratings.metacritic}/100\n🍅 rottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
           keyboard
         );
       } else {
