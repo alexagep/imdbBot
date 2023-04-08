@@ -4,11 +4,11 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 
 require("dotenv").config();
-const { dom, library } = require("@fortawesome/fontawesome-svg-core");
-const { faComment } = require("@fortawesome/free-solid-svg-icons");
-const { faImdb } = require("@fortawesome/free-brands-svg-icons");
+// const { dom, library } = require("@fortawesome/fontawesome-svg-core");
+// const { faComment } = require("@fortawesome/free-solid-svg-icons");
+// const { faImdb } = require("@fortawesome/free-brands-svg-icons");
 
-library.add(faComment, faImdb);
+// library.add(faComment, faImdb);
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
@@ -287,17 +287,10 @@ bot.on("message", async (msg) => {
           },
         };
 
-        const imdbIcon = dom.i(
-          { class: "fa-brands fa-imdb", style: "color: #b2db1f;" },
-          dom.svg({
-            class: "svg-inline--fa fa-w-16 fa-fw",
-            viewBox: "0 0 24 24",
-          })
-        );
 
         bot.sendMessage(
           chatId,
-          `🎬 ${ratings.fullTitle}\n🌟 ${imdbIcon} IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
           keyboard
         );
       } else {
