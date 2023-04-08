@@ -20,6 +20,7 @@ const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
 const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
+const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&type=movie&plot=short&r=json&genre=`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 // library.add(faComment, faImdb);
@@ -33,6 +34,7 @@ const staticKeyboard = {
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office Weekend"],
       ["💰📈 Box Office AllTime"],
+      ["🍿🤖 Recommend Movie"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -93,6 +95,68 @@ bot.onText(/Coming Soon/, async (msg) => {
     };
 
     bot.sendMessage(chatId, `Coming Soon:\n\n${movies}`, opts);
+  } catch (error) {
+    console.error("Error fetching the Coming Soon:", error);
+    bot.sendMessage(
+      chatId,
+      "An error occurred while fetching the Coming Soon. Please try again later."
+    );
+  }
+});
+
+bot.onText(/Recommend Movie/, async (msg) => {
+  const chatId = msg.chat.id;
+  try {
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Comedy",
+              callback_data: `comedy`,
+            },
+            {
+              text: "Sci-fi",
+              callback_data: `Sci-fi`,
+            },
+            {
+              text: "Romance",
+              callback_data: `romance`,
+            },
+            {
+              text: "Thriller",
+              callback_data: `thriller`,
+            },
+            {
+              text: "Horror",
+              callback_data: `horror`,
+            },
+            {
+              text: "Action",
+              callback_data: `action`,
+            },
+            {
+              text: "Animation",
+              callback_data: "animation",
+            },
+            {
+              text: "Adventure",
+              callback_data: "adventure",
+            },
+            {
+              text: "Drama",
+              callback_data: "drama",
+            },
+          ],
+        ],
+      },
+    };
+
+    bot.sendMessage(
+      chatId,
+      `Select A Genre You Want To See:\n\n${movies}`,
+      opts
+    );
   } catch (error) {
     console.error("Error fetching the Coming Soon:", error);
     bot.sendMessage(
@@ -287,7 +351,6 @@ bot.on("message", async (msg) => {
           },
         };
 
-
         bot.sendMessage(
           chatId,
           `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
@@ -322,6 +385,27 @@ bot.on("callback_query", async (callbackQuery) => {
   // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
   const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
+  const genres = [
+    "comedy",
+    "sci-fi",
+    "romance",
+    "thriller",
+    "horror",
+    "action",
+    "drama",
+    "fantasy",
+    "adventure",
+    "animation",
+    "crime",
+    "documentary",
+    "family",
+    "history",
+    "music",
+    "mystery",
+    "sport",
+    "war",
+    "western",
+  ];
 
   if (match) {
     const startIndex = parseInt(match[1], 10);
@@ -495,6 +579,18 @@ bot.on("callback_query", async (callbackQuery) => {
           UserRatings.demographicFemales.allAges.votes
         ).toLocaleString()})`
       );
+    }
+  }
+  if (genres.includes(callbackQuery.data)) {
+    // Send the user ratings data
+    const genre = callbackQuery.data;
+    if (genre !== null) {
+      const urResponse = await fetch(`${OMDB_SEARCH_GENRES}/${genre}`);
+
+      const movies = await urResponse.json();
+      console.log(movies,  "************");
+      // movie_ID = null;
+      bot.sendMessage(chatId, ``);
     }
   }
   // else if (previousMatch) {
