@@ -17,7 +17,7 @@ function calc () {
     ratings.map(rate => {
         count += parseInt(rate.votes)
     })
-    console.log(count.toLocaleString());
+    console.log(count.toString().toLocaleString());
 }
 
 calc()
