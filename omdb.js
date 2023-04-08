@@ -214,6 +214,7 @@ bot.onText(/Box Office AllTime/, async (msg) => {
   }
 });
 
+let movie_ID = null
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
@@ -257,6 +258,8 @@ bot.on("message", async (msg) => {
         // const urResponse = await fetch(IMDB_USER_RATINGS);
 
         // const UserRatings = await urResponse.json();
+
+        movie_ID = movieId 
 
         const imdbUrl = `https://www.imdb.com/title/${movieId}`;
         const keyboard = {
@@ -449,10 +452,11 @@ bot.on("callback_query", async (callbackQuery) => {
   }
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
-    const urResponse = await fetch(IMDB_USER_RATINGS);
+    const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
     const UserRatings = await urResponse.json();
     // console.log(UserRatings, "************");
+    // movie_ID = null;
     bot.sendMessage(
       chatId,
       `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
