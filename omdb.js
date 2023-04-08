@@ -33,8 +33,7 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office Weekend"],
-      ["💰📈 Box Office AllTime"],
-      ["🍿🤖 Recommend Movie"],
+      ["💰📈 Box Office AllTime", "🍿🤖 Recommend Movie"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -115,34 +114,50 @@ bot.onText(/Recommend Movie/, async (msg) => {
               text: "Comedy",
               callback_data: `comedy`,
             },
+          ],
+          [
             {
               text: "Sci-fi",
               callback_data: `Sci-fi`,
             },
+          ],
+          [
             {
               text: "Romance",
               callback_data: `romance`,
             },
+          ],
+          [
             {
               text: "Thriller",
               callback_data: `thriller`,
             },
+          ],
+          [
             {
               text: "Horror",
               callback_data: `horror`,
             },
+          ],
+          [
             {
               text: "Action",
               callback_data: `action`,
             },
+          ],
+          [
             {
               text: "Animation",
               callback_data: "animation",
             },
+          ],
+          [
             {
               text: "Adventure",
               callback_data: "adventure",
             },
+          ],
+          [
             {
               text: "Drama",
               callback_data: "drama",
@@ -152,11 +167,7 @@ bot.onText(/Recommend Movie/, async (msg) => {
       },
     };
 
-    bot.sendMessage(
-      chatId,
-      `Select A Genre You Want To See:\n\n`,
-      opts
-    );
+    bot.sendMessage(chatId, `Select A Genre You Want To See:\n\n`, opts);
   } catch (error) {
     console.error("Error fetching the Coming Soon:", error);
     bot.sendMessage(
@@ -298,7 +309,8 @@ bot.on("message", async (msg) => {
     msg.text.startsWith("🎥") ||
     msg.text.startsWith("🔝") ||
     msg.text.startsWith("🎭") ||
-    msg.text.startsWith("💰")
+    msg.text.startsWith("💰") ||
+    msg.text.startsWith("🍿")
   )
     return;
 
@@ -588,7 +600,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${OMDB_SEARCH_GENRES}/${genre}`);
 
       const movies = await urResponse.json();
-      console.log(movies,  "************");
+      console.log(movies, "************");
       // movie_ID = null;
       bot.sendMessage(chatId, ``);
     }
