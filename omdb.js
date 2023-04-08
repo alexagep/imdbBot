@@ -616,7 +616,7 @@ bot.on("callback_query", async (callbackQuery) => {
           (item, index) =>
             `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
               item.imDbRating
-            } ${item.imDbRatingVotes}\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
+            } (${item.imDbRatingVotes})\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
               item.genres
             }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}`
         )
