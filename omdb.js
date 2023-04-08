@@ -614,15 +614,15 @@ bot.on("callback_query", async (callbackQuery) => {
       const final = movies
         .map(
           (item, index) =>
-            `${index + 1}. ${item.title} (${item.description})\n\nTime: ${
-              item.runtimeStr
-            }\ngenres: ${item.genres}\nIMDb rating: ${
+            `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
               item.imDbRating
-            }\nVotes: ${item.imDbRatingVotes}\nCast: ${item.stars}\nContent Rating: ${item.contentRating}`
+            } ${item.imDbRatingVotes}\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
+              item.genres
+            }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}`
         )
         .join("\n\n");
-      // movie_ID = null;
-      bot.sendMessage(chatId, `Recommended movies: \n\ntitle: ${final}`);
+
+      bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
     }
   }
   // else if (previousMatch) {
@@ -672,7 +672,7 @@ bot.on("callback_query", async (callbackQuery) => {
   // }
 });
 
-function getRandomMovies() {
+function getRandomMovies(movies) {
   const randomMovies = [];
 
   while (randomMovies.length < 3) {
