@@ -452,16 +452,23 @@ bot.on("callback_query", async (callbackQuery) => {
   }
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
-    const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
-
-    const UserRatings = await urResponse.json();
-    console.log(UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
-    // movie_ID = null;
-    bot.sendMessage(
-      chatId,
-      `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
-    Under18: ${UserRatings.demographicAll.agesUnder18.rating}\n18-29: ${UserRatings.demographicAll.ages18To29.rating}\n30-44: ${UserRatings.demographicAll.ages18Toages30To4429.rating}\nOver45: ${UserRatings.demographicAll.agesOver45.rating}\nMales: ${UserRatings.demographicMales.allAges.rating}\nFemales: ${UserRatings.demographicFemales.allAges.rating}`
-    );
+    if (movie_ID !== null) {
+      const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
+  
+      const UserRatings = await urResponse.json();
+      console.log(UserRatings, UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
+      // movie_ID = null;
+      bot.sendMessage(
+        chatId,
+        `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
+      Under18: ${UserRatings.demographicAll.agesUnder18.rating}\n
+      18-29: ${UserRatings.demographicAll.ages18To29.rating}\n
+      30-44: ${UserRatings.demographicAll.ages18Toages30To4429.rating}\n
+      Over45: ${UserRatings.demographicAll.agesOver45.rating}\n
+      Males: ${UserRatings.demographicMales.allAges.rating}\n
+      Females: ${UserRatings.demographicFemales.allAges.rating}`
+      );
+    }
   }
   // else if (previousMatch) {
   //   const startIndex = parseInt(previousMatch[1], 10);
