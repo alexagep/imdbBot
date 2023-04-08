@@ -13,12 +13,13 @@ const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KE
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
-
+const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
-const limitMessage = 'You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.'
+const limitMessage =
+  "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
@@ -61,7 +62,7 @@ bot.onText(/Coming Soon/, async (msg) => {
   try {
     const response = await fetch(IMDB_COMING_SOON);
     const data = await response.json();
-    // console.log(data);
+
     const movies = data.items
       .slice(0, 10)
       .map(
@@ -155,7 +156,7 @@ bot.onText(/Box Office Weekend/, async (msg) => {
   try {
     const response = await fetch(IMDB_BOX_OFFICE);
     const data = await response.json();
-    console.log(data);
+
     const movies = data.items
       .map((movie, index) => {
         return `${index + 1}. ${movie.title}\n\nweekend: ${
@@ -180,7 +181,7 @@ bot.onText(/Box Office AllTime/, async (msg) => {
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
     const data = await response.json();
-    console.log(data);
+
     const movies = data.items
       .slice(0, 25)
       .map((movie, index) => {
@@ -196,7 +197,7 @@ bot.onText(/Box Office AllTime/, async (msg) => {
           [
             {
               text: "Next",
-              callback_data: `next_allTime_movies_${10}`,
+              callback_data: `next_allTime_movies_${25}`,
             },
           ],
         ],
@@ -244,7 +245,7 @@ bot.on("message", async (msg) => {
         movie[0].title
       );
       console.log(similarityScore);
-      if (similarityScore >= 0.30) {
+      if (similarityScore >= 0.3) {
         const movieId = movie[0].id;
 
         const ratingsResp = await fetch(
@@ -252,6 +253,10 @@ bot.on("message", async (msg) => {
         );
 
         const ratings = await ratingsResp.json();
+
+        // const urResponse = await fetch(IMDB_USER_RATINGS);
+
+        // const UserRatings = await urResponse.json();
 
         const imdbUrl = `https://www.imdb.com/title/${movieId}`;
         const keyboard = {
@@ -261,6 +266,12 @@ bot.on("message", async (msg) => {
                 {
                   text: "More Info",
                   url: imdbUrl,
+                },
+              ],
+              [
+                {
+                  text: "User Ratings",
+                  callback_data: "user_ratings",
                 },
               ],
             ],
@@ -435,6 +446,18 @@ bot.on("callback_query", async (callbackQuery) => {
         "An error occurred while fetching the box office allTime. Please try again later."
       );
     }
+  }
+  if (callbackQuery.data === "user_ratings") {
+    // Send the user ratings data
+    const urResponse = await fetch(IMDB_USER_RATINGS);
+
+    const UserRatings = await urResponse.json();
+    // console.log(UserRatings, "************");
+    bot.sendMessage(
+      chatId,
+      `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
+    Under18: ${UserRatings.demographicAll.agesUnder18.rating}\n18-29: ${UserRatings.demographicAll.ages18To29.rating}\n30-44: ${UserRatings.demographicAll.ages18Toages30To4429.rating}\nOver45: ${UserRatings.demographicAll.agesOver45.rating}\nMales: ${UserRatings.demographicMales.allAges.rating}\nFemales: ${UserRatings.demographicFemales.allAges.rating}`
+    );
   }
   // else if (previousMatch) {
   //   const startIndex = parseInt(previousMatch[1], 10);
