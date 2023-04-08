@@ -463,7 +463,7 @@ bot.on("callback_query", async (callbackQuery) => {
         `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
       Under18: ${UserRatings.demographicAll.agesUnder18.rating}\n
       18-29: ${UserRatings.demographicAll.ages18To29.rating}\n
-      30-44: ${UserRatings.demographicAll.ages18Toages30To4429.rating}\n
+      30-44: ${UserRatings.demographicAll.ages18Toages30To44.rating}\n
       Over45: ${UserRatings.demographicAll.agesOver45.rating}\n
       Males: ${UserRatings.demographicMales.allAges.rating}\n
       Females: ${UserRatings.demographicFemales.allAges.rating}`
