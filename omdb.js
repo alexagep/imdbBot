@@ -21,8 +21,7 @@ const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${
 const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&type=movie&plot=short&r=json&genre=`;
-const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`
-
+const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 // library.add(faComment, faImdb);
@@ -601,14 +600,29 @@ bot.on("callback_query", async (callbackQuery) => {
     // Send the user ratings data
     const genre = callbackQuery.data;
     if (genre !== null) {
-      console.log(`https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`);
-      const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
+      console.log(
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
+      );
+      const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
       const urResponse = await fetch(url);
 
-      const movies = await urResponse.json();
-      console.log(movies, movies.length, "************");
+      const res = await urResponse.json();
+      console.log(res.results, res.results.length, "************");
+
+      const movies = getRandomMovies(res.results);
+
+      const final = movies
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.title} (${item.description})\n\nTime: ${
+              item.runtimeStr
+            }\ngenres: ${item.genres}\nIMDb rating: ${
+              item.imDbRating
+            }\nVotes: ${item.imDbRatingVotes}\nCast: ${item.stars}\nContent Rating: ${item.contentRating}`
+        )
+        .join("\n\n");
       // movie_ID = null;
-      bot.sendMessage(chatId, ``);
+      bot.sendMessage(chatId, `Recommended movies: \n\ntitle: ${final}`);
     }
   }
   // else if (previousMatch) {
@@ -657,5 +671,21 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 });
+
+function getRandomMovies() {
+  const randomMovies = [];
+
+  while (randomMovies.length < 3) {
+    const randomIndex = Math.floor(Math.random() * movies.length);
+    const randomMovie = movies[randomIndex];
+
+    // Check if the random movie is already in the result array
+    if (!randomMovies.includes(randomMovie)) {
+      randomMovies.push(randomMovie);
+    }
+  }
+
+  return randomMovies;
+}
 
 console.log("Movie Rating Bot is running...");
