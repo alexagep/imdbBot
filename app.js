@@ -1,9 +1,27 @@
 // const TelegramBot = require("node-telegram-bot-api");
-// require("dotenv").config();
+const axios = require("axios");
+const fetch = require("node-fetch");
+const stringSimilarity = require("string-similarity");
 
-// const bot = new TelegramBot("5604371068:AAGR-VofEj8CSuRHQZDFW7sD5nPz3kcc690", {
-//   polling: true,
-// });
+require("dotenv").config();
+
+const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
+const OMDB_API_KEY = process.env.omdbAPIKEY;
+const IMDB_API_KEY = process.env.imdbAPIKEY;
+
+const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
+const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
+const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
+const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
+const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
+const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
+
+// const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
+
+async function getData () {
+    const data = await fetch(``)
+}
+
 
 // const staticKeyboard = {
 //   reply_markup: JSON.stringify({

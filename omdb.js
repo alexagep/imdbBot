@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 
 require("dotenv").config();
+require('@fortawesome/fontawesome-free/css/all.min.css')
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
@@ -281,9 +282,11 @@ bot.on("message", async (msg) => {
           },
         };
 
+        const icon = `<i class="fa-brands fa-imdb" style="color: #b2db1f;"></i>`;
+
         bot.sendMessage(
           chatId,
-          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+          `🎬 ${ratings.fullTitle}\n🌟 ${icon} IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
           keyboard
         );
       } else {
