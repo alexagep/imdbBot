@@ -6,6 +6,10 @@ const stringSimilarity = require("string-similarity");
 require("dotenv").config();
 const { dom, library } = require('@fortawesome/fontawesome-svg-core');
 const { faComment } = require('@fortawesome/free-solid-svg-icons');
+const { faImdb } = require('@fortawesome/free-brands-svg-icons');
+
+library.add(faComment, faImdb);
+
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
@@ -19,7 +23,7 @@ const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KE
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
-library.add(faComment);
+library.add(faComment, faImdb);
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
@@ -284,13 +288,18 @@ bot.on("message", async (msg) => {
           },
         };
 
-        const iconEl = dom.createIcon('comment');
-        // Convert the icon to a string
-        const iconStr = dom.toHtml(iconEl);
+        const imdbIcon = dom.i(
+          { class: 'fa-brands fa-imdb', style: 'color: #b2db1f;' },
+          dom.svg({ class: 'svg-inline--fa fa-w-16 fa-fw', viewBox: '0 0 24 24' },
+            dom.path({ fill: 'currentColor', d: 'M4 4v16h16V4H4zm12 12.5a.5.5 0 0 1-.5.5H8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v9z' })
+          )
+        );
+        
+
 
         bot.sendMessage(
           chatId,
-          `🎬 ${ratings.fullTitle}\n🌟 ${iconStr} IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+          `🎬 ${ratings.fullTitle}\n🌟 ${imdbIcon} IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
           keyboard
         );
       } else {
