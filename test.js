@@ -22,3 +22,5 @@ const genres = [
 
 
 console.log(genres.includes('comedy'));
+
+console.log(genres[0].slice(1));

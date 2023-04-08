@@ -21,6 +21,8 @@ const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${
 const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&type=movie&plot=short&r=json&genre=`;
+const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`
+
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 // library.add(faComment, faImdb);
@@ -599,10 +601,12 @@ bot.on("callback_query", async (callbackQuery) => {
     // Send the user ratings data
     const genre = callbackQuery.data;
     if (genre !== null) {
-      const urResponse = await fetch(`${OMDB_SEARCH_GENRES}/${genre}`);
+      console.log(`https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`);
+      const url = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
+      const urResponse = await fetch(url);
 
       const movies = await urResponse.json();
-      console.log(movies, "************");
+      console.log(movies, movies.length, "************");
       // movie_ID = null;
       bot.sendMessage(chatId, ``);
     }
