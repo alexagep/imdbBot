@@ -267,14 +267,14 @@ bot.on("message", async (msg) => {
             inline_keyboard: [
               [
                 {
-                  text: "More Info",
-                  url: imdbUrl,
+                  text: "User Ratings",
+                  callback_data: "user_ratings",
                 },
               ],
               [
                 {
-                  text: "User Ratings",
-                  callback_data: "user_ratings",
+                  text: "More Info",
+                  url: imdbUrl,
                 },
               ],
             ],
@@ -456,17 +456,11 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
   
       const UserRatings = await urResponse.json();
-      console.log(UserRatings, UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
+      // console.log(UserRatings, UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
       // movie_ID = null;
       bot.sendMessage(
         chatId,
-        `All Votes: ${UserRatings.demographicAll.allAges.votes}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n
-      Under18: ${UserRatings.demographicAll.agesUnder18.rating}\n
-      18-29: ${UserRatings.demographicAll.ages18To29.rating}\n
-      30-44: ${UserRatings.demographicAll.ages30To44.rating}\n
-      Over45: ${UserRatings.demographicAll.agesOver45.rating}\n
-      Males: ${UserRatings.demographicMales.allAges.rating}\n
-      Females: ${UserRatings.demographicFemales.allAges.rating}`
+        `All Votes: ${UserRatings.demographicAll.allAges.votes.toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${UserRatings.demographicAll.agesUnder18.rating} (${UserRatings.demographicAll.agesUnder18.votes})\n👨🏻‍🎓 18-29: ${UserRatings.demographicAll.ages18To29.rating} (${UserRatings.demographicAll.ages18To29.votes})\n👨🏽‍💼 30-44: ${UserRatings.demographicAll.ages30To44.rating} (${UserRatings.demographicAll.ages30To44.votes})\n👴🏾 Over 45: ${UserRatings.demographicAll.agesOver45.rating} (${UserRatings.demographicAll.agesOver45.votes})\n\n👨🏼 Males: ${UserRatings.demographicMales.allAges.rating} (${UserRatings.demographicMales.allAges.votes})\n👩🏻 Females: ${UserRatings.demographicFemales.allAges.rating} (${UserRatings.demographicFemales.allAges.votes})`
       );
     }
   }
