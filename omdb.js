@@ -154,7 +154,7 @@ bot.onText(/Recommend Movie/, async (msg) => {
 
     bot.sendMessage(
       chatId,
-      `Select A Genre You Want To See:\n\n${movies}`,
+      `Select A Genre You Want To See:\n\n`,
       opts
     );
   } catch (error) {
