@@ -601,8 +601,8 @@ bot.on("callback_query", async (callbackQuery) => {
     // Send the user ratings data
     const genre = callbackQuery.data;
     if (genre !== null) {
-      console.log(`https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`);
-      const url = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
+      console.log(`https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`);
+      const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
       const urResponse = await fetch(url);
 
       const movies = await urResponse.json();
