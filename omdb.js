@@ -33,7 +33,8 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office Weekend"],
-      ["💰📈 Box Office AllTime", "🍿🤖 Recommend Movie"],
+      ["💰📈 Box Office AllTime"],
+      ["🍿🤖 Recommend Movie"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
@@ -593,6 +594,7 @@ bot.on("callback_query", async (callbackQuery) => {
       );
     }
   }
+  console.log(callbackQuery.data);
   if (genres.includes(callbackQuery.data)) {
     // Send the user ratings data
     const genre = callbackQuery.data;
