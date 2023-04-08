@@ -4,12 +4,11 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 
 require("dotenv").config();
-const { library, icon } = require('@fortawesome/fontawesome-svg-core');
-const { faComment } = require('@fortawesome/free-solid-svg-icons');
-const { FontAwesomeIcon } = require('@fortawesome/react-fontawesome');
+const { dom, library } = require("@fortawesome/fontawesome-svg-core");
+const { faComment } = require("@fortawesome/free-solid-svg-icons");
+const { faImdb } = require("@fortawesome/free-brands-svg-icons");
 
-library.add(faComment);
-
+library.add(faComment, faImdb);
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
@@ -221,7 +220,7 @@ bot.onText(/Box Office AllTime/, async (msg) => {
   }
 });
 
-let movie_ID = null
+let movie_ID = null;
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
@@ -266,7 +265,7 @@ bot.on("message", async (msg) => {
 
         // const UserRatings = await urResponse.json();
 
-        movie_ID = movieId 
+        movie_ID = movieId;
 
         const imdbUrl = `https://www.imdb.com/title/${movieId}`;
         const keyboard = {
@@ -288,18 +287,13 @@ bot.on("message", async (msg) => {
           },
         };
 
-        // const imdbIcon = dom.i(
-        //   { class: 'fa-brands fa-imdb', style: 'color: #b2db1f;' },
-        //   dom.svg({ class: 'svg-inline--fa fa-w-16 fa-fw', viewBox: '0 0 24 24' },
-        //     dom.path({ fill: 'currentColor', d: 'M4 4v16h16V4H4zm12 12.5a.5.5 0 0 1-.5.5H8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 .5.5v9z' })
-        //   )
-        // );
-
-        const icon = icon({ icon: faComment, color: "#b2db1f" });
-        const imdbIcon = <FontAwesomeIcon icon={['fab', 'imdb']} color="#b2db1f" />
-
-        
-
+        const imdbIcon = dom.i(
+          { class: "fa-brands fa-imdb", style: "color: #b2db1f;" },
+          dom.svg({
+            class: "svg-inline--fa fa-w-16 fa-fw",
+            viewBox: "0 0 24 24",
+          })
+        );
 
         bot.sendMessage(
           chatId,
@@ -474,13 +468,39 @@ bot.on("callback_query", async (callbackQuery) => {
     // Send the user ratings data
     if (movie_ID !== null) {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
-  
+
       const UserRatings = await urResponse.json();
       // console.log(UserRatings, UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
       // movie_ID = null;
       bot.sendMessage(
         chatId,
-        `All Votes: ${parseInt(UserRatings.demographicAll.allAges.votes).toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${UserRatings.demographicAll.agesUnder18.rating} (${parseInt(UserRatings.demographicAll.agesUnder18.votes).toLocaleString()})\n👨🏻‍🎓 18-29: ${UserRatings.demographicAll.ages18To29.rating} (${parseInt(UserRatings.demographicAll.ages18To29.votes).toLocaleString()})\n👨🏽‍💼 30-44: ${UserRatings.demographicAll.ages30To44.rating} (${parseInt(UserRatings.demographicAll.ages30To44.votes).toLocaleString()})\n👴🏾 Over 45: ${UserRatings.demographicAll.agesOver45.rating} (${parseInt(UserRatings.demographicAll.agesOver45.votes).toLocaleString()})\n\n👨🏼 Males: ${UserRatings.demographicMales.allAges.rating} (${parseInt(UserRatings.demographicMales.allAges.votes).toLocaleString()})\n👩🏻 Females: ${UserRatings.demographicFemales.allAges.rating} (${parseInt(UserRatings.demographicFemales.allAges.votes).toLocaleString()})`
+        `All Votes: ${parseInt(
+          UserRatings.demographicAll.allAges.votes
+        ).toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${
+          UserRatings.demographicAll.agesUnder18.rating
+        } (${parseInt(
+          UserRatings.demographicAll.agesUnder18.votes
+        ).toLocaleString()})\n👨🏻‍🎓 18-29: ${
+          UserRatings.demographicAll.ages18To29.rating
+        } (${parseInt(
+          UserRatings.demographicAll.ages18To29.votes
+        ).toLocaleString()})\n👨🏽‍💼 30-44: ${
+          UserRatings.demographicAll.ages30To44.rating
+        } (${parseInt(
+          UserRatings.demographicAll.ages30To44.votes
+        ).toLocaleString()})\n👴🏾 Over 45: ${
+          UserRatings.demographicAll.agesOver45.rating
+        } (${parseInt(
+          UserRatings.demographicAll.agesOver45.votes
+        ).toLocaleString()})\n\n👨🏼 Males: ${
+          UserRatings.demographicMales.allAges.rating
+        } (${parseInt(
+          UserRatings.demographicMales.allAges.votes
+        ).toLocaleString()})\n👩🏻 Females: ${
+          UserRatings.demographicFemales.allAges.rating
+        } (${parseInt(
+          UserRatings.demographicFemales.allAges.votes
+        ).toLocaleString()})`
       );
     }
   }
