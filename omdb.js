@@ -455,7 +455,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
     const UserRatings = await urResponse.json();
-    // console.log(UserRatings, "************");
+    console.log(UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
     // movie_ID = null;
     bot.sendMessage(
       chatId,
