@@ -22,7 +22,7 @@ const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KE
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
-library.add(faComment, faImdb);
+// library.add(faComment, faImdb);
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
