@@ -406,7 +406,7 @@ bot.on("message", async (msg) => {
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
-  const genre = callbackQuery.data.toLowerCase();
+  let genre = null;
   const match = callbackQuery.data.match(/^next_(\d+)$/);
   // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
@@ -612,9 +612,10 @@ bot.on("callback_query", async (callbackQuery) => {
   if (genres.includes(callbackQuery.data.toLowerCase())) {
     console.log(callbackQuery.data);
 
-    if (genre !== null) {
+    genre = callbackQuery.data.toLowerCase()
+    // if (genre !== null) {
       await generateRecommendation(genre, chatId);
-    }
+    // }
   }
 
   // New recommendation callback query handling
