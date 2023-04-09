@@ -648,38 +648,62 @@ bot.on("callback_query", async (callbackQuery) => {
       //   });
       // });
 
-      movies.forEach(async (movie, index) => {
-        // Download the image and send it
-        if (movie.image) {
-          await fetch(movie.image)
+      // movies.forEach(async (movie, index) => {
+      //   // Download the image and send it
+      //   if (movie.image) {
+      //     await fetch(movie.image)
+      //     .then(response => {
+      //       if (response.ok) {
+      //         return response.buffer();
+      //       } else {
+      //         throw new Error(`Failed to download image for movie ${movie.title}`);
+      //       }
+      //     })
+      //     .then(buffer => {
+      //       const photo = { source: buffer };
+      //       const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
+      //       console.log(photo, message);
+      //       // bot.sendPhoto(
+      //       //   chatId,
+      //       //   photo,
+      //       //   {
+      //       //     caption: message,
+      //       //   },
+      //       // );
+      //     })
+      //     .catch(error => {
+      //       console.error(error);
+      //     });
+      //   } else{
+      //     console.log('no image');
+      //   }
+        
+      // });
+
+      //https://m.media-amazon.com/images/M/MV5BZjRlZDIyNDMtZjIwYi00YmJiLTg4NjMtODA2Mjc0YTBlNzIwXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_Ratio0.6837_AL_.jpg
+      await fetch("https://m.media-amazon.com/images/M/MV5BZjRlZDIyNDMtZjIwYi00YmJiLTg4NjMtODA2Mjc0YTBlNzIwXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_Ratio0.6837_AL_.jpg")
           .then(response => {
             if (response.ok) {
               return response.buffer();
             } else {
-              throw new Error(`Failed to download image for movie ${movie.title}`);
+              throw new Error(`Failed to download image for movie`);
             }
           })
           .then(buffer => {
             const photo = { source: buffer };
-            const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
+            const message = `hi`;
             console.log(photo, message);
-            // bot.sendPhoto(
-            //   chatId,
-            //   photo,
-            //   {
-            //     caption: message,
-            //   },
-            // );
+            bot.sendPhoto(
+              chatId,
+              photo,
+              {
+                caption: message,
+              },
+            );
           })
           .catch(error => {
             console.error(error);
           });
-        } else{
-          console.log('no image');
-        }
-        
-      });
-      
     }
   }
   // else if (previousMatch) {
