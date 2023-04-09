@@ -2,7 +2,8 @@ const TelegramBot = require("node-telegram-bot-api");
 const axios = require("axios");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
-const request = require('request');
+const request = require("request");
+const sharp = require("sharp");
 
 require("dotenv").config();
 // const { dom, library } = require("@fortawesome/fontawesome-svg-core");
@@ -618,6 +619,27 @@ bot.on("callback_query", async (callbackQuery) => {
 
       const movies = getRandomMovies(res.results);
 
+      for (const movie of movies) {
+        const response = await fetch(movie.image);
+        const buffer = await response.buffer();
+
+        const resizedBuffer = await sharp(buffer)
+          .resize({ width: 1280, height: 1024, fit: "inside" })
+          .toBuffer();
+
+        const message = `${movie.title} ${
+          movie.description
+        }\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(
+          movie.imDbRatingVotes
+        ).toLocaleString()})\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${
+          movie.genres
+        }\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
+          movie.contentRating
+        }\n🖼️ Image: ${movie.image}`;
+        bot.sendPhoto(chatId, resizedBuffer, {
+          caption: message,
+        });
+      }
       // const final = movies
       //   .map(
       //     (item, index) =>
@@ -630,80 +652,6 @@ bot.on("callback_query", async (callbackQuery) => {
       //   .join("\n\n");
 
       // bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
-
-      // movies.forEach((movie, index) => {
-      //   // Download the image and send it
-      //   request.get(movie.image, { encoding: null }, (error, response, body) => {
-      //     if (!error && response.statusCode === 200) {
-      //       const photo = { source: body };
-      //       const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
-      //       bot.sendPhoto(
-      //         chatId,
-      //         photo,
-      //         {
-      //           caption: message,
-      //         },
-      //       );
-      //     }
-      //   });
-      // });
-
-      // movies.forEach(async (movie, index) => {
-      //   // Download the image and send it
-      //   if (movie.image) {
-      //     await fetch(movie.image)
-      //     .then(response => {
-      //       if (response.ok) {
-      //         return response.buffer();
-      //       } else {
-      //         throw new Error(`Failed to download image for movie ${movie.title}`);
-      //       }
-      //     })
-      //     .then(buffer => {
-      //       const photo = { source: buffer };
-      //       const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
-      //       console.log(photo, message);
-      //       // bot.sendPhoto(
-      //       //   chatId,
-      //       //   photo,
-      //       //   {
-      //       //     caption: message,
-      //       //   },
-      //       // );
-      //     })
-      //     .catch(error => {
-      //       console.error(error);
-      //     });
-      //   } else{
-      //     console.log('no image');
-      //   }
-        
-      // });
-
-      //https://m.media-amazon.com/images/M/MV5BZjRlZDIyNDMtZjIwYi00YmJiLTg4NjMtODA2Mjc0YTBlNzIwXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_Ratio0.6837_AL_.jpg
-      await fetch("https://m.media-amazon.com/images/M/MV5BZjRlZDIyNDMtZjIwYi00YmJiLTg4NjMtODA2Mjc0YTBlNzIwXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_Ratio0.6837_AL_.jpg")
-          .then(response => {
-            if (response.ok) {
-              return response.buffer();
-            } else {
-              throw new Error(`Failed to download image for movie`);
-            }
-          })
-          .then(buffer => {
-            const photo = { source: buffer };
-            const message = `hi`;
-            console.log(photo, message);
-            bot.sendPhoto(
-              chatId,
-              photo,
-              {
-                caption: message,
-              },
-            );
-          })
-          .catch(error => {
-            console.error(error);
-          });
     }
   }
   // else if (previousMatch) {

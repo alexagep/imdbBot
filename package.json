@@ -20,6 +20,7 @@
     "node-fetch": "^2.6.9",
     "node-telegram-bot-api": "^0.61.0",
     "request": "^2.88.2",
+    "sharp": "^0.32.0",
     "string-similarity": "^4.0.4"
   }
 }
