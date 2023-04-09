@@ -143,19 +143,31 @@ const movies = [
 ];
 
 function getRandomMovies() {
-  const randomMovies = [];
+  // const randomMovies = [];
 
-  while (randomMovies.length < 3) {
-    const randomIndex = Math.floor(Math.random() * movies.length);
-    const randomMovie = movies[randomIndex];
+  // while (randomMovies.length < 3) {
+  //   const randomIndex = Math.floor(Math.random() * movies.length);
+  //   const randomMovie = movies[randomIndex];
 
-    // Check if the random movie is already in the result array
-    if (!randomMovies.includes(randomMovie)) {
-      randomMovies.push(randomMovie);
-    }
-  }
+  //   // Check if the random movie is already in the result array
+  //   if (!randomMovies.includes(randomMovie)) {
+  //     randomMovies.push(randomMovie);
+  //   }
+  // }
 
-  return randomMovies;
+  // return randomMovies;
+  const final = movies
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
+              item.imDbRating
+            } (${parseInt(item.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${item.runtimeStr}\n🎭 Genres: ${
+              item.genres
+            }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}\n🖼️  Image: ${item.image}`
+        )
+        .join("\n\n");
+
+        return final
 }
 
 console.log(getRandomMovies());

@@ -2,6 +2,7 @@ const TelegramBot = require("node-telegram-bot-api");
 const axios = require("axios");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
+const request = require('request');
 
 require("dotenv").config();
 // const { dom, library } = require("@fortawesome/fontawesome-svg-core");
@@ -163,6 +164,13 @@ bot.onText(/Recommend Movie/, async (msg) => {
             {
               text: "Drama",
               callback_data: "drama",
+            },
+          ],
+          ,
+          [
+            {
+              text: "Family",
+              callback_data: "family",
             },
           ],
         ],
@@ -596,9 +604,9 @@ bot.on("callback_query", async (callbackQuery) => {
     }
   }
   console.log(callbackQuery.data);
-  if (genres.includes(callbackQuery.data)) {
+  if (genres.includes(callbackQuery.data.toLowerCase())) {
     // Send the user ratings data
-    const genre = callbackQuery.data;
+    const genre = callbackQuery.data.toLowerCase();
     if (genre !== null) {
       console.log(
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
@@ -607,22 +615,40 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(url);
 
       const res = await urResponse.json();
-      console.log(res.results, res.results.length, "************");
+      // console.log(res.results, res.results.length, "************");
 
       const movies = getRandomMovies(res.results);
 
-      const final = movies
-        .map(
-          (item, index) =>
-            `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
-              item.imDbRating
-            } (${parseInt(item.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
-              item.genres
-            }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}`
-        )
-        .join("\n\n");
+      // const final = movies
+      //   .map(
+      //     (item, index) =>
+      //       `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
+      //         item.imDbRating
+      //       } (${parseInt(item.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
+      //         item.genres
+      //       }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}\n🖼️ Image: ${item.image}`
+      //   )
+      //   .join("\n\n");
 
-      bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
+      // bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
+
+      movies.forEach((movie, index) => {
+        // Download the image and send it
+        request.get(movie.image, { encoding: null }, (error, response, body) => {
+          if (!error && response.statusCode === 200) {
+            const photo = { source: body };
+            const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
+            bot.sendPhoto(
+              chatId,
+              photo,
+              {
+                caption: message,
+              },
+            );
+          }
+        });
+      });
+      
     }
   }
   // else if (previousMatch) {
