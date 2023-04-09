@@ -631,11 +631,35 @@ bot.on("callback_query", async (callbackQuery) => {
 
       // bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
 
+      // movies.forEach((movie, index) => {
+      //   // Download the image and send it
+      //   request.get(movie.image, { encoding: null }, (error, response, body) => {
+      //     if (!error && response.statusCode === 200) {
+      //       const photo = { source: body };
+      //       const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
+      //       bot.sendPhoto(
+      //         chatId,
+      //         photo,
+      //         {
+      //           caption: message,
+      //         },
+      //       );
+      //     }
+      //   });
+      // });
+
       movies.forEach((movie, index) => {
         // Download the image and send it
-        request.get(movie.image, { encoding: null }, (error, response, body) => {
-          if (!error && response.statusCode === 200) {
-            const photo = { source: body };
+        fetch(movie.image)
+          .then(response => {
+            if (response.ok) {
+              return response.buffer();
+            } else {
+              throw new Error(`Failed to download image for movie ${movie.title}`);
+            }
+          })
+          .then(buffer => {
+            const photo = { source: buffer };
             const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
             bot.sendPhoto(
               chatId,
@@ -644,8 +668,10 @@ bot.on("callback_query", async (callbackQuery) => {
                 caption: message,
               },
             );
-          }
-        });
+          })
+          .catch(error => {
+            console.error(error);
+          });
       });
       
     }
