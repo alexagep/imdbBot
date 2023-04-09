@@ -403,10 +403,11 @@ bot.on("message", async (msg) => {
   }
 });
 
+let genre = null;
+
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
-  let genre = null;
   const match = callbackQuery.data.match(/^next_(\d+)$/);
   // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
@@ -462,6 +463,16 @@ bot.on("callback_query", async (callbackQuery) => {
         ]);
       }
 
+      // add a "Back" button if there are previous movies to show
+      if (startIndex > 0) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Back",
+            callback_data: `next_${startIndex - 10}`,
+          },
+        ]);
+      }
+
       bot.editMessageText(
         `IMDb Top ${startIndex + 1}-${endIndex} Movies:\n\n${topMovies}`,
         opts
@@ -499,11 +510,22 @@ bot.on("callback_query", async (callbackQuery) => {
         },
       };
 
+      // add a "Next" button if there are more movies to show
       if (endIndex < data.items.length) {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Next",
             callback_data: `next_movies_${endIndex}`,
+          },
+        ]);
+      }
+
+      // add a "Back" button if there are previous movies to show
+      if (startIndex > 0) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Back",
+            callback_data: `next_movies_${startIndex - 10}`,
           },
         ]);
       }
@@ -610,39 +632,37 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
-    console.log(callbackQuery.data, 'genre');
+    // console.log(callbackQuery.data, 'genre');
 
-    genre = callbackQuery.data.toLowerCase()
-    // if (genre !== null) {
-      await generateRecommendation(genre, chatId);
-    // }
+    genre = callbackQuery.data.toLowerCase();
+
+    await generateRecommendation(genre, chatId);
   }
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    console.log(genre, 'genre in new rec');
+    // console.log(genre, 'genre in new rec');
     await generateRecommendation(genre, chatId);
     await bot.deleteMessage(chatId, messageId);
   }
 });
 
 function getRandomMovies(movies) {
-
   const randomIndex = Math.floor(Math.random() * movies.length);
   const randomMovie = movies[randomIndex];
 
-// console.log(randomMovie);
+  // console.log(randomMovie);
 
   return randomMovie;
 }
 
 async function generateRecommendation(genre, chatId) {
-  console.log(genre, 'genre in generateRec func');
+  console.log(genre, "genre in generateRec func");
   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
   const urResponse = await fetch(url);
   const res = await urResponse.json();
   const movie = getRandomMovies(res.results);
-// console.log(movie);
+  // console.log(movie);
   const response = await fetch(movie.image);
   const buffer = await response.buffer();
 
