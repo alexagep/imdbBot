@@ -1,54 +1,103 @@
-// const TelegramBot = require("node-telegram-bot-api");
-const axios = require("axios");
-const fetch = require("node-fetch");
-const stringSimilarity = require("string-similarity");
+bot.on("callback_query", async (callbackQuery) => {
+  const chatId = callbackQuery.message.chat.id;
+  const messageId = callbackQuery.message.message_id;
+  const genre = callbackQuery.data.toLowerCase();
+  const match = callbackQuery.data.match(/^next_(\d+)$/);
+  // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
+  const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
+  const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
+  const genres = [
+    "comedy",
+    "sci-fi",
+    "romance",
+    "thriller",
+    "horror",
+    "action",
+    "drama",
+    "fantasy",
+    "adventure",
+    "animation",
+    "crime",
+    "documentary",
+    "family",
+    "history",
+    "music",
+    "mystery",
+    "sport",
+    "war",
+    "western",
+  ];
 
-require("dotenv").config();
+  // Initial callback query handling
+  if (genres.includes(callbackQuery.data.toLowerCase())) {
+    if (genre !== null) {
+      await generateRecommendation(genre, chatId);
+    }
+  }
 
-const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
-const OMDB_API_KEY = process.env.omdbAPIKEY;
-const IMDB_API_KEY = process.env.imdbAPIKEY;
+  // New recommendation callback query handling
+  if (callbackQuery.data === "new_recommendation") {
+    await generateRecommendation(genre, chatId);
+    await bot.deleteMessage(chatId, messageId);
+  }
+});
 
-const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
-const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
-const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
-const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
-const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
-const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
+function getRandomMovies(movies) {
+  const randomIndex = Math.floor(Math.random() * movies.length);
+  const randomMovie = movies[randomIndex];
 
-// const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
-
-async function getData () {
-    const data = await fetch(``)
+  return randomMovie;
 }
 
+async function generateRecommendation(genre, chatId) {
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
+  const urResponse = await fetch(url);
+  const res = await urResponse.json();
+  const movie = getRandomMovies(res.results);
 
-// const staticKeyboard = {
-//   reply_markup: JSON.stringify({
-//     keyboard: [
-//       ["🎥 Search Movie", "🔝 Top250"],
-//       ["🎭 Coming Soon", "💰 Box Office"],
-//       ["💰📈 Box Office AllTime"],
-//     ],
-//     one_time_keyboard: false,
-//     resize_keyboard: true,
-//   }),
-// };
+  const response = await fetch(movie.image);
+  const buffer = await response.buffer();
 
-// bot.onText(/\/start/, (msg) => {
-//   try {
-//     console.log("****************");
-//     const chatId = msg.chat.id;
-//     const welcomeMessage =
-//       "Welcome to the IMDB Bot! Send me the title of a movie, and I will return its IMDb rating. Select an option:";
-//     bot.sendMessage(chatId, welcomeMessage, staticKeyboard);
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
+  const resizedBuffer = await sharp(buffer)
+    .resize({ width: 1280, height: 1024, fit: "inside" })
+    .toBuffer();
 
-// bot.on("message", (msg) => {
-//   console.log("Received message:", msg.text);
-// });
+  const message = `🎥 ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
+    movie.imDbRating
+  } (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${
+    movie.runtimeStr
+  }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
+    movie.contentRating
+  }\n`;
 
-// console.log("Movie Rating Bot is running...");
+  const imdbUrl = `https://www.imdb.com/title/${movie.id}`;
+  const opts = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "New Recommendation",
+            callback_data: "new_recommendation",
+          },
+        ],
+        [
+          {
+            text: "More Info",
+            url: imdbUrl,
+          },
+        ],
+      ],
+    },
+  };
+
+  bot.sendPhoto(
+    chatId,
+    resizedBuffer,
+    {
+      caption: message,
+    },
+    opts
+  );
+
+//   bot.sendMessage(chatId, `Do you want a new recommendation?`, opts);
+}

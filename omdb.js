@@ -603,7 +603,7 @@ bot.on("callback_query", async (callbackQuery) => {
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
     if (genre !== null) {
-      await generateRecommendation(genre, chatId, opts);
+      await generateRecommendation(genre, chatId);
     }
   }
 
@@ -634,7 +634,7 @@ async function generateRecommendation(genre, chatId) {
     .resize({ width: 1280, height: 1024, fit: "inside" })
     .toBuffer();
 
-  const message = `${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
+  const message = `🎥 ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
     movie.imDbRating
   } (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${
     movie.runtimeStr
@@ -652,12 +652,7 @@ async function generateRecommendation(genre, chatId) {
             callback_data: "new_recommendation",
           },
         ],
-        [
-          {
-            text: "More Info",
-            url: imdbUrl,
-          },
-        ],
+        [{ text: "More Info", url: imdbUrl }],
       ],
     },
   };
@@ -668,10 +663,10 @@ async function generateRecommendation(genre, chatId) {
     {
       caption: message,
     },
-    newOpts
+    opts
   );
 
-  bot.sendMessage(chatId, `Do you want a new recommendation?`, opts);
+  // bot.sendMessage(chatId, `Do you want a new recommendation?`, opts);
 }
 
 console.log("Movie Rating Bot is running...");
