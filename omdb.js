@@ -662,7 +662,7 @@ bot.on("callback_query", async (callbackQuery) => {
           .then(buffer => {
             const photo = { source: buffer };
             const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
-            console.log(buffer);
+            console.log(photo, message);
             // bot.sendPhoto(
             //   chatId,
             //   photo,
