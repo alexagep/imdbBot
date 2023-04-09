@@ -347,10 +347,6 @@ bot.on("message", async (msg) => {
 
         const ratings = await ratingsResp.json();
 
-        // const urResponse = await fetch(IMDB_USER_RATINGS);
-
-        // const UserRatings = await urResponse.json();
-
         movie_ID = movieId;
 
         const imdbUrl = `https://www.imdb.com/title/${movieId}`;
@@ -603,7 +599,7 @@ bot.on("callback_query", async (callbackQuery) => {
       );
     }
   }
- 
+
   if (callbackQuery.data === "new_recommendation") {
     // Generate a new set of recommendations for the same genre
     const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
@@ -650,10 +646,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
     // Delete the previous message
     await bot.deleteMessage(chatId, messageId);
-  }
-  else if (genres.includes(callbackQuery.data.toLowerCase())) {
+  } else if (genres.includes(callbackQuery.data.toLowerCase())) {
     // Send the user ratings data
-    // const genre = callbackQuery.data.toLowerCase();
     if (genre !== null) {
       const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
       const urResponse = await fetch(url);
@@ -683,7 +677,7 @@ bot.on("callback_query", async (callbackQuery) => {
             [
               {
                 text: "New Recommendation",
-                callback_data: "new_recommendation",
+                callback_data: `new_recommendation`,
               },
             ],
           ],
@@ -699,19 +693,7 @@ bot.on("callback_query", async (callbackQuery) => {
         opts
       );
 
-      // }
-      // const final = movies
-      //   .map(
-      //     (item, index) =>
-      //       `${index + 1}. ${item.title} ${item.description}\n\n⭐️ IMDb rating: ${
-      //         item.imDbRating
-      //       } (${parseInt(item.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${item.runtimeStr}\n🎭 genres: ${
-      //         item.genres
-      //       }\n🌟 Cast: ${item.stars}\n🔞 Content Rating: ${item.contentRating}\n🖼️ Image: ${item.image}`
-      //   )
-      //   .join("\n\n");
-
-      // bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
+      bot.sendMessage(chatId, ``, opts);
     }
   }
   // else if (previousMatch) {
