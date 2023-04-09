@@ -650,7 +650,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
       movies.forEach(async (movie, index) => {
         // Download the image and send it
-        await fetch(movie.image)
+        if (movie.image) {
+          await fetch(movie.image)
           .then(response => {
             if (response.ok) {
               return response.buffer();
@@ -661,17 +662,22 @@ bot.on("callback_query", async (callbackQuery) => {
           .then(buffer => {
             const photo = { source: buffer };
             const message = `${index + 1}. ${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱  Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n🖼️  Image: ${movie.image}`;
-            bot.sendPhoto(
-              chatId,
-              photo,
-              {
-                caption: message,
-              },
-            );
+            console.log(buffer);
+            // bot.sendPhoto(
+            //   chatId,
+            //   photo,
+            //   {
+            //     caption: message,
+            //   },
+            // );
           })
           .catch(error => {
             console.error(error);
           });
+        } else{
+          console.log('no image');
+        }
+        
       });
       
     }
