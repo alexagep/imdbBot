@@ -635,7 +635,7 @@ bot.on("callback_query", async (callbackQuery) => {
           movie.genres
         }\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
           movie.contentRating
-        }\n🖼️ Image: ${movie.image}`;
+        }\n`;
         bot.sendPhoto(chatId, resizedBuffer, {
           caption: message,
         });
