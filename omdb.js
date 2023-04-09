@@ -376,7 +376,7 @@ bot.on("message", async (msg) => {
           },
         };
 
-        const message = `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
+        const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
 
         await bot.sendPhoto(chatId, resizedBuffer, {
           caption: message,
