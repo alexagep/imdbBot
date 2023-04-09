@@ -166,7 +166,6 @@ bot.onText(/Recommend Movie/, async (msg) => {
               callback_data: "drama",
             },
           ],
-          ,
           [
             {
               text: "Family",
