@@ -36,3 +36,40 @@ cron.schedule("0 4 * * *", () => {
 });
 
 module.exports = updateTop250;
+
+
+
+/*
+const { Sequelize, DataTypes } = require("sequelize");
+
+// Define the connection details for your database
+const sequelize = new Sequelize("database", "username", "password", {
+  host: "localhost",
+  dialect: "postgres",
+});
+
+// Define the first table
+const Table1 = sequelize.define("Table1", {
+  // define the columns for this table
+});
+
+// Define the second table
+const Table2 = sequelize.define("Table2", {
+  // define the columns for this table
+});
+
+// Define the third table
+const Table3 = sequelize.define("Table3", {
+  // define the columns for this table
+});
+
+// Define the fourth table
+const Table4 = sequelize.define("Table4", {
+  // define the columns for this table
+});
+
+// Define the fifth table
+const Table5 = sequelize.define("Table5", {
+  // define the columns for this table
+});
+*/
