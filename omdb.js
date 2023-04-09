@@ -609,7 +609,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    await generateRecommendation(genre, chatId, opts);
+    await generateRecommendation(genre, chatId);
     await bot.deleteMessage(chatId, messageId);
   }
 });
@@ -621,7 +621,7 @@ function getRandomMovies(movies) {
   return randomMovie;
 }
 
-async function generateRecommendation(genre, chatId, opts) {
+async function generateRecommendation(genre, chatId) {
   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
   const urResponse = await fetch(url);
   const res = await urResponse.json();
@@ -643,7 +643,7 @@ async function generateRecommendation(genre, chatId, opts) {
   }\n`;
 
   const imdbUrl = `https://www.imdb.com/title/${movie.id}`;
-  const newOpts = {
+  const opts = {
     reply_markup: {
       inline_keyboard: [
         [
@@ -671,7 +671,7 @@ async function generateRecommendation(genre, chatId, opts) {
     newOpts
   );
 
-  bot.sendMessage(chatId, `Do you want a new recommendation?`, newOpts);
+  bot.sendMessage(chatId, `Do you want a new recommendation?`, opts);
 }
 
 console.log("Movie Rating Bot is running...");
