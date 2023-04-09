@@ -376,17 +376,11 @@ bot.on("message", async (msg) => {
           },
         };
 
-        // bot.sendMessage(
-        //   chatId,
-        //   `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
-        //   keyboard
-        // );
-
-        const message = `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
+        const message = `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
 
         await bot.sendPhoto(chatId, resizedBuffer, {
           caption: message,
-          reply_markup: opts.reply_markup,
+          reply_markup: keyboard.reply_markup,
         });
       } else {
         bot.sendMessage(
