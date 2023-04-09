@@ -600,163 +600,78 @@ bot.on("callback_query", async (callbackQuery) => {
     }
   }
 
-  if (callbackQuery.data === "new_recommendation") {
-    // Generate a new set of recommendations for the same genre
-    const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
-    const urResponse = await fetch(url);
-    const res = await urResponse.json();
-    const movie = getRandomMovies(res.results);
-
-    const response = await fetch(movie.image);
-    const buffer = await response.buffer();
-
-    const resizedBuffer = await sharp(buffer)
-      .resize({ width: 1280, height: 1024, fit: "inside" })
-      .toBuffer();
-
-    const message = `${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
-      movie.imDbRating
-    } (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${
-      movie.runtimeStr
-    }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${
-      movie.stars
-    }\n🔞 Content Rating: ${movie.contentRating}\n`;
-
-    const opts = {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "New Recommendation",
-              callback_data: "new_recommendation",
-            },
-          ],
-        ],
-      },
-    };
-
-    bot.sendPhoto(
-      chatId,
-      resizedBuffer,
-      {
-        caption: message,
-      },
-      opts
-    );
-
-    // Delete the previous message
-    await bot.deleteMessage(chatId, messageId);
-  } else if (genres.includes(callbackQuery.data.toLowerCase())) {
-    // Send the user ratings data
+  // Initial callback query handling
+  if (genres.includes(callbackQuery.data.toLowerCase())) {
     if (genre !== null) {
-      const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
-      const urResponse = await fetch(url);
-
-      const res = await urResponse.json();
-
-      const movie = getRandomMovies(res.results);
-
-      const response = await fetch(movie.image);
-      const buffer = await response.buffer();
-
-      const resizedBuffer = await sharp(buffer)
-        .resize({ width: 1280, height: 1024, fit: "inside" })
-        .toBuffer();
-
-      const message = `${movie.title} ${
-        movie.description
-      }\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(
-        movie.imDbRatingVotes
-      ).toLocaleString()})\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${
-        movie.genres
-      }\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n`;
-
-      const opts = {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              {
-                text: "New Recommendation",
-                callback_data: `new_recommendation`,
-              },
-            ],
-          ],
-        },
-      };
-
-      bot.sendPhoto(
-        chatId,
-        resizedBuffer,
-        {
-          caption: message,
-        },
-        opts
-      );
-
-      bot.sendMessage(chatId, ``, opts);
+      await generateRecommendation(genre, chatId, opts);
     }
   }
-  // else if (previousMatch) {
-  //   const startIndex = parseInt(previousMatch[1], 10);
-  //   const endIndex = startIndex - 50;
 
-  //   try {
-  //     const response = await fetch(IMDB_TOP_250_URL);
-  //     const data = await response.json();
-  //     const topMovies = data.items
-  //       .slice(startIndex, endIndex)
-  //       .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
-  //       .join("\n");
-
-  //     const opts = {
-  //       chat_id: chatId,
-  //       message_id: messageId,
-  //       reply_markup: {
-  //         inline_keyboard: [],
-  //       },
-  //     };
-
-  //     if (endIndex < data.items.length) {
-  //       opts.reply_markup.inline_keyboard.push([
-  //         {
-  //           text: "Next",
-  //           callback_data: `next_${endIndex}`,
-  //         },
-  //         {
-  //           text: "Previous",
-  //           callback_data: `prev_${endIndex}`,
-  //         }
-  //       ]);
-  //     }
-
-  //     bot.editMessageText(
-  //       `IMDb Top ${startIndex + 1}-${endIndex} Movies:\n\n${topMovies}`,
-  //       opts
-  //     );
-  //   } catch (error) {
-  //     console.error("Error fetching top 250 movies:", error);
-  //     bot.sendMessage(
-  //       chatId,
-  //       "An error occurred while fetching the top 250 movies. Please try again later."
-  //     );
-  //   }
-  // }
+  // New recommendation callback query handling
+  if (callbackQuery.data === "new_recommendation") {
+    await generateRecommendation(genre, chatId, opts);
+    await bot.deleteMessage(chatId, messageId);
+  }
 });
 
 function getRandomMovies(movies) {
-  // const randomMovies = [];
-
-  // while (randomMovies.length < 3) {
   const randomIndex = Math.floor(Math.random() * movies.length);
   const randomMovie = movies[randomIndex];
 
-  // Check if the random movie is already in the result array
-  //   if (!randomMovies.includes(randomMovie)) {
-  //     randomMovies.push(randomMovie);
-  //   }
-  // }
-
   return randomMovie;
+}
+
+async function generateRecommendation(genre, chatId, opts) {
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
+  const urResponse = await fetch(url);
+  const res = await urResponse.json();
+  const movie = getRandomMovies(res.results);
+
+  const response = await fetch(movie.image);
+  const buffer = await response.buffer();
+
+  const resizedBuffer = await sharp(buffer)
+    .resize({ width: 1280, height: 1024, fit: "inside" })
+    .toBuffer();
+
+  const message = `${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
+    movie.imDbRating
+  } (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${
+    movie.runtimeStr
+  }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
+    movie.contentRating
+  }\n`;
+
+  const imdbUrl = `https://www.imdb.com/title/${movie.id}`;
+  const newOpts = {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "New Recommendation",
+            callback_data: "new_recommendation",
+          },
+        ],
+        [
+          {
+            text: "More Info",
+            url: imdbUrl,
+          },
+        ],
+      ],
+    },
+  };
+
+  bot.sendPhoto(
+    chatId,
+    resizedBuffer,
+    {
+      caption: message,
+    },
+    newOpts
+  );
+
+  bot.sendMessage(chatId, `Do you want a new recommendation?`, newOpts);
 }
 
 console.log("Movie Rating Bot is running...");
