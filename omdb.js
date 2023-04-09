@@ -637,6 +637,7 @@ bot.on("callback_query", async (callbackQuery) => {
     genre = callbackQuery.data.toLowerCase();
 
     await generateRecommendation(genre, chatId);
+    await bot.deleteMessage(chatId, messageId);
   }
 
   // New recommendation callback query handling
