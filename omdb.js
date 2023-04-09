@@ -402,7 +402,7 @@ bot.on("message", async (msg) => {
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
-
+  const genre = callbackQuery.data.toLowerCase();
   const match = callbackQuery.data.match(/^next_(\d+)$/);
   // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
@@ -603,43 +603,55 @@ bot.on("callback_query", async (callbackQuery) => {
       );
     }
   }
-  console.log(callbackQuery.data);
   if (genres.includes(callbackQuery.data.toLowerCase())) {
     // Send the user ratings data
-    const genre = callbackQuery.data.toLowerCase();
+    // const genre = callbackQuery.data.toLowerCase();
     if (genre !== null) {
-      console.log(
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`
-      );
       const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
       const urResponse = await fetch(url);
 
       const res = await urResponse.json();
-      // console.log(res.results, res.results.length, "************");
 
-      const movies = getRandomMovies(res.results);
+      const movie = getRandomMovies(res.results);
 
-      for (const movie of movies) {
-        const response = await fetch(movie.image);
-        const buffer = await response.buffer();
+      const response = await fetch(movie.image);
+      const buffer = await response.buffer();
 
-        const resizedBuffer = await sharp(buffer)
-          .resize({ width: 1280, height: 1024, fit: "inside" })
-          .toBuffer();
+      const resizedBuffer = await sharp(buffer)
+        .resize({ width: 1280, height: 1024, fit: "inside" })
+        .toBuffer();
 
-        const message = `${movie.title} ${
-          movie.description
-        }\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(
-          movie.imDbRatingVotes
-        ).toLocaleString()})\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${
-          movie.genres
-        }\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
-          movie.contentRating
-        }\n`;
-        bot.sendPhoto(chatId, resizedBuffer, {
+      const message = `${movie.title} ${
+        movie.description
+      }\n\n⭐️ IMDb rating: ${movie.imDbRating} (${parseInt(
+        movie.imDbRatingVotes
+      ).toLocaleString()})\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${
+        movie.genres
+      }\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${movie.contentRating}\n`;
+
+      const opts = {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "New Recommendation",
+                callback_data: "new_recommendation",
+              },
+            ],
+          ],
+        },
+      };
+
+      bot.sendPhoto(
+        chatId,
+        resizedBuffer,
+        {
           caption: message,
-        });
-      }
+        },
+        opts
+      );
+
+      // }
       // const final = movies
       //   .map(
       //     (item, index) =>
@@ -653,6 +665,53 @@ bot.on("callback_query", async (callbackQuery) => {
 
       // bot.sendMessage(chatId, `Recommended movies: \n\n${final}`);
     }
+  }
+  if (callbackQuery.data === "new_recommendation") {
+    // Generate a new set of recommendations for the same genre
+    const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
+    const urResponse = await fetch(url);
+    const res = await urResponse.json();
+    const movie = getRandomMovies(res.results);
+
+    const response = await fetch(movie.image);
+    const buffer = await response.buffer();
+
+    const resizedBuffer = await sharp(buffer)
+      .resize({ width: 1280, height: 1024, fit: "inside" })
+      .toBuffer();
+
+    const message = `${movie.title} ${movie.description}\n\n⭐️ IMDb rating: ${
+      movie.imDbRating
+    } (${parseInt(movie.imDbRatingVotes).toLocaleString()})\n⏱ Time: ${
+      movie.runtimeStr
+    }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${
+      movie.stars
+    }\n🔞 Content Rating: ${movie.contentRating}\n`;
+
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "New Recommendation",
+              callback_data: "new_recommendation",
+            },
+          ],
+        ],
+      },
+    };
+
+    bot.sendPhoto(
+      chatId,
+      resizedBuffer,
+      {
+        caption: message,
+      },
+      opts
+    );
+
+    // Delete the previous message
+    await bot.deleteMessage(chatId, messageId);
   }
   // else if (previousMatch) {
   //   const startIndex = parseInt(previousMatch[1], 10);
@@ -702,19 +761,19 @@ bot.on("callback_query", async (callbackQuery) => {
 });
 
 function getRandomMovies(movies) {
-  const randomMovies = [];
+  // const randomMovies = [];
 
-  while (randomMovies.length < 3) {
-    const randomIndex = Math.floor(Math.random() * movies.length);
-    const randomMovie = movies[randomIndex];
+  // while (randomMovies.length < 3) {
+  const randomIndex = Math.floor(Math.random() * movies.length);
+  const randomMovie = movies[randomIndex];
 
-    // Check if the random movie is already in the result array
-    if (!randomMovies.includes(randomMovie)) {
-      randomMovies.push(randomMovie);
-    }
-  }
+  // Check if the random movie is already in the result array
+  //   if (!randomMovies.includes(randomMovie)) {
+  //     randomMovies.push(randomMovie);
+  //   }
+  // }
 
-  return randomMovies;
+  return randomMovie;
 }
 
 console.log("Movie Rating Bot is running...");
