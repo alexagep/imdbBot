@@ -333,6 +333,13 @@ bot.on("message", async (msg) => {
     const movie = data.results;
 
     if (movie.length > 0) {
+      const imageResponse = await fetch(movie[0].image);
+      const buffer = await imageResponse.buffer();
+
+      const resizedBuffer = await sharp(buffer)
+        .resize({ width: 1280, height: 1024, fit: "inside" })
+        .toBuffer();
+
       const similarityScore = stringSimilarity.compareTwoStrings(
         movieTitle,
         movie[0].title
@@ -369,11 +376,18 @@ bot.on("message", async (msg) => {
           },
         };
 
-        bot.sendMessage(
-          chatId,
-          `🎬 ${ratings.fullTitle}\n🌟 IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
-          keyboard
-        );
+        // bot.sendMessage(
+        //   chatId,
+        //   `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `,
+        //   keyboard
+        // );
+
+        const message = `🎬 ${ratings.fullTitle}\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
+
+        await bot.sendPhoto(chatId, resizedBuffer, {
+          caption: message,
+          reply_markup: opts.reply_markup,
+        });
       } else {
         bot.sendMessage(
           chatId,
@@ -657,16 +671,10 @@ async function generateRecommendation(genre, chatId) {
     },
   };
 
-  bot.sendPhoto(
-    chatId,
-    resizedBuffer,
-    {
-      caption: message,
-    },
-    opts
-  );
-
-  // bot.sendMessage(chatId, `Do you want a new recommendation?`, opts);
+  await bot.sendPhoto(chatId, resizedBuffer, {
+    caption: message,
+    reply_markup: opts.reply_markup,
+  });
 }
 
 console.log("Movie Rating Bot is running...");
