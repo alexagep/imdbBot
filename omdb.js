@@ -610,7 +610,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
-    console.log(callbackQuery.data);
+    console.log(callbackQuery.data, 'genre');
 
     genre = callbackQuery.data.toLowerCase()
     // if (genre !== null) {
@@ -620,7 +620,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    console.log(callbackQuery.data);
+    console.log(genre, 'genre in new rec');
     await generateRecommendation(genre, chatId);
     await bot.deleteMessage(chatId, messageId);
   }
@@ -631,18 +631,18 @@ function getRandomMovies(movies) {
   const randomIndex = Math.floor(Math.random() * movies.length);
   const randomMovie = movies[randomIndex];
 
-console.log(randomMovie);
+// console.log(randomMovie);
 
   return randomMovie;
 }
 
 async function generateRecommendation(genre, chatId) {
-  console.log(genre);
+  console.log(genre, 'genre in generateRec func');
   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
   const urResponse = await fetch(url);
   const res = await urResponse.json();
   const movie = getRandomMovies(res.results);
-console.log(movie);
+// console.log(movie);
   const response = await fetch(movie.image);
   const buffer = await response.buffer();
 
