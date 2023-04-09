@@ -648,9 +648,9 @@ bot.on("callback_query", async (callbackQuery) => {
       //   });
       // });
 
-      movies.forEach((movie, index) => {
+      movies.forEach(async (movie, index) => {
         // Download the image and send it
-        fetch(movie.image)
+        await fetch(movie.image)
           .then(response => {
             if (response.ok) {
               return response.buffer();
