@@ -1,9 +1,9 @@
-// const { Sequelize, DataTypes } = require("sequelize");
+// const { DataTypes } = require("sequelize");
 // const cron = require("node-cron");
 // const fetch = require('node-fetch');
 
 // Create a Sequelize instance
-const { Model } = require("sequelize");
+const { Model, DataTypes } = require("sequelize");
 const {sequelize} = require('../db/connection');
 
 console.log(sequelize, 'SEQUELIZE');
