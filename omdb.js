@@ -671,7 +671,7 @@ function getRandomMovies(movies) {
 }
 
 async function generateRecommendation(genre, chatId) {
-  console.log(genre, "genre in generateRec func");
+  // console.log(genre, "genre in generateRec func");
   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
   const urResponse = await fetch(url);
   const res = await urResponse.json();

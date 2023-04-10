@@ -1,6 +1,6 @@
 const { Top250 } = require('../models/top250');
 // const Top250 = db.Top250
-
+console.log(Top250, 'TOP250');
 async function getAllTop250() {
   const top250List = await Top250.findAll();
   return top250List;
@@ -19,7 +19,7 @@ async function updateTop250Row(data) {
 // USAGE: createTop250({ data: { name: 'Example', value: 42 }, updatedAt: new Date() })
 async function createTop250(data) {
   try {
-    console.log(data.length);
+    // console.log(data.length);
     const top250 = await Top250.create(data);
     console.log("New record created in Top250 table:", top250.toJSON());
     return top250;

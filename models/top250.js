@@ -6,6 +6,7 @@
 const { Model } = require("sequelize");
 const {sequelize} = require('../db/connection');
 
+console.log(sequelize, 'SEQUELIZE');
 // Define your models
 class Top250 extends Model {}
 Top250.init(
