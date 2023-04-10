@@ -212,6 +212,7 @@ bot.onText(/\/menu/, (msg) => {
   bot.sendMessage(chatId, "Menu:", menuOptions);
 });
 
+let top250List = null
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
   try {
@@ -219,10 +220,10 @@ bot.onText(/Top250/, async (msg) => {
     // const data = await response.json();
 
     const moviesInDb = await getAllTop250()
-    let movieData = null
+    // let movieData = null
     if (moviesInDb.length > 0) {
-      console.log(JSON.parse(moviesInDb.data).length);
-      movieData = JSON.parse(moviesInDb.data)
+      console.log(moviesInDb[0].dataValues.data.length);
+      top250List = moviesInDb[0].dataValues.data
     } 
     // if (data.items.length > 0) {
     //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
@@ -458,18 +459,18 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 50;
 
     try {
-      const moviesInDb = await getAllTop250()
-      let movieData = null
-      if (moviesInDb.length > 0) {
-        console.log(JSON.parse(moviesInDb.data).length);
-        movieData = JSON.parse(moviesInDb.data)
-      } else {
-        const response = await fetch(IMDB_TOP_250_URL);
-        const data = await response.json();
-        movieData = data.items
-      }
+      // const moviesInDb = await getAllTop250()
+      // let movieData = null
+      // if (moviesInDb.length > 0) {
+        // console.log(JSON.parse(moviesInDb.data).length);
+        // movieData = JSON.parse(moviesInDb.data)
+      // } else {
+      //   const response = await fetch(IMDB_TOP_250_URL);
+      //   const data = await response.json();
+      //   movieData = data.items
+      // }
       
-      const topMovies = movieData
+      const topMovies = top250List
         .slice(startIndex, endIndex)
         .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
         .join("\n\n");
