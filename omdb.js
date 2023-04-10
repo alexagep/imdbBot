@@ -218,7 +218,7 @@ bot.onText(/Top250/, async (msg) => {
     const response = await fetch(IMDB_TOP_250_URL);
     const data = await response.json();
 
-    if (data.items > 0) {
+    if (data.items.length > 0) {
       await createTop250({ data: data.items, updatedAt: new Date() })
     }
 
