@@ -1,4 +1,4 @@
-const { Top250 } = require("../models/top250");
+const { Top250 } = require('../models/top250');
 // const Top250 = db.Top250
 
 async function getAllTop250() {
@@ -19,7 +19,7 @@ async function updateTop250Row(data) {
 // USAGE: createTop250({ data: { name: 'Example', value: 42 }, updatedAt: new Date() })
 async function createTop250(data) {
   try {
-    console.log(data);
+    console.log(data.length);
     const top250 = await Top250.create(data);
     console.log("New record created in Top250 table:", top250.toJSON());
     return top250;
