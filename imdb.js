@@ -318,7 +318,7 @@ bot.onText(/Box Office Weekend/, async (msg) => {
       })
       .join("\n\n");
 
-    bot.sendMessage(chatId, `Box Office:\n\n${movies}`);
+    bot.sendMessage(chatId, `Box Office:\n\n${movies}`); 
   } catch (error) {
     console.error("Error fetching the box office:", error);
     bot.sendMessage(
@@ -370,7 +370,7 @@ bot.onText(/Box Office AllTime/, async (msg) => {
       },
     };
 
-    bot.sendMessage(chatId, `Box Office allTime:\n\n${movies}`, opts);
+    bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
   } catch (error) {
     console.error("Error fetching the box office allTime:", error);
     bot.sendMessage(
@@ -677,7 +677,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
       const UserRatings = await urResponse.json();
-      // console.log(UserRatings, UserRatings.demographicAll, UserRatings.demographicMales, UserRatings.demographicFemales,  "************");
+      console.log(UserRatings,  "************");
       // movie_ID = null;
       bot.sendMessage(
         chatId,
