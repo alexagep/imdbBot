@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 const request = require("request");
 const sharp = require("sharp");
-const { updateTop250, fetchAndProcessData } = require('./models/top250');
+const { updateTop250Row, createTop250 } = require('./queries/top250');
 
 require("dotenv").config();
 // const { dom, library } = require("@fortawesome/fontawesome-svg-core");
@@ -216,6 +216,11 @@ bot.onText(/Top250/, async (msg) => {
   try {
     const response = await fetch(IMDB_TOP_250_URL);
     const data = await response.json();
+
+    if (data.items > 0) {
+      await createTop250({ data: data.items, updatedAt: new Date() })
+    }
+
     const topMovies = data.items
       .slice(0, 50)
       .map((item, index) => `${index + 1}. ${item.title}`)
@@ -705,6 +710,17 @@ async function generateRecommendation(genre, chatId) {
     caption: message,
     reply_markup: opts.reply_markup,
   });
+}
+
+async function fetchAndProcessData(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    await updateTop250(data);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 console.log("Movie Rating Bot is running...");
