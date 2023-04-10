@@ -172,15 +172,49 @@
 
 // getData()
 
-const data = `[{
-    "id":"tt0476735","rank":"236","title":"My Father and My Son","fullTitle":"My Father and My Son (2005)","year":"2005","image":"https://m.media-amazon.com/images/M/MV5BMDEwMWQ3ZDctMjRkOC00MGE1LTk4NjktYjA3MGIyNjA5N2FiXkEyXkFqcGdeQXVyNjEyNDcyMDU@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Çagan Irmak (dir.), Çetin Tekindor, Fikret Kuskan","imDbRating":"8.0","imDbRatingCount":"87839"},
-    {"id":"tt0245712","rank":"237","title":"Amores Perros","fullTitle":"Amores Perros (2000)","year":"2000","image":"https://m.media-amazon.com/images/M/MV5BZjUxNmEwOGItMTBmYi00MWQ1LWExY2MtNDUxMjI0OWM4M2NiXkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Alejandro G. Iñárritu (dir.), Emilio Echevarría, Gael García Bernal","imDbRating":"8.0","imDbRatingCount":"244375"},
-    {"id":"tt0032976","rank":"238","title":"Rebecca","fullTitle":"Rebecca (1940)","year":"1940","image":"https://m.media-amazon.com/images/M/MV5BYTcxYWExOTMtMWFmYy00ZjgzLWI0YjktNWEzYzJkZTg0NDdmL2ltYWdlXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Alfred Hitchcock (dir.), Laurence Olivier, Joan Fontaine","imDbRating":"8.0","imDbRatingCount":"140049"},
-    {"id":"tt0061512","rank":"239","title":"Cool Hand Luke","fullTitle":"Cool Hand Luke (1967)","year":"1967","image":"https://m.media-amazon.com/images/M/MV5BNjcwNTQ3Y2EtMjdmZi00ODBhLWFhNzQtOTc3MWU5NTZlMDViXkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Stuart Rosenberg (dir.), Paul Newman, George Kennedy","imDbRating":"8.0","imDbRatingCount":"180462"},
-    {"id":"tt4016934","rank":"240","title":"The Handmaiden","fullTitle":"The Handmaiden (2016)","year":"2016","image":"https://m.media-amazon.com/images/M/MV5BNDJhYTk2MTctZmVmOS00OTViLTgxNjQtMzQxOTRiMDdmNGRjXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Park Chan-wook (dir.), Kim Min-hee, Ha Jung-woo","imDbRating":"8.0","imDbRatingCount":"154786"},
-    {"id":"tt0059742","rank":"241","title":"The Sound of Music","fullTitle":"The Sound of Music (1965)","year":"1965","image":"https://m.media-amazon.com/images/M/MV5BODIxNjhkYjEtYzUyMi00YTNjLWE1YjktNjAyY2I2MWNkNmNmL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Robert Wise (dir.), Julie Andrews, Christopher Plummer","imDbRating":"8.0","imDbRatingCount":"242697"},
-    {"id":"tt0053198","rank":"242","title":"The 400 Blows","fullTitle":"The 400 Blows (1959)","year":"1959","image":"https://m.media-amazon.com/images/M/MV5BYTQ4MjA4NmYtYjRhNi00MTEwLTg0NjgtNjk3ODJlZGU4NjRkL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"François Truffaut (dir.), Jean-Pierre Léaud, Albert Rémy","imDbRating":"8.0","imDbRatingCount":"121252"},
-    {"id":"tt0025316","rank":"243","title":"It Happened One Night","fullTitle":"It Happened One Night (1934)","year":"1934","image":"https://m.media-amazon.com/images/M/MV5BYzJmMWE5NjAtNWMyZS00NmFiLWIwMDgtZDE2NzczYWFhNzIzXkEyXkFqcGdeQXVyNjc1NTYyMjg@._V1_UX128_CR0,12,128,176_AL_.jpg","crew":"Frank Capra (dir.), Clark Gable, Claudette Colbert","imDbRating":"8.0","imDbRatingCount":"106594"}]`;
+const data = `{
+      id: 1,
+      data: {
+        data: [
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object], [Object], [Object],
+          [Object], [Object], [Object], [Object],
+          ... 150 more items
+        ],
+        createdAt: '2023-04-10T11:50:12.513Z',
+        updatedAt: '2023-04-10T11:50:12.513Z'
+      },
+      createdAt: 2023-04-10T11:50:12.514Z,
+      updatedAt: 2023-04-10T11:50:12.514Z
+    }
+    {
+      data: [
+        {
+          id: 'tt0111161',
+          crew: 'Frank Darabont (dir.), Tim Robbins, Morgan Freeman',
+          rank: '1',
+          year: '1994',
+          image: 'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_UX128_CR0,12,128,176_AL_.jpg',
+          title: 'The Shawshank Redemption',
+          fullTitle: 'The Shawshank Redemption (1994)',
+          imDbRating: '9.2',
+          imDbRatingCount: '2725069'
+        },
+    `;
 
 
 

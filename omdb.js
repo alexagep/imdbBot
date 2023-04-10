@@ -222,8 +222,8 @@ bot.onText(/Top250/, async (msg) => {
     const moviesInDb = await getAllTop250()
     // let movieData = null
     if (moviesInDb.length > 0) {
-      console.log(moviesInDb[0].dataValues.data.length);
-      top250List = moviesInDb[0].dataValues.data
+      console.log(moviesInDb[0].dataValues.data.data.length);
+      top250List = moviesInDb[0].dataValues.data.data
     } 
     // if (data.items.length > 0) {
     //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
