@@ -10,19 +10,19 @@ async function updateUpcomingRow(data) {
     const result = await Upcoming.update({ data }, { where: { id: 1 } });
     console.log(result);
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
   }
 }
 
 // USAGE: createUpcoming({ data: { name: 'Example', value: 42 }, createdAt: new Date(), updatedAt: new Date() })
 async function createUpcoming(data) {
   try {
-    const Upcoming = await Upcoming.create({ data });
+    const row = await Upcoming.create({ data });
     console.log("New record created in Upcoming table");
-    return Upcoming;
+    return row;
   } catch (error) {
-    console.error("Error creating new record in Upcoming table:", error);
-    throw error;
+    console.error("Error creating new record in Upcoming table:", error.message);
+    // throw error;
   }
 }
 

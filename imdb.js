@@ -2,8 +2,16 @@ const TelegramBot = require("node-telegram-bot-api");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 const sharp = require("sharp");
-const { updateTop250Row, createTop250, getAllTop250 } = require('./queries/top250');
-const { updateUpcomingRow, createUpcoming, getAllUpcoming } = require('./queries/upcoming');
+const {
+  updateTop250Row,
+  createTop250,
+  getAllTop250,
+} = require("./queries/top250");
+const {
+  updateUpcomingRow,
+  createUpcoming,
+  getAllUpcoming,
+} = require("./queries/upcoming");
 
 const cron = require("node-cron");
 
@@ -26,7 +34,6 @@ const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
-
 
 // Schedule the updateTop250 function to run each day at 4 AM
 cron.schedule("0 4 * * *", () => {
@@ -70,15 +77,27 @@ bot.onText(/Search Movie/, async (msg) => {
   bot.sendMessage(chatId, "Enter the movie title you want to search:");
 });
 
+let upcomingList = null;
 bot.onText(/Coming Soon/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    const response = await fetch(IMDB_COMING_SOON);
-    const data = await response.json();
+    const moviesInDb = await getAllUpcoming();
 
-    await createUpcoming(data.items)
+    if (moviesInDb[0].dataValues.data.length > 0) {
+      upcomingList = moviesInDb[0].dataValues.data;
+    } 
     
-    const movies = data.items
+    // else {
+    //   const response = await fetch(IMDB_COMING_SOON);
+    //   const data = await response.json();
+
+    //   upcomingList = data.items;
+    // }
+
+    //create a new coming soon list
+    // await createUpcoming(data.items)
+
+    const movies = upcomingList
       .slice(0, 10)
       .map(
         (item, index) =>
@@ -208,26 +227,32 @@ bot.onText(/\/menu/, (msg) => {
   bot.sendMessage(chatId, "Menu:", menuOptions);
 });
 
-let top250List = null
+let top250List = null;
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    // const response = await fetch(IMDB_TOP_250_URL);
-    // const data = await response.json();
+    const moviesInDb = await getAllTop250();
 
-    const moviesInDb = await getAllTop250()
-    // let movieData = null
-    if (moviesInDb.length > 0) {
-      // console.log(moviesInDb[0].dataValues.data.items.length);
-      top250List = moviesInDb[0].dataValues.data.items
-    } 
-    // if (data.items.length > 0) {
-    //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+    if (moviesInDb[0].dataValues.data.items.length > 0) {
+      top250List = moviesInDb[0].dataValues.data.items;
+    }
+
+    // else {
+    //   const response = await fetch(IMDB_TOP_250_URL);
+    //   const data = await response.json();
+
+    //   top250List = data.items
     // }
+
+    //create a new list of top250 movies
+    //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
 
     const topMovies = top250List
       .slice(0, 25)
-      .map((item, index) => `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`)
+      .map(
+        (item, index) =>
+          `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`
+      )
       .join("\n\n");
 
     const opts = {
@@ -451,10 +476,14 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 25;
 
     try {
-      // console.log(top250List);
       const topMovies = top250List
         .slice(startIndex, endIndex)
-        .map((item, index) => `${startIndex + index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`)
+        .map(
+          (item, index) =>
+            `${startIndex + index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${
+              item.imDbRating
+            }`
+        )
         .join("\n\n");
 
       const opts = {
@@ -500,10 +529,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 10;
 
     try {
-      const response = await fetch(IMDB_COMING_SOON);
-      const data = await response.json();
-
-      const movies = data.items
+      const movies = upcomingList
         .slice(startIndex, endIndex)
         .map(
           (item, index) =>
@@ -522,7 +548,7 @@ bot.on("callback_query", async (callbackQuery) => {
       };
 
       // add a "Next" button if there are more movies to show
-      if (endIndex < data.items.length) {
+      if (endIndex < upcomingList.length) {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Next",
