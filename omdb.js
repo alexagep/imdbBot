@@ -455,10 +455,10 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 25;
 
     try {
-      
+      console.log(top250List);
       const topMovies = top250List
         .slice(startIndex, endIndex)
-        .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
+        .map((item, index) => `${startIndex + index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`)
         .join("\n\n");
 
       const opts = {
