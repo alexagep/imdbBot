@@ -29,7 +29,7 @@ module.exports = {
           { type: QueryTypes.SELECT }
         ),
         existRole = await sequelize.query(
-          `SELECT 1 FROM pg_roles WHERE rolname = '${process.env.PG_USER}';`,
+          `SELECT 1 FROM pg_roles WHERE rolename = '${process.env.PG_USER}';`,
           { type: QueryTypes.SELECT }
         );
 
