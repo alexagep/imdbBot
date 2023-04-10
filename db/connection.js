@@ -1,5 +1,4 @@
 const { Sequelize, Model, DataTypes } = require("sequelize");
-const { Sequelize, Model, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize(
   process.env.PG_DATABASE,
