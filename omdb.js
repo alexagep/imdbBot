@@ -5,6 +5,7 @@ const stringSimilarity = require("string-similarity");
 const request = require("request");
 const sharp = require("sharp");
 const { updateTop250Row, createTop250 } = require('./queries/top250');
+const cron = require("node-cron");
 
 require("dotenv").config();
 // const { dom, library } = require("@fortawesome/fontawesome-svg-core");
