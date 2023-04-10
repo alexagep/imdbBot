@@ -215,14 +215,20 @@ bot.onText(/\/menu/, (msg) => {
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    const response = await fetch(IMDB_TOP_250_URL);
-    const data = await response.json();
+    // const response = await fetch(IMDB_TOP_250_URL);
+    // const data = await response.json();
 
+    const moviesInDb = await getAllTop250()
+    let movieData = null
+    if (moviesInDb.length > 0) {
+      console.log(JSON.parse(moviesInDb.data).length);
+      movieData = JSON.parse(moviesInDb.data)
+    } 
     // if (data.items.length > 0) {
     //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
     // }
 
-    const topMovies = data.items
+    const topMovies = movieData
       .slice(0, 50)
       .map((item, index) => `${index + 1}. ${item.title}`)
       .join("\n");
@@ -455,6 +461,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const moviesInDb = await getAllTop250()
       let movieData = null
       if (moviesInDb.length > 0) {
+        console.log(JSON.parse(moviesInDb.data).length);
         movieData = JSON.parse(moviesInDb.data)
       } else {
         const response = await fetch(IMDB_TOP_250_URL);
