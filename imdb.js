@@ -310,7 +310,7 @@ bot.onText(/Box Office Weekend/, async (msg) => {
   try {
     const moviesInDb = await getAllBoxOfficeWeek();
 
-    const movies = moviesInDb
+    const movies = moviesInDb[0].dataValues.data
       .map((movie, index) => {
         return `${index + 1}. ${movie.title}\n\nweekend: ${
           movie.weekend
@@ -645,6 +645,16 @@ bot.on("callback_query", async (callbackQuery) => {
           {
             text: "Next",
             callback_data: `next_allTime_movies_${endIndex}`,
+          },
+        ]);
+      }
+
+      // add a "Back" button if there are previous movies to show
+      if (startIndex > 0) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Back",
+            callback_data: `next_allTime_movies_${startIndex - 25}`,
           },
         ]);
       }
