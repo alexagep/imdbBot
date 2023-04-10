@@ -219,7 +219,7 @@ bot.onText(/Top250/, async (msg) => {
     const data = await response.json();
 
     if (data.items.length > 0) {
-      await createTop250({ data: data.items, updatedAt: new Date() })
+      await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
     }
 
     const topMovies = data.items
