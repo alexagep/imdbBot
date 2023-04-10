@@ -28,7 +28,7 @@ module.exports = {
       );
 
       const existRole = await sequelize.query(
-        `SELECT 1 FROM pg_roles WHERE rolename = '${process.env.PG_USER}';`,
+        `SELECT 1 FROM pg_roles WHERE pg_roles.rolename = '${process.env.PG_USER}';`,
         { type: QueryTypes.SELECT }
       );
 
