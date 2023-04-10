@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 const request = require("request");
 const sharp = require("sharp");
-const { updateTop250Row, createTop250 } = require('./queries/top250');
+const { updateTop250Row, createTop250, getAllTop250 } = require('./queries/top250');
 const cron = require("node-cron");
 
 require("dotenv").config();
@@ -218,9 +218,9 @@ bot.onText(/Top250/, async (msg) => {
     const response = await fetch(IMDB_TOP_250_URL);
     const data = await response.json();
 
-    if (data.items.length > 0) {
-      await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
-    }
+    // if (data.items.length > 0) {
+    //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+    // }
 
     const topMovies = data.items
       .slice(0, 50)
@@ -452,9 +452,17 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 50;
 
     try {
-      const response = await fetch(IMDB_TOP_250_URL);
-      const data = await response.json();
-      const topMovies = data.items
+      const moviesInDb = await getAllTop250()
+      let movieData = null
+      if (moviesInDb.length > 0) {
+        movieData = JSON.parse(moviesInDb.data)
+      } else {
+        const response = await fetch(IMDB_TOP_250_URL);
+        const data = await response.json();
+        movieData = data.items
+      }
+      
+      const topMovies = movieData
         .slice(startIndex, endIndex)
         .map((item, index) => `${startIndex + index + 1}. ${item.title}`)
         .join("\n\n");
@@ -467,7 +475,7 @@ bot.on("callback_query", async (callbackQuery) => {
         },
       };
 
-      if (endIndex < data.items.length) {
+      if (endIndex < movieData.length) {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Next",
