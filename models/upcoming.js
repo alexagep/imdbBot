@@ -1,10 +1,10 @@
-// Create a Sequelize instance
+
 const { Model, DataTypes } = require("sequelize");
 const {sequelize} = require('../db/connection');
 
 // Define your models
-class Top250 extends Model {}
-Top250.init(
+class Upcoming extends Model {}
+Upcoming.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -28,13 +28,13 @@ Top250.init(
   },
   {
     sequelize,
-    modelName: 'Top250',
+    modelName: 'Upcoming',
   }
 );
 
 // Define your associations
-Top250.associate = function (models) {};
+Upcoming.associate = function (models) {};
 
 module.exports = {
-  Top250,
+  Upcoming,
 };

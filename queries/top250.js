@@ -1,7 +1,5 @@
 const { Top250 } = require("../models/top250");
-// const Top250 = db.Top250
 
-// console.log(Top250, 'TOP250');
 async function getAllTop250() {
   const top250List = await Top250.findAll();
   return top250List;

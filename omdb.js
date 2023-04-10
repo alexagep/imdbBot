@@ -1,18 +1,13 @@
 const TelegramBot = require("node-telegram-bot-api");
-const axios = require("axios");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
-const request = require("request");
 const sharp = require("sharp");
 const { updateTop250Row, createTop250, getAllTop250 } = require('./queries/top250');
+const { updateUpcomingRow, createUpcoming, getAllUpcoming } = require('./queries/upcoming');
+
 const cron = require("node-cron");
 
 require("dotenv").config();
-// const { dom, library } = require("@fortawesome/fontawesome-svg-core");
-// const { faComment } = require("@fortawesome/free-solid-svg-icons");
-// const { faImdb } = require("@fortawesome/free-brands-svg-icons");
-
-// library.add(faComment, faImdb);
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
@@ -28,7 +23,6 @@ const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&ty
 const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
-// library.add(faComment, faImdb);
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
@@ -82,6 +76,8 @@ bot.onText(/Coming Soon/, async (msg) => {
     const response = await fetch(IMDB_COMING_SOON);
     const data = await response.json();
 
+    await createUpcoming(data.items)
+    
     const movies = data.items
       .slice(0, 10)
       .map(
@@ -222,7 +218,7 @@ bot.onText(/Top250/, async (msg) => {
     const moviesInDb = await getAllTop250()
     // let movieData = null
     if (moviesInDb.length > 0) {
-      console.log(moviesInDb[0].dataValues.data.items.length);
+      // console.log(moviesInDb[0].dataValues.data.items.length);
       top250List = moviesInDb[0].dataValues.data.items
     } 
     // if (data.items.length > 0) {
@@ -455,7 +451,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 25;
 
     try {
-      console.log(top250List);
+      // console.log(top250List);
       const topMovies = top250List
         .slice(startIndex, endIndex)
         .map((item, index) => `${startIndex + index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`)
