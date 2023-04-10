@@ -18,18 +18,18 @@ const sequelize = new Sequelize(
 
 module.exports = {
   initDatabase: async () => {
-    const createDb = `CREATE DATABASE ${process.env.DATABASE}`,
-      createRole = `CREATE ROLE ${process.env.USERNAME} WITH LOGIN PASSWORD '${process.env.PASSWORD}'`,
-      grantRoleAccess = `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${process.env.USERNAME};`,
-      grantAccessToCopy = `GRANT pg_write_server_files TO ${process.env.USERNAME}`;
+    const createDb = `CREATE DATABASE ${process.env.PG_DATABASE}`,
+      createRole = `CREATE ROLE ${process.env.PG_USER} WITH LOGIN PASSWORD '${process.env.PG_PASS}'`,
+      grantRoleAccess = `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO ${process.env.PG_USER};`,
+      grantAccessToCopy = `GRANT pg_write_server_files TO ${process.env.PG_USER}`;
 
     try {
       const existDb = await sequelize.query(
-          `SELECT 1 FROM pg_catalog.pg_database WHERE datname = '${process.env.DATABASE}';`,
+          `SELECT 1 FROM pg_catalog.pg_database WHERE datname = '${process.env.PG_DATABASE}';`,
           { type: QueryTypes.SELECT }
         ),
         existRole = await sequelize.query(
-          `SELECT 1 FROM pg_roles WHERE rolname = '${process.env.USERNAME}';`,
+          `SELECT 1 FROM pg_roles WHERE rolname = '${process.env.PG_USER}';`,
           { type: QueryTypes.SELECT }
         );
 

@@ -18,17 +18,17 @@ const sequelize = new Sequelize(
 
 module.exports = {
   dropDatabase: async () => {
-    const dropDb = `DROP DATABASE ${process.env.DATABASE}`;
-    const dropRole = `DROP ROLE ${process.env.USERNAME}`;
+    const dropDb = `DROP DATABASE ${process.env.PG_DATABASE}`;
+    const dropRole = `DROP ROLE ${process.env.PG_USER}`;
 
     try {
       const existDb = await sequelize.query(
-        `SELECT 1 FROM pg_catalog.pg_database WHERE datname = '${process.env.DATABASE}';`,
+        `SELECT 1 FROM pg_catalog.pg_database WHERE datname = '${process.env.PG_DATABASE}';`,
         { type: QueryTypes.SELECT }
       );
 
       const existRole = await sequelize.query(
-        `SELECT 1 FROM pg_roles WHERE rolname = '${process.env.USERNAME}';`,
+        `SELECT 1 FROM pg_roles WHERE rolname = '${process.env.PG_USER}';`,
         { type: QueryTypes.SELECT }
       );
 
