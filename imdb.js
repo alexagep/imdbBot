@@ -49,7 +49,22 @@ const limitMessage =
 
 // Schedule the updateTop250 function to run each day at 4 AM
 cron.schedule("0 4 * * *", () => {
-  fetchAndProcessData(IMDB_TOP_250_URL);
+  fetchAndProcessData(IMDB_TOP_250_URL, "top250");
+});
+
+// Schedule the updateUpcomingRow function to run each day at 4:30 AM
+cron.schedule("30 4 * * *", () => {
+  fetchAndProcessData(IMDB_COMING_SOON, "upcoming");
+});
+
+// Schedule the updateBoxOfficeWeekRow function to run each day at 5 AM
+cron.schedule("0 5 * * *", () => {
+  fetchAndProcessData(IMDB_BOX_OFFICE, "boxWeek");
+});
+
+// Schedule the updateBoxOfficeAllTimeRow function to run each day at 5:30 AM
+cron.schedule("30 5 * * *", () => {
+  fetchAndProcessData(IMDB_BOX_OFFICE_ALLTIME, "boxAll");
 });
 
 const staticKeyboard = {
@@ -290,17 +305,12 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
-let boxWeekList = null;
 bot.onText(/Box Office Weekend/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    const response = await fetch(IMDB_BOX_OFFICE);
-    const data = await response.json();
+    const moviesInDb = await getAllBoxOfficeWeek();
 
-    //create a new coming soon list
-    await createBoxOfficeWeek(data.items);
-
-    const movies = data.items
+    const movies = moviesInDb
       .map((movie, index) => {
         return `${index + 1}. ${movie.title}\n\nweekend: ${
           movie.weekend
@@ -322,12 +332,23 @@ let boxAllList = null;
 bot.onText(/Box Office AllTime/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
-    const data = await response.json();
+    const moviesInDb = await getAllBoxOfficeAllTime();
 
-    await createBoxOfficeAllTime(data.items)
+    if (moviesInDb[0].dataValues.data.length > 0) {
+      boxAllList = moviesInDb[0].dataValues.data;
+    }
 
-    const movies = data.items
+    // else {
+    //   const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
+    //   const data = await response.json();
+
+    //   boxAllList = data.items
+    // }
+
+    //create a new coming soon list
+    // await createBoxOfficeAllTime(data.items);
+
+    const movies = boxAllList
       .slice(0, 25)
       .map((movie, index) => {
         return `${index + 1}. ${movie.title}\n\ngross: ${
@@ -601,9 +622,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const endIndex = startIndex + 25;
 
     try {
-      const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
-      const data = await response.json();
-      const topMovies = data.items
+      const topMovies = boxAllList
         .slice(startIndex, endIndex)
         .map(
           (item, index) =>
@@ -621,7 +640,7 @@ bot.on("callback_query", async (callbackQuery) => {
         },
       };
 
-      if (endIndex < data.items.length) {
+      if (endIndex < boxAllList.length) {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Next",
@@ -753,12 +772,28 @@ async function generateRecommendation(genre, chatId) {
   });
 }
 
-async function fetchAndProcessData(url) {
+async function fetchAndProcessData(url, entity) {
   try {
     const response = await fetch(url);
     const data = await response.json();
 
-    await updateTop250Row(data);
+    switch (entity) {
+      case "top250":
+        await updateTop250Row(data);
+        break;
+      case "upcoming":
+        await updateUpcomingRow(data);
+        break;
+      case "boxWeek":
+        await updateBoxOfficeWeekRow(data);
+        break;
+      case "boxAll":
+        await updateBoxOfficeAllTimeRow(data);
+        break;
+      default:
+        console.log(`Invalid entity type: ${entity}`);
+        break;
+    }
   } catch (error) {
     console.error(error);
   }
