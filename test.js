@@ -172,50 +172,20 @@
 
 // getData()
 
-const data = `{
-      id: 1,
-      data: {
-        data: [
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object], [Object], [Object],
-          [Object], [Object], [Object], [Object],
-          ... 150 more items
-        ],
-        createdAt: '2023-04-10T11:50:12.513Z',
-        updatedAt: '2023-04-10T11:50:12.513Z'
-      },
-      createdAt: 2023-04-10T11:50:12.514Z,
-      updatedAt: 2023-04-10T11:50:12.514Z
-    }
-    {
-      data: [
-        {
-          id: 'tt0111161',
-          crew: 'Frank Darabont (dir.), Tim Robbins, Morgan Freeman',
-          rank: '1',
-          year: '1994',
-          image: 'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_UX128_CR0,12,128,176_AL_.jpg',
-          title: 'The Shawshank Redemption',
-          fullTitle: 'The Shawshank Redemption (1994)',
-          imDbRating: '9.2',
-          imDbRatingCount: '2725069'
-        },
-    `;
+// const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/k_t8o2kalg`;
+
+// const {updateTop250Row} = require('./queries/top250');
 
 
+// async function fetchAndProcessData(url) {
+//   try {
+//     const response = await fetch(url);
+//     const data = await response.json();
 
-    console.log(JSON.parse(data));
+//     await updateTop250Row(data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// fetchAndProcessData(IMDB_TOP_250_URL);

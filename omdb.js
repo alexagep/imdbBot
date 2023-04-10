@@ -222,17 +222,17 @@ bot.onText(/Top250/, async (msg) => {
     const moviesInDb = await getAllTop250()
     // let movieData = null
     if (moviesInDb.length > 0) {
-      console.log(moviesInDb[0].dataValues.data.data.length);
-      top250List = moviesInDb[0].dataValues.data.data
+      console.log(moviesInDb[0].dataValues.data.items.length);
+      top250List = moviesInDb[0].dataValues.data.items
     } 
     // if (data.items.length > 0) {
     //   await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
     // }
 
-    const topMovies = movieData
-      .slice(0, 50)
-      .map((item, index) => `${index + 1}. ${item.title}`)
-      .join("\n");
+    const topMovies = top250List
+      .slice(0, 25)
+      .map((item, index) => `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`)
+      .join("\n\n");
 
     const opts = {
       reply_markup: {
@@ -240,18 +240,14 @@ bot.onText(/Top250/, async (msg) => {
           [
             {
               text: "Next",
-              callback_data: `next_${50}`,
+              callback_data: `next_${25}`,
             },
-            // {
-            //   text: "Previous",
-            //   callback_data: `previous_${50}`,
-            // },
           ],
         ],
       },
     };
 
-    bot.sendMessage(chatId, `IMDb Top 50 Movies:\n\n${topMovies}`, opts);
+    bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
   } catch (error) {
     console.error("Error fetching top 250 movies:", error);
     bot.sendMessage(
@@ -456,19 +452,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (match) {
     const startIndex = parseInt(match[1], 10);
-    const endIndex = startIndex + 50;
+    const endIndex = startIndex + 25;
 
     try {
-      // const moviesInDb = await getAllTop250()
-      // let movieData = null
-      // if (moviesInDb.length > 0) {
-        // console.log(JSON.parse(moviesInDb.data).length);
-        // movieData = JSON.parse(moviesInDb.data)
-      // } else {
-      //   const response = await fetch(IMDB_TOP_250_URL);
-      //   const data = await response.json();
-      //   movieData = data.items
-      // }
       
       const topMovies = top250List
         .slice(startIndex, endIndex)
@@ -483,7 +469,7 @@ bot.on("callback_query", async (callbackQuery) => {
         },
       };
 
-      if (endIndex < movieData.length) {
+      if (endIndex < top250List.length) {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Next",
@@ -497,7 +483,7 @@ bot.on("callback_query", async (callbackQuery) => {
         opts.reply_markup.inline_keyboard.push([
           {
             text: "Back",
-            callback_data: `next_${startIndex - 10}`,
+            callback_data: `next_${startIndex - 25}`,
           },
         ]);
       }
@@ -734,7 +720,7 @@ async function fetchAndProcessData(url) {
     const response = await fetch(url);
     const data = await response.json();
 
-    await updateTop250(data);
+    await updateTop250Row(data);
   } catch (error) {
     console.error(error);
   }
