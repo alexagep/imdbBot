@@ -13,6 +13,18 @@ const {
   getAllUpcoming,
 } = require("./queries/upcoming");
 
+const {
+  createBoxOfficeAllTime,
+  updateBoxOfficeAllTimeRow,
+  getAllBoxOfficeAllTime,
+} = require("./queries/boxOfficeAll");
+
+const {
+  createBoxOfficeWeek,
+  updateBoxOfficeWeekRow,
+  getAllBoxOfficeWeek,
+} = require("./queries/boxOfficeWeek");
+
 const cron = require("node-cron");
 
 require("dotenv").config();
@@ -85,8 +97,8 @@ bot.onText(/Coming Soon/, async (msg) => {
 
     if (moviesInDb[0].dataValues.data.length > 0) {
       upcomingList = moviesInDb[0].dataValues.data;
-    } 
-    
+    }
+
     // else {
     //   const response = await fetch(IMDB_COMING_SOON);
     //   const data = await response.json();
@@ -278,12 +290,15 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
-//box office weekend
+let boxWeekList = null;
 bot.onText(/Box Office Weekend/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE);
     const data = await response.json();
+
+    //create a new coming soon list
+    await createBoxOfficeWeek(data.items);
 
     const movies = data.items
       .map((movie, index) => {
@@ -303,12 +318,14 @@ bot.onText(/Box Office Weekend/, async (msg) => {
   }
 });
 
-//box office allTime
+let boxAllList = null;
 bot.onText(/Box Office AllTime/, async (msg) => {
   const chatId = msg.chat.id;
   try {
     const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
     const data = await response.json();
+
+    await createBoxOfficeAllTime(data.items)
 
     const movies = data.items
       .slice(0, 25)
@@ -446,7 +463,6 @@ bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
   const match = callbackQuery.data.match(/^next_(\d+)$/);
-  // const previousMatch = callbackQuery.data.match(/^previous_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
   const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
   const genres = [
