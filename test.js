@@ -162,3 +162,12 @@
 
 // var myName = undefined
 
+const {getAllTop250} = require('./queries/top250');
+
+async function getData() {
+    const data = await getAllTop250()
+
+    console.log(data.length);
+}
+
+getData() 

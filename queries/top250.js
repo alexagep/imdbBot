@@ -1,6 +1,9 @@
 const { Top250 } = require('../models/top250');
 // const Top250 = db.Top250
-console.log(Top250, 'TOP250');
+
+
+
+// console.log(Top250, 'TOP250');
 async function getAllTop250() {
   const top250List = await Top250.findAll();
   return top250List;
@@ -21,7 +24,7 @@ async function createTop250(data) {
   try {
     // console.log(data.length);
     const top250 = await Top250.create(data);
-    console.log("New record created in Top250 table:", top250.toJSON());
+    console.log("New record created in Top250 table");
     return top250;
   } catch (error) {
     console.error("Error creating new record in Top250 table:", error);
