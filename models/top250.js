@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require("sequelize");
 const cron = require("node-cron");
+const fetch = require('node-fetch');
 
 // Create a Sequelize instance
 const sequelize = new Sequelize("imdbrate", "postgres", "postgres", {
@@ -18,6 +19,11 @@ const Top250 = sequelize.define("Top250", {
     type: DataTypes.JSONB,
     allowNull: false,
   },
+  updatedAt: {
+    type: DataTypes.DATE,
+    field: "updated_at",
+    allowNull: false,
+  },
 });
 
 // Sync the model with the database
@@ -30,14 +36,24 @@ async function updateTop250(data) {
   await Top250.update({ data }, { where: { id: 1 } });
 }
 
-// Schedule the updateTop250 function to run each day at 4 AM
-cron.schedule("0 4 * * *", () => {
-  updateTop250(/* data */);
-});
+// Define a separate async function to make the API request and pass the data to the updateTop250 function
+async function fetchAndProcessData(url) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-module.exports = updateTop250;
+    await updateTop250(data);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
+// // Schedule the updateTop250 function to run each day at 4 AM
+// cron.schedule("0 4 * * *", () => {
+//   fetchAndProcessData();
+// });
 
+module.exports = {updateTop250, fetchAndProcessData};
 
 /*
 const { Sequelize, DataTypes } = require("sequelize");

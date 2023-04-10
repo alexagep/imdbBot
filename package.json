@@ -4,7 +4,8 @@
   "description": "Telegram Bot for IMDb Movie Ratings This project is a Telegram bot that allows users to search for movies and get their IMDb ratings. The bot uses the OMDB API to retrieve movie data and returns the title, year of release, and IMDb rating.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:init": "node ./db/init",
+    "db:drop": "node -e 'require(\"./db/drop\").dropDatabase()'"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
     "pg": "^8.10.0",
     "request": "^2.88.2",
     "sequelize": "^6.30.0",
+    "sequelize-cli": "^6.6.0",
     "sharp": "^0.32.0",
     "string-similarity": "^4.0.4"
   }

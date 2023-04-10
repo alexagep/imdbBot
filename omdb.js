@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 const request = require("request");
 const sharp = require("sharp");
+const { updateTop250, fetchAndProcessData } = require('./models/top250');
 
 require("dotenv").config();
 // const { dom, library } = require("@fortawesome/fontawesome-svg-core");
@@ -30,6 +31,12 @@ const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
+
+
+// Schedule the updateTop250 function to run each day at 4 AM
+cron.schedule("0 4 * * *", () => {
+  fetchAndProcessData(IMDB_TOP_250_URL);
+});
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
