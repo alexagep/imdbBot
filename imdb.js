@@ -94,9 +94,11 @@ const staticKeyboard = {
 
 // Define the available box office options
 const boxOfficeOptions = [
-  { text: "💰 Box Office Weekend", callback_data: "box_office_weekend" },
-  { text: "💰📈 Box Office AllTime", callback_data: "box_office_all_time" },
+  [{ text: "💰 Box Office Weekend", callback_data: "box_office_weekend" }],
+  [{ text: "💰📈 Box Office AllTime", callback_data: "box_office_all_time" }],
 ];
+
+
 
 bot.onText(/\/start/, (msg) => {
   console.log("****************");
@@ -405,7 +407,7 @@ bot.onText(/Box Office/, async (msg) => {
   // Send the available options to the user
   const opts = {
     reply_markup: {
-      inline_keyboard: [boxOfficeOptions],
+      inline_keyboard: boxOfficeOptions,
     },
   };
   bot.sendMessage(chatId, "Which information do you want to see?", opts);
