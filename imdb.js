@@ -26,7 +26,11 @@ const {
 } = require("./queries/boxOfficeWeek");
 
 const cron = require("node-cron");
-const { createTop250TV } = require("./queries/top250TV");
+const {
+  createTop250TV,
+  getAllTop250TV,
+  updateTop250TVRow,
+} = require("./queries/top250TV");
 
 require("dotenv").config();
 
@@ -48,6 +52,14 @@ const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
+
+
+
+
+// Schedule the updateTop250TV function to run each day at 00:30 AM
+cron.schedule("30 0 * * *", () => {
+  fetchAndProcessData(IMDB_TOP250_TV, "top250_tv");
+});
 
 // Schedule the updateTop250 function to run each day at 1 AM
 cron.schedule("0 1 * * *", () => {
@@ -103,7 +115,7 @@ const boxOfficeOptions = [
 // Define the available box office options
 const top250Options = [
   [{ text: "🔝 Top250 movies", callback_data: "top250_movies" }],
-  [{ text: "🔝 Top250 TV", callback_data: "top250_TV" }],
+  [{ text: "🔝 Top250 TV Series", callback_data: "top250_TV" }],
 ];
 
 bot.onText(/\/start/, (msg) => {
@@ -333,132 +345,15 @@ bot.onText(/\/menu/, (msg) => {
 
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
-  try {
-    // const moviesInDb = await getAllTop250();
 
-    // if (moviesInDb[0].dataValues.data.items.length > 0) {
-    //   top250List = moviesInDb[0].dataValues.data.items;
-    // }
-
-    // else {
-    //   const response = await fetch(IMDB_TOP_250_URL);
-    //   const data = await response.json();
-
-    //   top250List = data.items
-    // }
-
-    const response = await fetch(IMDB_TOP250_TV);
-    const data = await response.json();
-
-    // boxAllList = data.items;
-    //create a new list of top250 movies
-    await createTop250TV({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
-
-    const topMovies = data.items
-      .slice(0, 25)
-      .map(
-        (item, index) =>
-          `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`
-      )
-      .join("\n\n");
-
-    const opts = {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "Next",
-              callback_data: `next_${25}`,
-            },
-          ],
-        ],
-      },
-    };
-
-    bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
-  } catch (error) {
-    console.error("Error fetching top 250 movies:", error);
-    bot.sendMessage(
-      chatId,
-      "An error occurred while fetching the top 250 movies. Please try again later."
-    );
-  }
+  // Send the available options to the user
+  const opts = {
+    reply_markup: {
+      inline_keyboard: top250Options,
+    },
+  };
+  bot.sendMessage(chatId, "Which information do you want to see?", opts);
 });
-
-// bot.onText(/Box Office Weekend/, async (msg) => {
-//   const chatId = msg.chat.id;
-//   try {
-//     const moviesInDb = await getAllBoxOfficeWeek();
-
-//     const movies = moviesInDb[0].dataValues.data.items
-//       .map((movie, index) => {
-//         return `${index + 1}. ${movie.title}\n\nWeekend: ${
-//           movie.weekend
-//         }\nGross: ${movie.gross}\nWeeks: ${movie.weeks}`;
-//       })
-//       .join("\n\n");
-
-//     bot.sendMessage(chatId, `🎬 Box Office:\n\n${movies}`);
-//   } catch (error) {
-//     console.error("Error fetching the box office:", error);
-//     bot.sendMessage(
-//       chatId,
-//       "An error occurred while fetching the box office. Please try again later."
-//     );
-//   }
-// });
-
-// let boxAllList = null;
-// bot.onText(/Box Office AllTime/, async (msg) => {
-//   const chatId = msg.chat.id;
-//   try {
-//     const moviesInDb = await getAllBoxOfficeAllTime();
-
-//     if (moviesInDb[0].dataValues.data.items.length > 0) {
-//       boxAllList = moviesInDb[0].dataValues.data.items;
-//     }
-
-//     // else {
-//     //   const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
-//     //   const data = await response.json();
-
-//     //   boxAllList = data.items
-//     // }
-
-//     //create a new coming soon list
-//     // await createBoxOfficeAllTime(data.items);
-
-//     const movies = boxAllList
-//       .slice(0, 25)
-//       .map((movie, index) => {
-//         return `${index + 1}. ${movie.title} (${movie.year})\n\nGross: ${
-//           movie.worldwideLifetimeGross
-//         }\nDomestic Gross: ${movie.domesticLifetimeGross}`;
-//       })
-//       .join("\n\n");
-
-//     const opts = {
-//       reply_markup: {
-//         inline_keyboard: [
-//           [
-//             {
-//               text: "Next",
-//               callback_data: `next_allTime_movies_${25}`,
-//             },
-//           ],
-//         ],
-//       },
-//     };
-
-//     bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
-//   } catch (error) {
-//     console.error("Error fetching the box office allTime:", error);
-//     bot.sendMessage(
-//       chatId,
-//       "An error occurred while fetching the box office allTime. Please try again later."
-//     );
-//   }
-// });
 
 // Handle the user's request to see box office information
 bot.onText(/Box Office/, async (msg) => {
@@ -574,11 +469,13 @@ bot.on("message", async (msg) => {
 let genre = null;
 let boxAllList = null;
 let top250List = null;
+let top250SeriesList = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
   const messageId = callbackQuery.message.message_id;
   const match = callbackQuery.data.match(/^next_(\d+)$/);
+  const matchSeries = callbackQuery.data.match(/^next_series_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
   const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
   const genres = [
@@ -654,6 +551,59 @@ bot.on("callback_query", async (callbackQuery) => {
       bot.sendMessage(
         chatId,
         "An error occurred while fetching the top 250 movies. Please try again later."
+      );
+    }
+  } else if (matchSeries) {
+    const startIndex = parseInt(matchSeries[1], 10);
+    const endIndex = startIndex + 25;
+
+    try {
+      const topSeries = top250SeriesList
+        .slice(startIndex, endIndex)
+        .map(
+          (item, index) =>
+            `${startIndex + index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${
+              item.imDbRating
+            }`
+        )
+        .join("\n\n");
+
+      const opts = {
+        chat_id: chatId,
+        message_id: messageId,
+        reply_markup: {
+          inline_keyboard: [],
+        },
+      };
+
+      if (endIndex < top250SeriesList.length) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Next",
+            callback_data: `next_series_${endIndex}`,
+          },
+        ]);
+      }
+
+      // add a "Back" button if there are previous movies to show
+      if (startIndex > 0) {
+        opts.reply_markup.inline_keyboard.push([
+          {
+            text: "Back",
+            callback_data: `next_series_${startIndex - 25}`,
+          },
+        ]);
+      }
+
+      bot.editMessageText(
+        `IMDb Top ${startIndex + 1}-${endIndex} Series:\n\n${topSeries}`,
+        opts
+      );
+    } catch (error) {
+      console.error("Error fetching top 250 series:", error);
+      bot.sendMessage(
+        chatId,
+        "An error occurred while fetching the top 250 series. Please try again later."
       );
     }
   } else if (matchCS) {
@@ -881,24 +831,123 @@ bot.on("callback_query", async (callbackQuery) => {
 
     bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
   }
+
+  if (callbackQuery.data === "top250_movies") {
+    const chatId = msg.chat.id;
+    try {
+      const moviesInDb = await getAllTop250();
+
+      if (moviesInDb[0].dataValues.data.items.length > 0) {
+        top250List = moviesInDb[0].dataValues.data.items;
+      }
+
+      // else {
+      //   const response = await fetch(IMDB_TOP_250_URL);
+      //   const data = await response.json();
+
+      //   top250List = data.items
+      // }
+
+      //create a new list of top250 movies
+      //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+
+      const topMovies = top250List
+        .slice(0, 25)
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${
+              item.imDbRating
+            }`
+        )
+        .join("\n\n");
+
+      const opts = {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "Next",
+                callback_data: `next_${25}`,
+              },
+            ],
+          ],
+        },
+      };
+
+      bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
+    } catch (error) {
+      console.error("Error fetching top 250 movies:", error);
+      bot.sendMessage(
+        chatId,
+        "An error occurred while fetching the top 250 movies. Please try again later."
+      );
+    }
+  } else if (callbackQuery.data === "top250_TV") {
+    const chatId = msg.chat.id;
+    try {
+      const seriesInDb = await getAllTop250TV();
+
+      if (seriesInDb[0].dataValues.data.items.length > 0) {
+        top250SeriesList = seriesInDb[0].dataValues.data.items;
+      }
+
+      // else {
+      //   const response = await fetch(IMDB_TOP250_TV);
+      //   const data = await response.json();
+
+      //   top250List = data.items
+      // }
+
+      //create a new list of top250 movies
+      //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+
+      const topSeries = top250SeriesList
+        .slice(0, 25)
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${
+              item.imDbRating
+            }`
+        )
+        .join("\n\n");
+
+      const opts = {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: "Next",
+                callback_data: `next_series_${25}`,
+              },
+            ],
+          ],
+        },
+      };
+
+      bot.sendMessage(chatId, `IMDb Top 25 Series:\n\n${topSeries}`, opts);
+    } catch (error) {
+      console.error("Error fetching top 250 Series:", error);
+      bot.sendMessage(
+        chatId,
+        "An error occurred while fetching the top 250 Series. Please try again later."
+      );
+    }
+  }
 });
 
 function getRandomMovies(movies) {
   const randomIndex = Math.floor(Math.random() * movies.length);
   const randomMovie = movies[randomIndex];
 
-  // console.log(randomMovie);
-
   return randomMovie;
 }
 
 async function generateRecommendation(genre, chatId) {
-  // console.log(genre, "genre in generateRec func");
   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&groups=top_1000&languages=en`;
   const urResponse = await fetch(url);
   const res = await urResponse.json();
   const movie = getRandomMovies(res.results);
-  // console.log(movie);
+
   const response = await fetch(movie.image);
   const buffer = await response.buffer();
 
@@ -953,6 +1002,8 @@ async function fetchAndProcessData(url, entity) {
       case "boxAll":
         await updateBoxOfficeAllTimeRow(data);
         break;
+      case "top250_tv":
+        await updateTop250TVRow(data);
       default:
         console.log(`Invalid entity type: ${entity}`);
         break;
