@@ -53,10 +53,6 @@ Movie.init(
       type: DataTypes.INTEGER,
       field: "total_votes",
     },
-    genres: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: true,
-    },
     createdAt: {
       type: DataTypes.DATE,
       field: "created_at",

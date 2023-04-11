@@ -310,7 +310,6 @@ async function creating() {
     runtimeStr: '120 min',
     contentRating: 'PG-13',
     imDbRatingVotes: 12000,
-    genres: ['comedy'],
   };
   const query = await createMovie(data);
 

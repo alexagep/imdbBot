@@ -17,6 +17,7 @@ async function updateMovieRow(data) {
 // USAGE: createMovie({ data: { name: 'Example', value: 42 }, createdAt: new Date(), updatedAt: new Date() })
 async function createMovie(data) {
   try {
+    console.log(data);
     const row = await Movie.create({
       name: data.title,
       director: data.director,
