@@ -189,23 +189,77 @@
 
 // fetchAndProcessData(IMDB_TOP_250_URL);
 
-const { google } = require("googleapis");
-const youtube = google.youtube({
-  version: "v3",
-  auth: "AIzaSyC1UaS_99LQlNWX7ioUOdKJQTR-iZnGt9Y",
-});
+// const { google } = require("googleapis");
+// const youtube = google.youtube({
+//   version: "v3",
+//   auth: "AIzaSyC1UaS_99LQlNWX7ioUOdKJQTR-iZnGt9Y",
+// });
 
-const videoId = "Jvurpf91omw";
-const response = await youtube.videos.list({
-  part: "id,snippet",
-  id: videoId,
-});
-const video = response.data.items[0];
-console.log(video.snippet.title);
+// const videoId = "Jvurpf91omw";
+// const response = await youtube.videos.list({
+//   part: "id,snippet",
+//   id: videoId,
+// });
+// const video = response.data.items[0];
+// console.log(video.snippet.title);
 
-const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-const options = {
-  format: "bestvideo[height<=720]+bestaudio/best[height<=720]",
-  output: "%(title)s.%(ext)s",
-};
-await require("youtube-dl-exec")(videoUrl, options);
+// const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+// const options = {
+//   format: "bestvideo[height<=720]+bestaudio/best[height<=720]",
+//   output: "%(title)s.%(ext)s",
+// };
+// await require("youtube-dl-exec")(videoUrl, options);
+
+// const items = [
+//   {
+//     id: "tt5491994",
+//     crew: "David Attenborough, Gordon Buchanan",
+//     rank: "1",
+//     year: "2016",
+//     image:
+//       "https://m.media-amazon.com/images/M/MV5BMGZmYmQ5NGQtNWQ1MC00NWZlLTg0MjYtYjJjMzQ5ODgxYzRkXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_Ratio0.7015_AL_.jpg",
+//     title: "Planet Earth II",
+//     fullTitle: "Planet Earth II (2016)",
+//     imDbRating: "9.4",
+//     imDbRatingCount: "149100",
+//   },
+//   {
+//     id: "tt0903747",
+//     crew: "Bryan Cranston, Aaron Paul",
+//     rank: "2",
+//     year: "2008",
+//     image:
+//       "https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_Ratio0.6716_AL_.jpg",
+//     title: "Breaking Bad",
+//     fullTitle: "Breaking Bad (2008)",
+//     imDbRating: "9.4",
+//     imDbRatingCount: "1955160",
+//   },
+// ];
+
+// const obj = {
+//   id: "tt0903747",
+//   crew: "Bryan Cranston, Aaron Paul",
+//   rank: "2",
+//   year: "2008",
+//   image:
+//     "https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_Ratio0.6716_AL_.jpg",
+//   title: "Breaking Bad",
+//   fullTitle: "Breaking Bad (2008)",
+//   imDbRating: "9.4",
+//   imDbRatingCount: "1955160",
+// }
+
+// const obj2 = {
+//   id: "tt0903747",
+//   crew: "Bryan Cranston, Aaron Paul",
+//   rank: "2",
+//   year: "2008",
+//   image:
+//     "https://m.media-amazon.com/images/M/MV5BYmQ4YWMxYjUtNjZmYi00MDQ1LWFjMjMtNjA5ZDdiYjdiODU5XkEyXkFqcGdeQXVyMTMzNDExODE5._V1_Ratio0.6716_AL_.jpg",
+//   title: "Breaking Bad",
+//   fullTitle: "Breaking Bad (2008)",
+//   imDbRating: "9.4",
+//   imDbRatingCount: "1955160",
+// }
+// console.log(obj == obj2);

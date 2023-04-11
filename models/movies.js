@@ -9,6 +9,7 @@ Movie.init(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      allowNull: false,
     },
     name: {
       type: DataTypes.STRING,
@@ -58,11 +59,14 @@ Movie.init(
   {
     sequelize,
     modelName: "Movie",
+    underscored: true
   }
 );
 
 Movie.associate = function (models) {
-  // Define your associations here
+  Movie.hasMany(models.MovieGenre, {
+    foreignKey: "movie_id",
+  });
 };
 
 module.exports = { Movie };

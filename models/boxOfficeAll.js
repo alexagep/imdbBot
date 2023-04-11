@@ -29,6 +29,7 @@ BoxOfficeAllTime.init(
   {
     sequelize,
     modelName: 'BoxOfficeAllTime',
+    underscored: true
   }
 );
 

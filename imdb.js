@@ -923,6 +923,9 @@ bot.on("callback_query", async (callbackQuery) => {
       };
 
       bot.sendMessage(chatId, `IMDb Top 25 Series:\n\n${topSeries}`, opts);
+
+      await bot.deleteMessage(chatId, messageId);
+
     } catch (error) {
       console.error("Error fetching top 250 Series:", error);
       bot.sendMessage(

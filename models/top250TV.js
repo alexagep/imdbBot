@@ -29,6 +29,7 @@ Top250TV.init(
   {
     sequelize,
     modelName: 'Top250TV',
+    underscored: true
   }
 );
 

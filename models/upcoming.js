@@ -29,6 +29,7 @@ Upcoming.init(
   {
     sequelize,
     modelName: 'Upcoming',
+    underscored: true
   }
 );
 

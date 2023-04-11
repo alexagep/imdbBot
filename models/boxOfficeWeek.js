@@ -29,6 +29,7 @@ BoxOfficeWeek.init(
   {
     sequelize,
     modelName: 'BoxOfficeWeek',
+    underscored: true
   }
 );
 

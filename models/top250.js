@@ -29,6 +29,7 @@ Top250.init(
   {
     sequelize,
     modelName: 'Top250',
+    underscored: true
   }
 );
 
