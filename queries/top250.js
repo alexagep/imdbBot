@@ -18,9 +18,9 @@ async function updateTop250Row(data) {
 async function createTop250(data) {
   try {
     // console.log(data.length);
-    const top250 = await Top250.create({ data });
+    const rows = await Top250.create({ data });
     console.log("New record created in Top250 table");
-    return top250;
+    return rows;
   } catch (error) {
     console.error("Error creating new record in Top250 table:", error);
     throw error;
