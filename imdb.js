@@ -47,23 +47,23 @@ const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
 
-// Schedule the updateTop250 function to run each day at 4 AM
-cron.schedule("0 4 * * *", () => {
+// Schedule the updateTop250 function to run each day at 1 AM
+cron.schedule("0 1 * * *", () => {
   fetchAndProcessData(IMDB_TOP_250_URL, "top250");
 });
 
-// Schedule the updateUpcomingRow function to run each day at 4:30 AM
-cron.schedule("30 4 * * *", () => {
+// Schedule the updateUpcomingRow function to run each day at 1:30 AM
+cron.schedule("30 1 * * *", () => {
   fetchAndProcessData(IMDB_COMING_SOON, "upcoming");
 });
 
-// Schedule the updateBoxOfficeWeekRow function to run each day at 5 AM
-cron.schedule("0 5 * * *", () => {
+// Schedule the updateBoxOfficeWeekRow function to run each day at 2 AM
+cron.schedule("0 2 * * *", () => {
   fetchAndProcessData(IMDB_BOX_OFFICE, "boxWeek");
 });
 
-// Schedule the updateBoxOfficeAllTimeRow function to run each day at 5:30 AM
-cron.schedule("30 5 * * *", () => {
+// Schedule the updateBoxOfficeAllTimeRow function to run each day at 2:30 AM
+cron.schedule("30 2 * * *", () => {
   fetchAndProcessData(IMDB_BOX_OFFICE_ALLTIME, "boxAll");
 });
 
@@ -110,8 +110,8 @@ bot.onText(/Coming Soon/, async (msg) => {
   try {
     const moviesInDb = await getAllUpcoming();
 
-    if (moviesInDb[0].dataValues.data.length > 0) {
-      upcomingList = moviesInDb[0].dataValues.data;
+    if (moviesInDb[0].dataValues.data.items.length > 0) {
+      upcomingList = moviesInDb[0].dataValues.data.items;
     }
 
     // else {
@@ -310,7 +310,7 @@ bot.onText(/Box Office Weekend/, async (msg) => {
   try {
     const moviesInDb = await getAllBoxOfficeWeek();
 
-    const movies = moviesInDb[0].dataValues.data
+    const movies = moviesInDb[0].dataValues.data.items
       .map((movie, index) => {
         return `${index + 1}. ${movie.title}\n\nweekend: ${
           movie.weekend
@@ -334,8 +334,8 @@ bot.onText(/Box Office AllTime/, async (msg) => {
   try {
     const moviesInDb = await getAllBoxOfficeAllTime();
 
-    if (moviesInDb[0].dataValues.data.length > 0) {
-      boxAllList = moviesInDb[0].dataValues.data;
+    if (moviesInDb[0].dataValues.data.items.length > 0) {
+      boxAllList = moviesInDb[0].dataValues.data.items;
     }
 
     // else {
