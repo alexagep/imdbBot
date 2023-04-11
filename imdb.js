@@ -53,9 +53,6 @@ const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 const limitMessage =
   "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
 
-
-
-
 // Schedule the updateTop250TV function to run each day at 00:30 AM
 cron.schedule("30 0 * * *", () => {
   fetchAndProcessData(IMDB_TOP250_TV, "top250_tv");
@@ -114,7 +111,7 @@ const boxOfficeOptions = [
 
 // Define the available box office options
 const top250Options = [
-  [{ text: "🔝 Top250 movies", callback_data: "top250_movies" }],
+  [{ text: "🔝 Top250 Movies", callback_data: "top250_movies" }],
   [{ text: "🔝 Top250 TV Series", callback_data: "top250_TV" }],
 ];
 
@@ -833,7 +830,6 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data === "top250_movies") {
-    const chatId = msg.chat.id;
     try {
       const moviesInDb = await getAllTop250();
 
@@ -875,6 +871,9 @@ bot.on("callback_query", async (callbackQuery) => {
       };
 
       bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
+
+      await bot.deleteMessage(chatId, messageId);
+
     } catch (error) {
       console.error("Error fetching top 250 movies:", error);
       bot.sendMessage(
@@ -883,7 +882,6 @@ bot.on("callback_query", async (callbackQuery) => {
       );
     }
   } else if (callbackQuery.data === "top250_TV") {
-    const chatId = msg.chat.id;
     try {
       const seriesInDb = await getAllTop250TV();
 
