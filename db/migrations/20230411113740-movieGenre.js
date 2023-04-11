@@ -32,7 +32,7 @@ module.exports = {
       {
         uniqueKeys: {
           actions_unique: {
-            fields: ["api_key_id", "service_id"],
+            fields: ["genre_id", "movie_id"],
           },
         },
         timestamps: false, // Disable timestamps fields
