@@ -510,6 +510,7 @@ bot.on("message", async (msg) => {
 });
 
 let genre = null;
+let boxAllList = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -660,7 +661,7 @@ bot.on("callback_query", async (callbackQuery) => {
             `${startIndex + index + 1}. ${item.title} (${
               item.year
             })\n\nGross: ${item.worldwideLifetimeGross}\nDomestic Gross: ${
-              movie.domesticLifetimeGross
+              item.domesticLifetimeGross
             }`
         )
         .join("\n\n");
