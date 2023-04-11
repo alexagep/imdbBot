@@ -10,7 +10,7 @@ module.exports = {
           primaryKey: true,
           autoIncrement: true,
         },
-        movieId: {
+        MovieId: {
           type: Sequelize.INTEGER,
           field: "movie_id",
           allowNull: false,
@@ -19,7 +19,7 @@ module.exports = {
             key: "id",
           },
         },
-        genreId: {
+        GenreId: {
           type: Sequelize.INTEGER,
           field: "genre_id",
           allowNull: false,

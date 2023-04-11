@@ -1,14 +1,14 @@
-'use strict';
-
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Movies', {
+    await queryInterface.createTable("Movies", {
       id: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        autoIncrement: false,
         primaryKey: true,
-        autoIncrement: true,
       },
       name: {
         type: Sequelize.STRING,
@@ -26,6 +26,7 @@ module.exports = {
         type: Sequelize.STRING,
         field: "imdb_id",
         allowNull: true,
+        unique: true,
       },
       imageUrl: {
         type: Sequelize.STRING,
@@ -42,17 +43,16 @@ module.exports = {
       },
       runtime: {
         type: Sequelize.STRING,
+        allowNull: true,
       },
       contentRating: {
         type: Sequelize.STRING,
         field: "content_rating",
+        allowNull: true,
       },
       totalVotes: {
         type: Sequelize.INTEGER,
         field: "total_votes",
-      },
-      genres: {
-        type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: true,
       },
       createdAt: {
@@ -65,9 +65,9 @@ module.exports = {
         field: "updated_at",
         allowNull: false,
       },
-    })
+    });
   },
   async down(queryInterface) {
-    await queryInterface.dropTable('Movies')
+    await queryInterface.dropTable("Movies");
   },
-}
+};
