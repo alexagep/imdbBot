@@ -26,6 +26,7 @@ const {
 } = require("./queries/boxOfficeWeek");
 
 const cron = require("node-cron");
+const { createTop250TV } = require("./queries/top250TV");
 
 require("dotenv").config();
 
@@ -41,6 +42,7 @@ const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KE
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
 const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&type=movie&plot=short&r=json&genre=`;
 const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`;
+const IMDB_TOP250_TV = `https://imdb-api.com/en/API/Top250TVs/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
@@ -98,7 +100,11 @@ const boxOfficeOptions = [
   [{ text: "💰📈 Box Office AllTime", callback_data: "box_office_all_time" }],
 ];
 
-
+// Define the available box office options
+const top250Options = [
+  [{ text: "🔝 Top250 movies", callback_data: "top250_movies" }],
+  [{ text: "🔝 Top250 TV", callback_data: "top250_TV" }],
+];
 
 bot.onText(/\/start/, (msg) => {
   console.log("****************");
@@ -274,15 +280,65 @@ bot.onText(/\/menu/, (msg) => {
   bot.sendMessage(chatId, "Menu:", menuOptions);
 });
 
-let top250List = null;
+// let top250List = null;
+// bot.onText(/Top250/, async (msg) => {
+//   const chatId = msg.chat.id;
+//   try {
+//     const moviesInDb = await getAllTop250();
+
+//     if (moviesInDb[0].dataValues.data.items.length > 0) {
+//       top250List = moviesInDb[0].dataValues.data.items;
+//     }
+
+//     // else {
+//     //   const response = await fetch(IMDB_TOP_250_URL);
+//     //   const data = await response.json();
+
+//     //   top250List = data.items
+//     // }
+
+//     //create a new list of top250 movies
+//     //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+
+//     const topMovies = top250List
+//       .slice(0, 25)
+//       .map(
+//         (item, index) =>
+//           `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`
+//       )
+//       .join("\n\n");
+
+//     const opts = {
+//       reply_markup: {
+//         inline_keyboard: [
+//           [
+//             {
+//               text: "Next",
+//               callback_data: `next_${25}`,
+//             },
+//           ],
+//         ],
+//       },
+//     };
+
+//     bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
+//   } catch (error) {
+//     console.error("Error fetching top 250 movies:", error);
+//     bot.sendMessage(
+//       chatId,
+//       "An error occurred while fetching the top 250 movies. Please try again later."
+//     );
+//   }
+// });
+
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
   try {
-    const moviesInDb = await getAllTop250();
+    // const moviesInDb = await getAllTop250();
 
-    if (moviesInDb[0].dataValues.data.items.length > 0) {
-      top250List = moviesInDb[0].dataValues.data.items;
-    }
+    // if (moviesInDb[0].dataValues.data.items.length > 0) {
+    //   top250List = moviesInDb[0].dataValues.data.items;
+    // }
 
     // else {
     //   const response = await fetch(IMDB_TOP_250_URL);
@@ -291,10 +347,14 @@ bot.onText(/Top250/, async (msg) => {
     //   top250List = data.items
     // }
 
-    //create a new list of top250 movies
-    //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+    const response = await fetch(IMDB_TOP250_TV);
+    const data = await response.json();
 
-    const topMovies = top250List
+    // boxAllList = data.items;
+    //create a new list of top250 movies
+    await createTop250TV({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
+
+    const topMovies = data.items
       .slice(0, 25)
       .map(
         (item, index) =>
@@ -513,6 +573,7 @@ bot.on("message", async (msg) => {
 
 let genre = null;
 let boxAllList = null;
+let top250List = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
