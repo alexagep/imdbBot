@@ -11,7 +11,7 @@ MovieGenre.init(
       autoIncrement: true,
       allowNull: false,
     },
-    movieId: {
+    MovieId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       onUpdate: "CASCADE",
@@ -22,7 +22,7 @@ MovieGenre.init(
         key: "id",
       },
     },
-    genreId: {
+    GenreId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       onUpdate: "CASCADE",
@@ -52,13 +52,13 @@ MovieGenre.init(
 MovieGenre.associate = function (models) {
   // Define a many-to-one association between MovieGenre and Movie
   MovieGenre.belongsTo(models.Movie, {
-    foreignKey: "movie_id",
+    foreignKey: "MovieId",
     targetKey: 'id',
   });
 
   // Define a many-to-one association between MovieGenre and Genre
   MovieGenre.belongsTo(models.Genre, {
-    foreignKey: "genre_id",
+    foreignKey: "GenreId",
     targetKey: 'id',
   });
 };
