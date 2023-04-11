@@ -76,9 +76,7 @@ Movie.init(
 );
 
 Movie.associate = function (models) {
-  Movie.hasMany(models.MovieGenre, {
-    foreignKey: "movie_id",
-  });
+  Movie.hasMany(models.MovieGenre);
 };
 
 module.exports = { Movie };

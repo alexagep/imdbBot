@@ -25,9 +25,7 @@ Genre.init(
 
 // Define your associations
 Genre.associate = function (models) {
-  Genre.hasMany(models.MovieGenre, {
-    foreignKey: "genre_id",
-  });
+  Genre.hasMany(models.MovieGenre);
 };
 
 module.exports = {

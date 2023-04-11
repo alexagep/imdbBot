@@ -14,14 +14,27 @@ module.exports = {
           type: Sequelize.INTEGER,
           field: "movie_id",
           allowNull: false,
+          references: {
+            model: "Movie",
+            key: "id",
+          },
         },
         genreId: {
           type: Sequelize.INTEGER,
           field: "genre_id",
           allowNull: false,
+          references: {
+            model: "Genre",
+            key: "id",
+          },
         },
       },
       {
+        uniqueKeys: {
+          actions_unique: {
+            fields: ["api_key_id", "service_id"],
+          },
+        },
         timestamps: false, // Disable timestamps fields
       }
     );
