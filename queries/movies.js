@@ -17,7 +17,19 @@ async function updateMovieRow(data) {
 // USAGE: createMovie({ data: { name: 'Example', value: 42 }, createdAt: new Date(), updatedAt: new Date() })
 async function createMovie(data) {
   try {
-    const row = await Movie.create({ data });
+    const row = await Movie.create({
+      name: data.title,
+      director: data.director,
+      rating: data.imDbRating,
+      imdbId: data.id,
+      imageUrl: data.image,
+      actors: data.stars,
+      year: data.year,
+      runtime: data.runtimeStr,
+      contentRating: data.contentRating,
+      totalVotes: data.imDbRatingVotes,
+      genres: data.genres, // add genres property
+    });
     console.log("New record created in Movie table");
     return row;
   } catch (error) {
@@ -25,6 +37,7 @@ async function createMovie(data) {
     // throw error;
   }
 }
+
 
 module.exports = {
   getAllMovie,

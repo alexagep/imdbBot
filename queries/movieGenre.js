@@ -1,6 +1,8 @@
 const { MovieGenre } = require("../models/movieGenres");
 const { Genre } = require("../models/genres");
 
+const { getAllGenre } = require("./genres");
+
 async function getAllMovieGenre() {
   const MovieGenreList = await MovieGenre.findAll();
   return MovieGenreList;
@@ -21,8 +23,9 @@ async function createMovieGenre(data) {
     const { id, genres } = data;
     const rows = [];
     for (const genreName of genres) {
-      const genre = await Genre.findOne({ where: { name: genreName } });
-      console.log(genre, 'GENRE');
+      const clause = { name : genreName }
+      const genre = await getAllGenre(clause)
+      console.log(genre, "GENRE");
       if (genre.dataValues) {
         const movieGenre = await MovieGenre.create({
           movieId: id,
@@ -34,11 +37,13 @@ async function createMovieGenre(data) {
     console.log(`Created ${rows.length} new records in MovieGenre table`);
     return rows;
   } catch (error) {
-    console.error("Error creating new records in MovieGenre table:", error.message);
+    console.error(
+      "Error creating new records in MovieGenre table:",
+      error.message
+    );
     // throw error;
   }
 }
-
 
 module.exports = {
   getAllMovieGenre,
