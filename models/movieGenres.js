@@ -38,7 +38,13 @@ MovieGenre.init(
     sequelize,
     timestamps: false, // Disable createdAt and updatedAt fields
     modelName: "MovieGenre",
-    underscored: true
+    underscored: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["movie_id", "genre_id"],
+      },
+    ],
   }
 );
 

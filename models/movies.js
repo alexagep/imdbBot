@@ -32,6 +32,7 @@ Movie.init(
       type: DataTypes.STRING,
       field: "image_url",
       allowNull: true,
+      unique: true, // add unique constraint
     },
     actors: {
       type: DataTypes.ARRAY(DataTypes.STRING),
