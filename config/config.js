@@ -1,4 +1,4 @@
-import env from '../common/env';
+const env = require('../common/env');
 
 const config = {
   development: {
@@ -28,4 +28,4 @@ const config = {
   timestamps: true,
 };
 
-export default config;
+module.exports = config;

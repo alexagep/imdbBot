@@ -40,6 +40,17 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: true,
       },
+      runtime: {
+        type: Sequelize.STRING,
+      },
+      contentRating: {
+        type: Sequelize.STRING,
+        field: "content_rating",
+      },
+      totalVotes: {
+        type: Sequelize.INTEGER,
+        field: "total_votes",
+      },
       genres: {
         type: Sequelize.ARRAY(Sequelize.STRING),
         allowNull: true,

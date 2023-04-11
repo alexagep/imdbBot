@@ -42,6 +42,17 @@ Movie.init(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    runtime: {
+      type: DataTypes.STRING,
+    },
+    contentRating: {
+      type: DataTypes.STRING,
+      field: "content_rating",
+    },
+    totalVotes: {
+      type: DataTypes.INTEGER,
+      field: "total_votes",
+    },
     genres: {
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: true,
