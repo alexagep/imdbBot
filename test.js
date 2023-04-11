@@ -176,7 +176,6 @@
 
 // const {updateTop250Row} = require('./queries/top250');
 
-
 // async function fetchAndProcessData(url) {
 //   try {
 //     const response = await fetch(url);
@@ -189,3 +188,24 @@
 // }
 
 // fetchAndProcessData(IMDB_TOP_250_URL);
+
+const { google } = require("googleapis");
+const youtube = google.youtube({
+  version: "v3",
+  auth: "AIzaSyC1UaS_99LQlNWX7ioUOdKJQTR-iZnGt9Y",
+});
+
+const videoId = "Jvurpf91omw";
+const response = await youtube.videos.list({
+  part: "id,snippet",
+  id: videoId,
+});
+const video = response.data.items[0];
+console.log(video.snippet.title);
+
+const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+const options = {
+  format: "bestvideo[height<=720]+bestaudio/best[height<=720]",
+  output: "%(title)s.%(ext)s",
+};
+await require("youtube-dl-exec")(videoUrl, options);

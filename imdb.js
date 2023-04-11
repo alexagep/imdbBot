@@ -67,18 +67,36 @@ cron.schedule("30 2 * * *", () => {
   fetchAndProcessData(IMDB_BOX_OFFICE_ALLTIME, "boxAll");
 });
 
+// const staticKeyboard = {
+//   reply_markup: JSON.stringify({
+//     keyboard: [
+//       ["🎥 Search Movie", "🔝 Top250"],
+//       ["🎭 Coming Soon", "💰 Box Office Weekend"],
+//       ["💰📈 Box Office AllTime"],
+//       ["🍿🤖 Recommend Movie"],
+//     ],
+//     one_time_keyboard: false,
+//     resize_keyboard: true,
+//   }),
+// };
+
 const staticKeyboard = {
   reply_markup: JSON.stringify({
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
-      ["🎭 Coming Soon", "💰 Box Office Weekend"],
-      ["💰📈 Box Office AllTime"],
+      ["🎭 Coming Soon", "💰 Box Office"],
       ["🍿🤖 Recommend Movie"],
     ],
     one_time_keyboard: false,
     resize_keyboard: true,
   }),
 };
+
+// Define the available box office options
+const boxOfficeOptions = [
+  { text: "💰 Box Office Weekend", callback_data: "box_office_weekend" },
+  { text: "💰📈 Box Office AllTime", callback_data: "box_office_all_time" },
+];
 
 bot.onText(/\/start/, (msg) => {
   console.log("****************");
@@ -305,79 +323,92 @@ bot.onText(/Top250/, async (msg) => {
   }
 });
 
-bot.onText(/Box Office Weekend/, async (msg) => {
+// bot.onText(/Box Office Weekend/, async (msg) => {
+//   const chatId = msg.chat.id;
+//   try {
+//     const moviesInDb = await getAllBoxOfficeWeek();
+
+//     const movies = moviesInDb[0].dataValues.data.items
+//       .map((movie, index) => {
+//         return `${index + 1}. ${movie.title}\n\nWeekend: ${
+//           movie.weekend
+//         }\nGross: ${movie.gross}\nWeeks: ${movie.weeks}`;
+//       })
+//       .join("\n\n");
+
+//     bot.sendMessage(chatId, `🎬 Box Office:\n\n${movies}`);
+//   } catch (error) {
+//     console.error("Error fetching the box office:", error);
+//     bot.sendMessage(
+//       chatId,
+//       "An error occurred while fetching the box office. Please try again later."
+//     );
+//   }
+// });
+
+// let boxAllList = null;
+// bot.onText(/Box Office AllTime/, async (msg) => {
+//   const chatId = msg.chat.id;
+//   try {
+//     const moviesInDb = await getAllBoxOfficeAllTime();
+
+//     if (moviesInDb[0].dataValues.data.items.length > 0) {
+//       boxAllList = moviesInDb[0].dataValues.data.items;
+//     }
+
+//     // else {
+//     //   const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
+//     //   const data = await response.json();
+
+//     //   boxAllList = data.items
+//     // }
+
+//     //create a new coming soon list
+//     // await createBoxOfficeAllTime(data.items);
+
+//     const movies = boxAllList
+//       .slice(0, 25)
+//       .map((movie, index) => {
+//         return `${index + 1}. ${movie.title} (${movie.year})\n\nGross: ${
+//           movie.worldwideLifetimeGross
+//         }\nDomestic Gross: ${movie.domesticLifetimeGross}`;
+//       })
+//       .join("\n\n");
+
+//     const opts = {
+//       reply_markup: {
+//         inline_keyboard: [
+//           [
+//             {
+//               text: "Next",
+//               callback_data: `next_allTime_movies_${25}`,
+//             },
+//           ],
+//         ],
+//       },
+//     };
+
+//     bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
+//   } catch (error) {
+//     console.error("Error fetching the box office allTime:", error);
+//     bot.sendMessage(
+//       chatId,
+//       "An error occurred while fetching the box office allTime. Please try again later."
+//     );
+//   }
+// });
+
+// Handle the user's request to see box office information
+bot.onText(/Box Office/, async (msg) => {
   const chatId = msg.chat.id;
-  try {
-    const moviesInDb = await getAllBoxOfficeWeek();
 
-    const movies = moviesInDb[0].dataValues.data.items
-      .map((movie, index) => {
-        return `${index + 1}. ${movie.title}\n\nWeekend: ${
-          movie.weekend
-        }\nGross: ${movie.gross}\nWeeks: ${movie.weeks}`;
-      })
-      .join("\n\n");
-
-    bot.sendMessage(chatId, `🎬 Box Office:\n\n${movies}`);
-  } catch (error) {
-    console.error("Error fetching the box office:", error);
-    bot.sendMessage(
-      chatId,
-      "An error occurred while fetching the box office. Please try again later."
-    );
-  }
-});
-
-let boxAllList = null;
-bot.onText(/Box Office AllTime/, async (msg) => {
-  const chatId = msg.chat.id;
-  try {
-    const moviesInDb = await getAllBoxOfficeAllTime();
-
-    if (moviesInDb[0].dataValues.data.items.length > 0) {
-      boxAllList = moviesInDb[0].dataValues.data.items;
-    }
-
-    // else {
-    //   const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
-    //   const data = await response.json();
-
-    //   boxAllList = data.items
-    // }
-
-    //create a new coming soon list
-    // await createBoxOfficeAllTime(data.items);
-
-    const movies = boxAllList
-      .slice(0, 25)
-      .map((movie, index) => {
-        return `${index + 1}. ${movie.title} (${movie.year})\n\nGross: ${
-          movie.worldwideLifetimeGross
-        }\nDomestic Gross: ${movie.domesticLifetimeGross}`;
-      })
-      .join("\n\n");
-
-    const opts = {
-      reply_markup: {
-        inline_keyboard: [
-          [
-            {
-              text: "Next",
-              callback_data: `next_allTime_movies_${25}`,
-            },
-          ],
-        ],
-      },
-    };
-
-    bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
-  } catch (error) {
-    console.error("Error fetching the box office allTime:", error);
-    bot.sendMessage(
-      chatId,
-      "An error occurred while fetching the box office allTime. Please try again later."
-    );
-  }
+  // Send the available options to the user
+  const opts = {
+    reply_markup: {
+      inline_keyboard: [boxOfficeOptions],
+    },
+  };
+  bot.sendMessage(chatId, "Which information do you want to see?", opts);
 });
 
 let movie_ID = null;
@@ -713,37 +744,6 @@ bot.on("callback_query", async (callbackQuery) => {
       Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
 
       bot.sendMessage(chatId, message);
-
-      // bot.sendMessage(
-      //   chatId,
-      //   `Total Votes: ${parseInt(
-      //     UserRatings.demographicAll.allAges.votes
-      //   ).toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${
-      //     UserRatings.demographicAll.agesUnder18.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicAll.agesUnder18.votes
-      //   ).toLocaleString()})\n👨🏻‍🎓 18-29: ${
-      //     UserRatings.demographicAll.ages18To29.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicAll.ages18To29.votes
-      //   ).toLocaleString()})\n👨🏽‍💼 30-44: ${
-      //     UserRatings.demographicAll.ages30To44.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicAll.ages30To44.votes
-      //   ).toLocaleString()})\n👴🏾 Over 45: ${
-      //     UserRatings.demographicAll.agesOver45.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicAll.agesOver45.votes
-      //   ).toLocaleString()})\n\n👨🏼 Males: ${
-      //     UserRatings.demographicMales.allAges.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicMales.allAges.votes
-      //   ).toLocaleString()})\n👩🏻 Females: ${
-      //     UserRatings.demographicFemales.allAges.rating
-      //   } (${parseInt(
-      //     UserRatings.demographicFemales.allAges.votes
-      //   ).toLocaleString()})`
-      // );
     }
   }
 
@@ -762,6 +762,60 @@ bot.on("callback_query", async (callbackQuery) => {
     // console.log(genre, 'genre in new rec');
     await generateRecommendation(genre, chatId);
     await bot.deleteMessage(chatId, messageId);
+  }
+
+  if (callbackQuery.data === "box_office_weekend") {
+    const moviesInDb = await getAllBoxOfficeWeek();
+
+    const movies = moviesInDb[0].dataValues.data.items
+      .map((movie, index) => {
+        return `${index + 1}. ${movie.title}\n\nWeekend: ${
+          movie.weekend
+        }\nGross: ${movie.gross}\nWeeks: ${movie.weeks}`;
+      })
+      .join("\n\n");
+
+    bot.sendMessage(chatId, `🎬 Box Office Weekend:\n\n${movies}`);
+  } else if (callbackQuery.data === "box_office_all_time") {
+    const moviesInDb = await getAllBoxOfficeAllTime();
+
+    if (moviesInDb[0].dataValues.data.items.length > 0) {
+      boxAllList = moviesInDb[0].dataValues.data.items;
+    }
+
+    // else {
+    //   const response = await fetch(IMDB_BOX_OFFICE_ALLTIME);
+    //   const data = await response.json();
+
+    //   boxAllList = data.items
+    // }
+
+    //create a new coming soon list
+    // await createBoxOfficeAllTime(data.items);
+
+    const movies = boxAllList
+      .slice(0, 25)
+      .map((movie, index) => {
+        return `${index + 1}. ${movie.title} (${movie.year})\n\nGross: ${
+          movie.worldwideLifetimeGross
+        }\nDomestic Gross: ${movie.domesticLifetimeGross}`;
+      })
+      .join("\n\n");
+
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Next",
+              callback_data: `next_allTime_movies_${25}`,
+            },
+          ],
+        ],
+      },
+    };
+
+    bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
   }
 });
 
