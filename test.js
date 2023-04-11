@@ -263,3 +263,38 @@
 //   imDbRatingCount: "1955160",
 // }
 // console.log(obj == obj2);
+
+
+
+const genres = [
+    "comedy",
+    "sci-fi",
+    "romance",
+    "thriller",
+    "horror",
+    "action",
+    "drama",
+    "fantasy",
+    "adventure",
+    "animation",
+    "crime",
+    "documentary",
+    "family",
+    "history",
+    "music",
+    "mystery",
+    "sport",
+    "war",
+    "western",
+  ];
+  
+  const userGenre = "romance"; // Example genre chosen by the user
+  const genreIndex = genres.indexOf(userGenre) + 1; // Get the index of the chosen genre
+  
+  if (genreIndex !== -1) {
+    // If the chosen genre is found in the array
+    console.log(`Genre: ${userGenre}, Index: ${genreIndex}`); // Output the genre and its index
+  } else {
+    console.log(`Genre: ${userGenre} not found in the array.`); // Output a message if the genre is not found
+  }
+  

@@ -1,13 +1,11 @@
 const { Genre } = require("../models/genres");
 
-async function getAllGenre(clause) {
+async function getGenre(clause) {
   const row = await Genre.findOne({ where: clause });
   return row;
 }
 
 
 module.exports = {
-  getAllGenre,
-  updateGenreRow,
-  createGenre,
+  getGenre,
 };

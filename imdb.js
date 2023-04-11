@@ -25,12 +25,17 @@ const {
   getAllBoxOfficeWeek,
 } = require("./queries/boxOfficeWeek");
 
+const {
+  getGenre,
+} = require("./queries/genres");
+
 const cron = require("node-cron");
 const {
   createTop250TV,
   getAllTop250TV,
   updateTop250TVRow,
 } = require("./queries/top250TV");
+const { getAllMovieGenre } = require("./queries/movieGenre");
 
 require("dotenv").config();
 
@@ -78,18 +83,6 @@ cron.schedule("30 2 * * *", () => {
   fetchAndProcessData(IMDB_BOX_OFFICE_ALLTIME, "boxAll");
 });
 
-// const staticKeyboard = {
-//   reply_markup: JSON.stringify({
-//     keyboard: [
-//       ["🎥 Search Movie", "🔝 Top250"],
-//       ["🎭 Coming Soon", "💰 Box Office Weekend"],
-//       ["💰📈 Box Office AllTime"],
-//       ["🍿🤖 Recommend Movie"],
-//     ],
-//     one_time_keyboard: false,
-//     resize_keyboard: true,
-//   }),
-// };
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
@@ -288,57 +281,6 @@ bot.onText(/\/menu/, (msg) => {
 
   bot.sendMessage(chatId, "Menu:", menuOptions);
 });
-
-// let top250List = null;
-// bot.onText(/Top250/, async (msg) => {
-//   const chatId = msg.chat.id;
-//   try {
-//     const moviesInDb = await getAllTop250();
-
-//     if (moviesInDb[0].dataValues.data.items.length > 0) {
-//       top250List = moviesInDb[0].dataValues.data.items;
-//     }
-
-//     // else {
-//     //   const response = await fetch(IMDB_TOP_250_URL);
-//     //   const data = await response.json();
-
-//     //   top250List = data.items
-//     // }
-
-//     //create a new list of top250 movies
-//     //await createTop250({ data: data.items, createdAt: new Date(), updatedAt: new Date() })
-
-//     const topMovies = top250List
-//       .slice(0, 25)
-//       .map(
-//         (item, index) =>
-//           `${index + 1}. ${item.fullTitle}\n⭐️ IMDb Rating: ${item.imDbRating}`
-//       )
-//       .join("\n\n");
-
-//     const opts = {
-//       reply_markup: {
-//         inline_keyboard: [
-//           [
-//             {
-//               text: "Next",
-//               callback_data: `next_${25}`,
-//             },
-//           ],
-//         ],
-//       },
-//     };
-
-//     bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
-//   } catch (error) {
-//     console.error("Error fetching top 250 movies:", error);
-//     bot.sendMessage(
-//       chatId,
-//       "An error occurred while fetching the top 250 movies. Please try again later."
-//     );
-//   }
-// });
 
 bot.onText(/Top250/, async (msg) => {
   const chatId = msg.chat.id;
@@ -760,12 +702,23 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
-    // console.log(callbackQuery.data, 'genre');
 
     genre = callbackQuery.data.toLowerCase();
 
-    await generateRecommendation(genre, chatId);
-    await bot.deleteMessage(chatId, messageId);
+    const genreIndex = genres.indexOf(genre) + 1; // Get the id of the chosen genre
+
+    // const clause = { genreId: genreIndex };
+
+    const movieGenre = await getAllMovieGenre(genreIndex)
+
+    console.log(movieGenre.dataValues);
+    // if (movieGenre.dataValues) {
+      
+    // } else {
+    //   await generateRecommendation(genre, chatId);
+    // }
+
+    // await bot.deleteMessage(chatId, messageId);
   }
 
   // New recommendation callback query handling
@@ -827,6 +780,8 @@ bot.on("callback_query", async (callbackQuery) => {
     };
 
     bot.sendMessage(chatId, `🎬 Box Office All-Time 🎥:\n\n${movies}`, opts);
+
+    await bot.deleteMessage(chatId, messageId);
   }
 
   if (callbackQuery.data === "top250_movies") {
@@ -873,7 +828,6 @@ bot.on("callback_query", async (callbackQuery) => {
       bot.sendMessage(chatId, `IMDb Top 25 Movies:\n\n${topMovies}`, opts);
 
       await bot.deleteMessage(chatId, messageId);
-
     } catch (error) {
       console.error("Error fetching top 250 movies:", error);
       bot.sendMessage(
@@ -925,7 +879,6 @@ bot.on("callback_query", async (callbackQuery) => {
       bot.sendMessage(chatId, `IMDb Top 25 Series:\n\n${topSeries}`, opts);
 
       await bot.deleteMessage(chatId, messageId);
-
     } catch (error) {
       console.error("Error fetching top 250 Series:", error);
       bot.sendMessage(
