@@ -52,13 +52,13 @@ MovieGenre.init(
 MovieGenre.associate = function (models) {
   // Define a many-to-one association between MovieGenre and Movie
   MovieGenre.belongsTo(models.Movie, {
-    foreignKey: "movieId",
+    foreignKey: "movie_id",
     targetKey: 'id',
   });
 
   // Define a many-to-one association between MovieGenre and Genre
   MovieGenre.belongsTo(models.Genre, {
-    foreignKey: "genreId",
+    foreignKey: "genre_id",
     targetKey: 'id',
   });
 };
