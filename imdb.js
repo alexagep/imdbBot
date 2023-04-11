@@ -128,9 +128,9 @@ bot.onText(/Coming Soon/, async (msg) => {
       .slice(0, 10)
       .map(
         (item, index) =>
-          `${index + 1}. ${item.title}\n\nrelease: ${
+          `${index + 1}. ${item.title}\n\n🗓️ Release Date: ${
             item.releaseState
-          }\ngenres: ${item.genres}\nstars: ${item.stars}`
+          }\n🎭 Genres: ${item.genres}\n🌟 Stars: ${item.stars}`
       )
       .join("\n\n");
 
@@ -312,13 +312,13 @@ bot.onText(/Box Office Weekend/, async (msg) => {
 
     const movies = moviesInDb[0].dataValues.data.items
       .map((movie, index) => {
-        return `${index + 1}. ${movie.title}\n\nweekend: ${
+        return `${index + 1}. ${movie.title}\n\nWeekend: ${
           movie.weekend
-        }\ngross: ${movie.gross}\nweeks: ${movie.weeks}`;
+        }\nGross: ${movie.gross}\nWeeks: ${movie.weeks}`;
       })
       .join("\n\n");
 
-    bot.sendMessage(chatId, `Box Office:\n\n${movies}`); 
+    bot.sendMessage(chatId, `🎬 Box Office:\n\n${movies}`);
   } catch (error) {
     console.error("Error fetching the box office:", error);
     bot.sendMessage(
@@ -351,9 +351,9 @@ bot.onText(/Box Office AllTime/, async (msg) => {
     const movies = boxAllList
       .slice(0, 25)
       .map((movie, index) => {
-        return `${index + 1}. ${movie.title}\n\ngross: ${
+        return `${index + 1}. ${movie.title} (${movie.year})\n\nGross: ${
           movie.worldwideLifetimeGross
-        }\nyear: ${movie.year}`;
+        }\nDomestic Gross: ${movie.domesticLifetimeGross}`;
       })
       .join("\n\n");
 
@@ -570,9 +570,9 @@ bot.on("callback_query", async (callbackQuery) => {
         .slice(startIndex, endIndex)
         .map(
           (item, index) =>
-            `${startIndex + index + 1}. ${item.title}\n\nrelease: ${
+            `${startIndex + index + 1}. ${item.title}\n\n🗓️ Release Date: ${
               item.releaseState
-            }\ngenres: ${item.genres}\nstars: ${item.stars}`
+            }\n🎭 Genres: ${item.genres}\n🌟 Stars: ${item.stars}`
         )
         .join("\n\n");
 
@@ -626,9 +626,11 @@ bot.on("callback_query", async (callbackQuery) => {
         .slice(startIndex, endIndex)
         .map(
           (item, index) =>
-            `${startIndex + index + 1}. ${item.title}\n\ngross: ${
-              item.worldwideLifetimeGross
-            }\nyear: ${item.year}`
+            `${startIndex + index + 1}. ${item.title} (${
+              item.year
+            })\n\nGross: ${item.worldwideLifetimeGross}\nDomestic Gross: ${
+              movie.domesticLifetimeGross
+            }`
         )
         .join("\n\n");
 
@@ -677,38 +679,68 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
       const UserRatings = await urResponse.json();
-      console.log(UserRatings,  "************");
-      // movie_ID = null;
-      bot.sendMessage(
-        chatId,
-        `All Votes: ${parseInt(
-          UserRatings.demographicAll.allAges.votes
-        ).toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${
-          UserRatings.demographicAll.agesUnder18.rating
-        } (${parseInt(
-          UserRatings.demographicAll.agesUnder18.votes
-        ).toLocaleString()})\n👨🏻‍🎓 18-29: ${
-          UserRatings.demographicAll.ages18To29.rating
-        } (${parseInt(
-          UserRatings.demographicAll.ages18To29.votes
-        ).toLocaleString()})\n👨🏽‍💼 30-44: ${
-          UserRatings.demographicAll.ages30To44.rating
-        } (${parseInt(
-          UserRatings.demographicAll.ages30To44.votes
-        ).toLocaleString()})\n👴🏾 Over 45: ${
-          UserRatings.demographicAll.agesOver45.rating
-        } (${parseInt(
-          UserRatings.demographicAll.agesOver45.votes
-        ).toLocaleString()})\n\n👨🏼 Males: ${
-          UserRatings.demographicMales.allAges.rating
-        } (${parseInt(
-          UserRatings.demographicMales.allAges.votes
-        ).toLocaleString()})\n👩🏻 Females: ${
-          UserRatings.demographicFemales.allAges.rating
-        } (${parseInt(
-          UserRatings.demographicFemales.allAges.votes
-        ).toLocaleString()})`
-      );
+      console.log(UserRatings, "************");
+
+      const totalVotes = parseInt(UserRatings.demographicAll.allAges.votes).toLocaleString();
+      const ratingUnder18 = UserRatings.demographicAll.agesUnder18.rating;
+      const votesUnder18 = parseInt(UserRatings.demographicAll.agesUnder18.votes).toLocaleString();
+      const rating18To29 = UserRatings.demographicAll.ages18To29.rating;
+      const votes18To29 = parseInt(UserRatings.demographicAll.ages18To29.votes).toLocaleString();
+      const rating30To44 = UserRatings.demographicAll.ages30To44.rating;
+      const votes30To44 = parseInt(UserRatings.demographicAll.ages30To44.votes).toLocaleString();
+      const ratingOver45 = UserRatings.demographicAll.agesOver45.rating;
+      const votesOver45 = parseInt(UserRatings.demographicAll.agesOver45.votes).toLocaleString();
+      const ratingMales = UserRatings.demographicMales.allAges.rating;
+      const votesMales = parseInt(UserRatings.demographicMales.allAges.votes).toLocaleString();
+      const ratingFemales = UserRatings.demographicFemales.allAges.rating;
+      const votesFemales = parseInt(UserRatings.demographicFemales.allAges.votes).toLocaleString();
+
+      const message = `
+      Total Votes: ${totalVotes}
+
+      Ratings by Age:
+      🧒 Under 18: ${ratingUnder18} (${votesUnder18})
+      👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})
+      👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})
+      👴🏾 Over 45: ${ratingOver45} (${votesOver45})
+
+      Ratings by Gender:
+      👨🏼 Males: ${ratingMales} (${votesMales})
+      👩🏻 Females: ${ratingFemales} (${votesFemales})
+      `;
+
+      bot.sendMessage(chatId, message);
+
+      // bot.sendMessage(
+      //   chatId,
+      //   `Total Votes: ${parseInt(
+      //     UserRatings.demographicAll.allAges.votes
+      //   ).toLocaleString()}\n\n"The following ratings and votes are categorized based on different age groups and genders:"\n\n🧒 Under 18: ${
+      //     UserRatings.demographicAll.agesUnder18.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicAll.agesUnder18.votes
+      //   ).toLocaleString()})\n👨🏻‍🎓 18-29: ${
+      //     UserRatings.demographicAll.ages18To29.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicAll.ages18To29.votes
+      //   ).toLocaleString()})\n👨🏽‍💼 30-44: ${
+      //     UserRatings.demographicAll.ages30To44.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicAll.ages30To44.votes
+      //   ).toLocaleString()})\n👴🏾 Over 45: ${
+      //     UserRatings.demographicAll.agesOver45.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicAll.agesOver45.votes
+      //   ).toLocaleString()})\n\n👨🏼 Males: ${
+      //     UserRatings.demographicMales.allAges.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicMales.allAges.votes
+      //   ).toLocaleString()})\n👩🏻 Females: ${
+      //     UserRatings.demographicFemales.allAges.rating
+      //   } (${parseInt(
+      //     UserRatings.demographicFemales.allAges.votes
+      //   ).toLocaleString()})`
+      // );
     }
   }
 
