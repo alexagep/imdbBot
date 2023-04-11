@@ -5,20 +5,40 @@ const { getGenre } = require("../queries/genres");
 
 // const { getAllGenre } = require("./genres");
 
+// async function getAllMovieGenre(genreId) {
+//   console.log(genreId);
+//   try {
+//     const MovieGenreRow = await Genre.findAll({
+//       where: { id: genreId },
+//       include: [
+//         {
+//           model: Movie,
+//           include: { model: MovieGenre },
+//         },
+//       ],
+//     });
+//     return MovieGenreRow;
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
+
 async function getAllMovieGenre(genreId) {
-  const MovieGenreRow = await Movie.findAll({
-    include: [
-      {
-        model: Genre,
-        through: MovieGenre,
-        where: { id: genreId }, // add your condition object here
-      },
-    ],
-    // other options, such as order, limit, etc., can also be added
-  });
-  // const MovieGenreRow = await MovieGenre.findAll({ where: clause });
-  return MovieGenreRow;
+  console.log(genreId);
+  try {
+    const genre = await Genre.findByPk(genreId);
+    if (!genre) {
+      throw new Error(`Genre not found with id ${genreId}`);
+    }
+    const movies = await genre.getMovies({
+      include: [{ model: MovieGenre, include: [Genre] }],
+    });
+    return movies;
+  } catch (error) {
+    console.log(error.message);
+  }
 }
+
 
 async function updateMovieGenreRow(data) {
   try {
