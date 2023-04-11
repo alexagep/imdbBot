@@ -28,4 +28,4 @@ Genre.init(
 //   Genre.hasMany(models.MovieGenre);
 // };
 
-module.exports = Genre;
+module.exports = {Genre};

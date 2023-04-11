@@ -63,4 +63,4 @@ MovieGenre.init(
 //   });
 // };
 
-module.exports = MovieGenre;
+module.exports = {MovieGenre};
