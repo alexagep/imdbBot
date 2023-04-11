@@ -24,10 +24,8 @@ Genre.init(
 );
 
 // Define your associations
-Genre.associate = function (models) {
-  Genre.hasMany(models.MovieGenre);
-};
+// Genre.associate = function (models) {
+//   Genre.hasMany(models.MovieGenre);
+// };
 
-module.exports = {
-  Genre,
-};
+module.exports = Genre;

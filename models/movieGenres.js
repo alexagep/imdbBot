@@ -49,20 +49,18 @@ MovieGenre.init(
 );
 
 // Define your associations
-MovieGenre.associate = function (models) {
-  // Define a many-to-one association between MovieGenre and Movie
-  MovieGenre.belongsTo(models.Movie, {
-    foreignKey: "MovieId",
-    targetKey: 'id',
-  });
+// MovieGenre.associate = function (models) {
+//   // Define a many-to-one association between MovieGenre and Movie
+//   MovieGenre.belongsTo(models.Movie, {
+//     foreignKey: "MovieId",
+//     targetKey: 'id',
+//   });
 
-  // Define a many-to-one association between MovieGenre and Genre
-  MovieGenre.belongsTo(models.Genre, {
-    foreignKey: "GenreId",
-    targetKey: 'id',
-  });
-};
+//   // Define a many-to-one association between MovieGenre and Genre
+//   MovieGenre.belongsTo(models.Genre, {
+//     foreignKey: "GenreId",
+//     targetKey: 'id',
+//   });
+// };
 
-module.exports = {
-  MovieGenre,
-};
+module.exports = MovieGenre;

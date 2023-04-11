@@ -75,8 +75,8 @@ Movie.init(
   }
 );
 
-Movie.associate = function (models) {
-  Movie.hasMany(models.MovieGenre);
-};
+// Movie.associate = function (models) {
+//   Movie.hasMany(models.MovieGenre);
+// };
 
-module.exports = { Movie };
+module.exports = Movie ;

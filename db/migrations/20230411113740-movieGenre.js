@@ -15,7 +15,7 @@ module.exports = {
           field: "movie_id",
           allowNull: false,
           references: {
-            model: "Movie",
+            model: "Movies",
             key: "id",
           },
         },
@@ -24,7 +24,7 @@ module.exports = {
           field: "genre_id",
           allowNull: false,
           references: {
-            model: "Genre",
+            model: "Genres",
             key: "id",
           },
         },
