@@ -708,6 +708,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
 
+    console.log(genre, genreId, "GENREID");
     const movieGenre = await getAllMovieGenre(genreId)
 
     console.log(movieGenre);

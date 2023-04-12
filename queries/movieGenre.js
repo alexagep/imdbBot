@@ -7,7 +7,7 @@ const Genre = db.Genre;
 
 
 async function getAllMovieGenre(genreId) {
-  console.log(genreId);
+  // console.log(genreId);
   try {
     const MovieGenreRow = await Genre.findAll({
       where: { id: genreId },
@@ -21,6 +21,7 @@ async function getAllMovieGenre(genreId) {
 
     const data = MovieGenreRow[0].dataValues.MovieGenres;
 
+    console.log(MovieGenreRow);
     return data;
   } catch (error) {
     console.log(error.message);
