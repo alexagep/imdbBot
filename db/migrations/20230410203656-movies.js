@@ -13,10 +13,6 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
         },
-        director: {
-          type: Sequelize.STRING,
-          allowNull: false,
-        },
         rating: {
           type: Sequelize.FLOAT,
           allowNull: true,
@@ -56,6 +52,10 @@ module.exports = {
         totalVotes: {
           type: Sequelize.INTEGER,
           field: "total_votes",
+          allowNull: true,
+        },
+        plot: {
+          type: Sequelize.TEXT,
           allowNull: true,
         },
         createdAt: {

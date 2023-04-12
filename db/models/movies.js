@@ -21,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      director: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       rating: {
         type: DataTypes.FLOAT,
         allowNull: true,
@@ -62,6 +58,10 @@ module.exports = (sequelize, DataTypes) => {
       year: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      plot: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
       createdAt: {
         type: DataTypes.DATE,

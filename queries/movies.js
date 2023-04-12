@@ -22,7 +22,6 @@ async function createMovie(data) {
     console.log(data);
     const row = await Movie.create({
       name: data.title,
-      director: data.director,
       rating: data.imDbRating,
       imdbId: data.id,
       imageUrl: data.image,
@@ -32,6 +31,7 @@ async function createMovie(data) {
       runtime: data.runtimeStr,
       contentRating: data.contentRating,
       totalVotes: data.imDbRatingVotes,
+      plot: data.plot
     });
     console.log("New record created in Movie table");
     return row.data;
