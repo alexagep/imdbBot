@@ -64,7 +64,7 @@ async function createMovie(data) {
     //   totalVotes: data.imDbRatingVotes,
     //   plot: data.plot,
     // });
-    console.log("New record created in Movie table", createdTableRows);
+    console.log("New record created in Movie table");
     return createdTableRows;
   } catch (error) {
     console.error("Error creating new record in Movie table:", error.message);

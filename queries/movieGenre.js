@@ -41,7 +41,7 @@ async function createMovieGenre(movies, genreId) {
 
     const movieRows = await createMovie(movies);
 
-    // console.log(movieRows);
+    console.log(movieRows);
     // const movieId = movie.id
 
     const movieData = movieRows.map((movieRow) => {
