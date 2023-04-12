@@ -915,7 +915,7 @@ async function generateRecommendation(genre, chatId) {
     movie.runtimeStr
   }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${movie.stars}\n🔞 Content Rating: ${
     movie.contentRating
-  }\n`;
+  }\n\n📝 Plot: ${movie.plot}`;
 
   const imdbUrl = `https://www.imdb.com/title/${movie.id}`;
   const opts = {
