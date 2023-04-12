@@ -5,7 +5,6 @@ const MovieGenre = db.MovieGenre;
 const Movie = db.Movie;
 const Genre = db.Genre;
 
-
 async function getAllMovieGenre(genreId) {
   // console.log(genreId);
   try {
@@ -21,7 +20,7 @@ async function getAllMovieGenre(genreId) {
 
     const data = MovieGenreRow[0].dataValues.MovieGenres;
 
-    console.log(MovieGenreRow, 'MOVIEGENRE_FOUND_OR_NOT');
+    console.log(MovieGenreRow, "MOVIEGENRE_FOUND_OR_NOT");
     return data;
   } catch (error) {
     console.log(error.message);
@@ -37,20 +36,32 @@ async function updateMovieGenreRow(data) {
   }
 }
 
-async function createMovieGenre(data, genreId) {
+async function createMovieGenre(movies, genreId) {
   try {
-    const movie = await createMovie(data)
+    const movieRows = await createMovie(movies);
 
-    console.log(movie);
-    const movieId = movie.id
-    
-    const row = await MovieGenre.create({
-      MovieId: movieId,
-      GenreId: genreId,
+    // console.log(movieRows);
+    // const movieId = movie.id
+
+    const movieData = movieRows.map((movieRow) => {
+      return {
+        MovieId: movieRow.id,
+        GenreId: genreId,
+      };
     });
 
-    console.log(`Created new records in MovieGenre table`, row);
-    return row;
+    const createdMovieGenreRows = await MovieGenre.bulkCreate(movieData);
+
+    // const row = await MovieGenre.create({
+    //   MovieId: movieId,
+    //   GenreId: genreId,
+    // });
+
+    console.log(
+      `Created new records in MovieGenre table`,
+      createdMovieGenreRows
+    );
+    return createdMovieGenreRows;
   } catch (error) {
     console.error(
       "Error creating new records in MovieGenre table:",
