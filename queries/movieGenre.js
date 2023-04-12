@@ -45,13 +45,20 @@ async function createMovieGenre(movies, genreId) {
     // const movieId = movie.id
 
     const movieData = movieRows.map((movieRow) => {
-      return {
-        MovieId: movieRow.id,
-        GenreId: genreId,
-      };
+      console.log(movieRow.title);
+      // if (movieRow.id && movieRow.id !== null) {
+        return {
+          MovieId: movieRow.id,
+          GenreId: genreId,
+        };
+      // }
     });
 
-    console.log(movieData);
+    // const filteredMovieData = movieData.filter((movie) => movie?.MovieId !== null);
+
+    // console.log(filteredMovieData);
+
+    // console.log(movieData);
 
     const createdMovieGenreRows = await MovieGenre.bulkCreate(movieData, { ignoreDuplicates: true });
 

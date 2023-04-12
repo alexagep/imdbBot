@@ -107,6 +107,9 @@ const table2Data = items.map((item) => {
     table1Id: item.id, // Use the ID of the created row in Table1
   };
 });
+// table2Data.pop()
+
+const first100Elements = table2Data.slice(0, 3);  // Slicing to get the first 100 elements
 
 
-console.log(table2Data);
+console.log(first100Elements);
