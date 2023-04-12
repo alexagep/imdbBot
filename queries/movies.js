@@ -50,7 +50,7 @@ async function createMovie(data) {
       }
     });
 
-    const createdTableRows = await Movie.bulkCreate(movieData, { ignoreDuplicates: true });
+    const createdTableRows = await Movie.bulkCreate(movieData, { ignoreDuplicates: true, returning: true });
     // const row = await Movie.create({
     //   name: data.title,
     //   rating: data.imDbRating,
