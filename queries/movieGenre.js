@@ -21,7 +21,7 @@ async function getAllMovieGenre(genreId) {
 
     const data = MovieGenreRow[0].dataValues.MovieGenres;
 
-    console.log(MovieGenreRow);
+    console.log(MovieGenreRow, 'MOVIEGENRE_FOUND_OR_NOT');
     return data;
   } catch (error) {
     console.log(error.message);
