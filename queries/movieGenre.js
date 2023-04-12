@@ -38,7 +38,7 @@ async function updateMovieGenreRow(data) {
 
 async function createMovieGenre(movies, genreId) {
   try {
-    
+
     const movieRows = await createMovie(movies);
 
     // console.log(movieRows);
@@ -53,7 +53,7 @@ async function createMovieGenre(movies, genreId) {
 
     console.log(movieData);
 
-    const createdMovieGenreRows = await MovieGenre.bulkCreate(movieData);
+    const createdMovieGenreRows = await MovieGenre.bulkCreate(movieData, { ignoreDuplicates: true });
 
     // const row = await MovieGenre.create({
     //   MovieId: movieId,

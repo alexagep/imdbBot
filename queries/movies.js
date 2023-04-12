@@ -49,8 +49,8 @@ async function createMovie(data) {
         plot: row.plot,
       }
     });
-    
-    const createdTableRows = await Movie.bulkCreate(movieData);
+
+    const createdTableRows = await Movie.bulkCreate(movieData, { ignoreDuplicates: true });
     // const row = await Movie.create({
     //   name: data.title,
     //   rating: data.imDbRating,
