@@ -1,5 +1,3 @@
-"use strict";
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable(
@@ -7,13 +5,16 @@ module.exports = {
       {
         id: {
           type: Sequelize.INTEGER,
+          allowNull: false,
           primaryKey: true,
           autoIncrement: true,
         },
         MovieId: {
           type: Sequelize.INTEGER,
-          field: "movie_id",
           allowNull: false,
+          field: "movie_id",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
           references: {
             model: "Movies",
             key: "id",
@@ -21,8 +22,10 @@ module.exports = {
         },
         GenreId: {
           type: Sequelize.INTEGER,
-          field: "genre_id",
           allowNull: false,
+          field: "genre_id",
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
           references: {
             model: "Genres",
             key: "id",

@@ -1,10 +1,9 @@
-'use strict';
-
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('BoxOfficeAllTimes', {
+    await queryInterface.createTable("BoxOfficeAllTimes", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -24,9 +23,9 @@ module.exports = {
         field: "updated_at",
         allowNull: false,
       },
-    })
+    });
   },
   async down(queryInterface) {
-    await queryInterface.dropTable('BoxOfficeAllTimes')
+    await queryInterface.dropTable("BoxOfficeAllTimes");
   },
-}
+};

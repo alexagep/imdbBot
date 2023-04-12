@@ -1,4 +1,6 @@
-const { Top250TV } = require("../models/top250TV");
+const { db } = require("../db/models/index");
+
+const Top250TV = db.Top250TV
 
 async function getAllTop250TV() {
   const Top250TVList = await Top250TV.findAll();

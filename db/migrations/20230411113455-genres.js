@@ -1,13 +1,13 @@
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  up: async (queryInterface, Sequelize) => {
     await queryInterface.createTable(
       "Genres",
       {
         id: {
           type: Sequelize.INTEGER,
+          allowNull: false,
           primaryKey: true,
           autoIncrement: true,
-          allowNull: false,
         },
         name: {
           type: Sequelize.STRING,
@@ -16,11 +16,12 @@ module.exports = {
         },
       },
       {
-        timestamps: false, // Disable createdAt and updatedAt fields
+        timestamps: false,
       }
     );
   },
-  async down(queryInterface) {
+
+  down: async (queryInterface, Sequelize) => {
     await queryInterface.dropTable("Genres");
   },
 };

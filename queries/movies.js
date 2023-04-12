@@ -1,4 +1,6 @@
-const { Movie } = require("../models/movies");
+const { db } = require("../db/models/index");
+
+const Movie = db.Movie
 
 async function getAllMovie() {
   const MovieList = await Movie.findAll();

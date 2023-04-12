@@ -1,8 +1,8 @@
-// const { MovieGenre } = require("../models/movieGenres");
-// const { Movie } = require("../models/movies");
-// const { Genre } = require("../models/genres");
-// const { getGenre } = require("../queries/genres");
-const { Movie, Genre, MovieGenre } = require("../db/association");
+const { db } = require("../db/models/index");
+
+const MovieGenre = db.MovieGenre
+const Movie = db.Movie
+const Genre = db.Genre
 
 // const { getAllGenre } = require("./genres");
 
@@ -27,18 +27,19 @@ const { Movie, Genre, MovieGenre } = require("../db/association");
 async function getAllMovieGenre(genreId) {
   console.log(genreId);
   try {
-    const MovieGenreRow = await Movie.findAll({
+    const MovieGenreRow = await Genre.findAll({
+      where: { id: genreId },
       include: [
         {
-          model: Genre,
-          through: {
-            model: MovieGenre,
-          },
-          where: { id: genreId },
+          model: MovieGenre,
+          include: { model: Movie },
         },
       ],
     });
-    return MovieGenreRow;
+
+    const data = MovieGenreRow[0].dataValues.MovieGenres
+
+    return data;
   } catch (error) {
     console.log(error.message);
   }

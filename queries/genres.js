@@ -1,4 +1,6 @@
-const { Genre } = require("../models/genres");
+const { db } = require("../db/models/index");
+
+const Genre = db.Genre
 
 async function getGenre(clause) {
   const row = await Genre.findOne({ where: clause });

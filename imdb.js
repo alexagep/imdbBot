@@ -711,8 +711,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movieGenre = await getAllMovieGenre(genreIndex)
 
-    console.log(movieGenre.dataValues);
-    // if (movieGenre.dataValues) {
+    console.log(movieGenre);
+    // if (movieGenre.length > 0) {
       
     // } else {
     //   await generateRecommendation(genre, chatId);

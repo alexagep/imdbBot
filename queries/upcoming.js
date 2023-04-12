@@ -1,4 +1,6 @@
-const { Upcoming } = require("../models/upcoming");
+const { db } = require("../db/models/index");
+
+const Upcoming = db.Upcoming
 
 async function getAllUpcoming() {
   const UpcomingList = await Upcoming.findAll();

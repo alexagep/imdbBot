@@ -1,4 +1,6 @@
-const { BoxOfficeAllTime } = require("../models/boxOfficeAll");
+const { db } = require("../db/models/index");
+
+const BoxOfficeAllTime = db.BoxOfficeAllTime
 
 async function getAllBoxOfficeAllTime() {
   const BoxOfficeAllTimeList = await BoxOfficeAllTime.findAll();

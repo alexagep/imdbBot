@@ -1,4 +1,6 @@
-const { BoxOfficeWeek } = require("../models/boxOfficeWeek");
+const { db } = require("../db/models/index");
+
+const BoxOfficeWeek = db.BoxOfficeWeek
 
 async function getAllBoxOfficeWeek() {
   const BoxOfficeWeekList = await BoxOfficeWeek.findAll();
