@@ -1,4 +1,4 @@
-const { db } = require("../db/models/index");
+const db = require("../db/models/index");
 
 const Top250 = db.Top250
 

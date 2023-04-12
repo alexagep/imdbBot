@@ -1,4 +1,4 @@
-const { db } = require("../db/models/index");
+const db = require("../db/models/index");
 
 const MovieGenre = db.MovieGenre
 const Movie = db.Movie
