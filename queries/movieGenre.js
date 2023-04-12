@@ -41,6 +41,7 @@ async function createMovieGenre(data, genreId) {
   try {
     const movie = await createMovie(data)
 
+    console.log(movie);
     const movieId = movie.id
     
     const row = await MovieGenre.create({
