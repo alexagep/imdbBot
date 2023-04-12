@@ -35,7 +35,7 @@ const {
   getAllTop250TV,
   updateTop250TVRow,
 } = require("./queries/top250TV");
-const { getAllMovieGenre } = require("./queries/movieGenre");
+const { getAllMovieGenre, createMovieGenre } = require("./queries/movieGenre");
 
 require("dotenv").config();
 
@@ -409,6 +409,7 @@ let genre = null;
 let boxAllList = null;
 let top250List = null;
 let top250SeriesList = null;
+let genreId = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -705,11 +706,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
     genre = callbackQuery.data.toLowerCase();
 
-    const genreIndex = genres.indexOf(genre) + 1; // Get the id of the chosen genre
+    genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
 
-    // const clause = { genreId: genreIndex };
-
-    const movieGenre = await getAllMovieGenre(genreIndex)
+    const movieGenre = await getAllMovieGenre(genreId)
 
     console.log(movieGenre);
     if (movieGenre.length > 0) {
@@ -718,7 +717,7 @@ bot.on("callback_query", async (callbackQuery) => {
       await generateRecommendation(genre, chatId);
     }
 
-    // await bot.deleteMessage(chatId, messageId);
+    await bot.deleteMessage(chatId, messageId);
   }
 
   // New recommendation callback query handling
@@ -931,6 +930,20 @@ async function generateRecommendation(genre, chatId) {
       ],
     },
   };
+
+  // const createdData = {
+  //   image: movie.image,
+  //   name: movie.name,
+  //   year: movie.year,
+  //   time: movie.runtimeString,
+  //   contentRating: movie.contentRating,
+  //   cast: movie.cast,
+  //   imDbRating: movie.imDbRating,
+  //   imdbId: movie.id,
+  //   genres: movie.genres,
+  // }
+
+  await createMovieGenre(movie, genreId)
 
   await bot.sendPhoto(chatId, resizedBuffer, {
     caption: message,

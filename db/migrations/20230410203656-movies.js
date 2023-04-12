@@ -36,6 +36,10 @@ module.exports = {
           type: Sequelize.ARRAY(Sequelize.STRING),
           allowNull: true,
         },
+        genres: {
+          type: Sequelize.ARRAY(Sequelize.STRING),
+          allowNull: true,
+        },
         year: {
           type: Sequelize.STRING,
           allowNull: false,

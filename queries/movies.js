@@ -28,12 +28,13 @@ async function createMovie(data) {
       imageUrl: data.image,
       actors: data.stars,
       year: data.year,
+      genre: data.genre,
       runtime: data.runtimeStr,
       contentRating: data.contentRating,
       totalVotes: data.imDbRatingVotes,
     });
     console.log("New record created in Movie table");
-    return row;
+    return row.data;
   } catch (error) {
     console.error("Error creating new record in Movie table:", error.message);
     // throw error;
