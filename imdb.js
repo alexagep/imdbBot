@@ -712,11 +712,11 @@ bot.on("callback_query", async (callbackQuery) => {
     const movieGenre = await getAllMovieGenre(genreIndex)
 
     console.log(movieGenre);
-    // if (movieGenre.length > 0) {
-      
-    // } else {
-    //   await generateRecommendation(genre, chatId);
-    // }
+    if (movieGenre.length > 0) {
+      console.log('here is a movie');
+    } else {
+      await generateRecommendation(genre, chatId);
+    }
 
     // await bot.deleteMessage(chatId, messageId);
   }
