@@ -58,6 +58,16 @@ module.exports = {
           field: "total_votes",
           allowNull: true,
         },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "created_at",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updated_at",
+          allowNull: false,
+        },
       },
       {
         timestamps: false,
