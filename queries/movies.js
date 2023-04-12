@@ -29,7 +29,6 @@ async function createMovie(data) {
       runtime: data.runtimeStr,
       contentRating: data.contentRating,
       totalVotes: data.imDbRatingVotes,
-      genres: data.genres, // add genres property
     });
     console.log("New record created in Movie table");
     return row;
