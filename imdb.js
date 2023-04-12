@@ -664,7 +664,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
       const UserRatings = await urResponse.json();
-      console.log(UserRatings, "************");
+      // console.log(UserRatings, "************");
 
       const totalVotes = parseInt(
         UserRatings.demographicAll.allAges.votes
@@ -711,9 +711,9 @@ bot.on("callback_query", async (callbackQuery) => {
     console.log(genre, genreId, "GENREID");
     const movieGenre = await getAllMovieGenre(genreId)
 
-    console.log(movieGenre);
+    // console.log(movieGenre);
     // if (movieGenre.length > 0) {
-      console.log('here is a movie');
+      // console.log('here is a movie');
     // } else {
       await generateRecommendation(genre, chatId);
     // }

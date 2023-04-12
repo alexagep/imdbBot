@@ -20,7 +20,7 @@ async function getAllMovieGenre(genreId) {
 
     const data = MovieGenreRow[0].dataValues.MovieGenres;
 
-    console.log(MovieGenreRow, "MOVIEGENRE_FOUND_OR_NOT");
+    // console.log(MovieGenreRow, "MOVIEGENRE_FOUND_OR_NOT");
     return data;
   } catch (error) {
     console.log(error.message);
@@ -41,7 +41,7 @@ async function createMovieGenre(movies, genreId) {
 
     const movieRows = await createMovie(movies);
 
-    console.log(movieRows);
+    console.log(movieRows[0], 'test here');
     // const movieId = movie.id
 
     const movieData = movieRows.map((movieRow) => {
@@ -62,7 +62,7 @@ async function createMovieGenre(movies, genreId) {
 
     console.log(
       `Created new records in MovieGenre table`,
-      createdMovieGenreRows
+      createdMovieGenreRows.length
     );
     return createdMovieGenreRows;
   } catch (error) {
