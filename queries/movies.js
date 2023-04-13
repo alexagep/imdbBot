@@ -26,7 +26,7 @@ async function createMovie(movieData, genreId) {
     for (const item of movieData) {
       try {
         if (!item.name) {
-          
+          failed += 1
         }
         const [row] = await Movie.findOrCreate({
           where: { imdbId: item.id }, // criteria to find existing row
@@ -42,7 +42,7 @@ async function createMovie(movieData, genreId) {
       }
     }
 
-    console.log("New record created in Movie table", collector.length);
+    console.log("New record created in Movie table", collector.length, failed);
     return collector;
   } catch (error) {
     console.error("Error creating new record in Movie table:", error.message);
