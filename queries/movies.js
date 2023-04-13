@@ -1,4 +1,5 @@
 const db = require("../db/models/index");
+const Sequelize = require("sequelize");
 
 const Movie = db.Movie;
 
@@ -64,9 +65,12 @@ async function findMoviesBySearchQuery(searchQuery) {
   try {
     // const searchQuery = "Slave";
     const movies = await Movie.findAll({
-      where: {
-        name: { [Op.like]: `%${searchQuery}%` },
-      },
+      where: Sequelize.where(
+        Sequelize.fn("LOWER", Sequelize.col("name")),
+        "LIKE",
+        `%${searchQuery.toLowerCase()}%`
+      ),
+      order: [["totalVotes", "DESC"]],
     });
 
     movies.forEach((movie) => {

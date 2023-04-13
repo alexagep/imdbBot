@@ -6,6 +6,8 @@ module.exports = (sequelize, DataTypes) => {
   class Movie extends Model {
     static associate(models) {
       Movie.hasMany(models.MovieGenre);
+
+      Movie.hasMany(models.Rating);
     }
   }
 

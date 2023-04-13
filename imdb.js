@@ -25,9 +25,7 @@ const {
   getAllBoxOfficeWeek,
 } = require("./queries/boxOfficeWeek");
 
-const {
-  getGenre,
-} = require("./queries/genres");
+const { getGenre } = require("./queries/genres");
 
 const cron = require("node-cron");
 const {
@@ -36,6 +34,7 @@ const {
   updateTop250TVRow,
 } = require("./queries/top250TV");
 const { getAllMovieGenre, createMovieGenre } = require("./queries/movieGenre");
+const { findMoviesBySearchQuery } = require("./queries/movies");
 
 require("dotenv").config();
 
@@ -55,8 +54,28 @@ const IMDB_TOP250_TV = `https://imdb-api.com/en/API/Top250TVs/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
 
-const limitMessage =
-  "You have reached the daily limit for using our API key. Please wait until tomorrow to resume using our Telegram bot.";
+const genres = [
+  "comedy",
+  "sci-fi",
+  "romance",
+  "thriller",
+  "horror",
+  "action",
+  "drama",
+  "fantasy",
+  "adventure",
+  "animation",
+  "crime",
+  "documentary",
+  "family",
+  "history",
+  "music",
+  "mystery",
+  "sport",
+  "war",
+  "western",
+];
+
 
 // Schedule the updateTop250TV function to run each day at 00:30 AM
 cron.schedule("30 0 * * *", () => {
@@ -82,7 +101,6 @@ cron.schedule("0 2 * * *", () => {
 cron.schedule("30 2 * * *", () => {
   fetchAndProcessData(IMDB_BOX_OFFICE_ALLTIME, "boxAll");
 });
-
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
@@ -308,6 +326,9 @@ bot.onText(/Box Office/, async (msg) => {
 });
 
 let movie_ID = null;
+let movieCollector = null
+
+
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
@@ -327,74 +348,85 @@ bot.on("message", async (msg) => {
     return;
 
   try {
-    const response = await fetch(
-      `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
-    );
-    const data = await response.json();
+    const moviesInDb = await findMoviesBySearchQuery(movieTitle);
+    movieCollector = moviesInDb;
 
-    const movie = data.results;
-
-    if (movie.length > 0) {
-      const imageResponse = await fetch(movie[0].image);
-      const buffer = await imageResponse.buffer();
-
-      const resizedBuffer = await sharp(buffer)
-        .resize({ width: 1280, height: 1024, fit: "inside" })
-        .toBuffer();
-
-      const similarityScore = stringSimilarity.compareTwoStrings(
-        movieTitle,
-        movie[0].title
+    if (moviesInDb.length > 0) {
+      creatingSearchedMoviesButton(moviesInDb);
+    } else {
+      const response = await fetch(
+        `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
       );
-      console.log(similarityScore);
-      if (similarityScore >= 0.3) {
-        const movieId = movie[0].id;
+      const data = await response.json();
 
-        const ratingsResp = await fetch(
-          `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+      const movie = data.results;
+
+      if (movie.length > 0) {
+        const imageResponse = await fetch(movie[0].image);
+        const buffer = await imageResponse.buffer();
+
+        const resizedBuffer = await sharp(buffer)
+          .resize({ width: 1280, height: 1024, fit: "inside" })
+          .toBuffer();
+
+        const similarityScore = stringSimilarity.compareTwoStrings(
+          movieTitle,
+          movie[0].title
         );
+        console.log(similarityScore);
+        if (similarityScore >= 0.3) {
+          const movieId = movie[0].id;
 
-        const ratings = await ratingsResp.json();
+          const ratingsResp = await fetch(
+            `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+          );
 
-        movie_ID = movieId;
+          const ratings = await ratingsResp.json();
 
-        const imdbUrl = `https://www.imdb.com/title/${movieId}`;
-        const keyboard = {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                {
-                  text: "User Ratings",
-                  callback_data: "user_ratings",
-                },
+          movie_ID = movieId;
+
+          const imdbUrl = `https://www.imdb.com/title/${movieId}`;
+          const keyboard = {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "User Ratings",
+                    callback_data: "user_ratings",
+                  },
+                ],
+                [
+                  {
+                    text: "More Info",
+                    url: imdbUrl,
+                  },
+                ],
               ],
-              [
-                {
-                  text: "More Info",
-                  url: imdbUrl,
-                },
-              ],
-            ],
-          },
-        };
+            },
+          };
 
-        const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
+          const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
 
-        await bot.sendPhoto(chatId, resizedBuffer, {
-          caption: message,
-          reply_markup: keyboard.reply_markup,
-        });
+          genreId = genres.indexOf(movie.genre.split(',')[0]) + 1;
+
+          await createMovieGenre(movie, genreId);
+
+          await bot.sendPhoto(chatId, resizedBuffer, {
+            caption: message,
+            reply_markup: keyboard.reply_markup,
+          });
+        } else {
+          bot.sendMessage(
+            chatId,
+            "Sorry, I couldn't find that movie. Please try another title."
+          );
+        }
       } else {
         bot.sendMessage(
           chatId,
           "Sorry, I couldn't find that movie. Please try another title."
         );
       }
-    } else {
-      bot.sendMessage(
-        chatId,
-        "Sorry, I couldn't find that movie. Please try another title."
-      );
     }
   } catch (error) {
     console.error("Error fetching movie:", error);
@@ -418,27 +450,27 @@ bot.on("callback_query", async (callbackQuery) => {
   const matchSeries = callbackQuery.data.match(/^next_series_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
   const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
-  const genres = [
-    "comedy",
-    "sci-fi",
-    "romance",
-    "thriller",
-    "horror",
-    "action",
-    "drama",
-    "fantasy",
-    "adventure",
-    "animation",
-    "crime",
-    "documentary",
-    "family",
-    "history",
-    "music",
-    "mystery",
-    "sport",
-    "war",
-    "western",
-  ];
+  // const genres = [
+  //   "comedy",
+  //   "sci-fi",
+  //   "romance",
+  //   "thriller",
+  //   "horror",
+  //   "action",
+  //   "drama",
+  //   "fantasy",
+  //   "adventure",
+  //   "animation",
+  //   "crime",
+  //   "documentary",
+  //   "family",
+  //   "history",
+  //   "music",
+  //   "mystery",
+  //   "sport",
+  //   "war",
+  //   "western",
+  // ];
 
   if (match) {
     const startIndex = parseInt(match[1], 10);
@@ -703,19 +735,18 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
-
     genre = callbackQuery.data.toLowerCase();
 
     genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
 
     console.log(genre, genreId, "GENREID");
-    const movieGenre = await getAllMovieGenre(genreId)
+    const movieGenre = await getAllMovieGenre(genreId);
 
-    console.log(movieGenre.length, 'length of movies in DB');
+    console.log(movieGenre.length, "length of movies in DB");
     // if (movieGenre.length > 0) {
-      // console.log('here is a movie');
+    // console.log('here is a movie');
     // } else {
-      await generateRecommendation(genre, chatId);
+    await generateRecommendation(genre, chatId);
     // }
 
     await bot.deleteMessage(chatId, messageId);
@@ -887,6 +918,69 @@ bot.on("callback_query", async (callbackQuery) => {
       );
     }
   }
+
+  if (callbackQuery.data.startsWith("show_movie_")) {
+    const movieId = parseInt(callbackQuery.data.split("_")[2]);
+    // Movie.findByPk(movieId).then((movie) => {
+    //   bot.sendMessage(chatId, `You selected: ${movie.name}`);
+    // });
+    const movie = movieCollector.find(movie => movie.imdbId === movieId);
+
+    const response = await fetch(movie.image);
+    const buffer = await response.buffer();
+
+    const ratingsResp = await fetch(
+      `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+    );
+
+    const ratings = await ratingsResp.json();
+
+    movie_ID = movieId;
+
+    const resizedBuffer = await sharp(buffer)
+      .resize({ width: 1280, height: 1024, fit: "inside" })
+      .toBuffer();
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`
+
+      let rateMessage = ''
+
+      if (ratings.metacritic) {
+        rateMessage += metacriticRate
+      } else if (ratings.rottenTomatoes) {
+        rateMessage += rottenRate
+      }
+
+      const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${
+        movie.runtimeStr
+      }\n🎭 Genres: ${
+        movie.genres
+      }\n🔞 Content Rating: ${
+        movie.contentRating
+      }\n`;
+
+
+    const imdbUrl = `https://www.imdb.com/title/${movieId}`;
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "User Ratings",
+              callback_data: "user_ratings",
+            },
+          ],
+          [{ text: "More Info", url: imdbUrl }],
+        ],
+      },
+    };
+
+    await bot.sendPhoto(chatId, resizedBuffer, {
+      caption: message,
+      reply_markup: opts.reply_markup,
+    });
+  }
 });
 
 function getRandomMovies(movies) {
@@ -897,13 +991,12 @@ function getRandomMovies(movies) {
 }
 
 async function generateRecommendation(genre, chatId) {
-
-   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`
-  
+
   const urResponse = await fetch(url);
   const res = await urResponse.json();
   const movie = getRandomMovies(res.results);
@@ -938,13 +1031,30 @@ async function generateRecommendation(genre, chatId) {
     },
   };
 
-
-  await createMovieGenre(res.results, genreId)
+  await createMovieGenre(res.results, genreId);
 
   await bot.sendPhoto(chatId, resizedBuffer, {
     caption: message,
     reply_markup: opts.reply_markup,
   });
+}
+
+function creatingSearchedMoviesButton(movies) {
+  const opts = {
+    reply_markup: {
+      inline_keyboard: [],
+    },
+  };
+  movies.map((movie) => {
+    opts.reply_markup.inline_keyboard.push([
+      {
+        text: `${movie.name} ${movie.year}`,
+        callback_data: `show_movie_${movie.imdbId}`,
+      },
+    ]);
+  });
+
+  bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
 }
 
 async function fetchAndProcessData(url, entity) {
