@@ -926,6 +926,7 @@ bot.on("callback_query", async (callbackQuery) => {
     // });
     const movie = movieCollector.find(movie => movie.imdbId === movieId);
 
+    console.log(movie);
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
