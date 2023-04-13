@@ -711,7 +711,7 @@ bot.on("callback_query", async (callbackQuery) => {
     console.log(genre, genreId, "GENREID");
     const movieGenre = await getAllMovieGenre(genreId)
 
-    // console.log(movieGenre);
+    console.log(movieGenre.length, 'length of movies in DB');
     // if (movieGenre.length > 0) {
       // console.log('here is a movie');
     // } else {
@@ -898,8 +898,8 @@ function getRandomMovies(movies) {
 
 async function generateRecommendation(genre, chatId) {
 
-  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`
-  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
+   const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`
+  //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`

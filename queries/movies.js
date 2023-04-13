@@ -22,13 +22,8 @@ async function createMovie(movieData, genreId) {
     console.log(movieData.length, "LENGTH_OF_FOUND_MOVIES");
 
     let collector = [];
-    let failed = 0;
     for (const item of movieData) {
       try {
-        // console.log(item);
-        // if (!item.name) {
-        //   failed += 1
-        // }
         const movie = {
           name: item.title,
           rating: item.imDbRating,
@@ -65,8 +60,28 @@ async function createMovie(movieData, genreId) {
   }
 }
 
+async function findMoviesBySearchQuery(searchQuery) {
+  try {
+    // const searchQuery = "Slave";
+    const movies = await Movie.findAll({
+      where: {
+        name: { [Op.like]: `%${searchQuery}%` },
+      },
+    });
+
+    movies.forEach((movie) => {
+      console.log(movie.dataValues);
+    });
+
+    return movies;
+  } catch (error) {
+    console.error("Error:", error.message);
+  }
+}
+
 module.exports = {
   getAllMovie,
   updateMovieRow,
   createMovie,
+  findMoviesBySearchQuery,
 };
