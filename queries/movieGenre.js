@@ -39,11 +39,26 @@ async function updateMovieGenreRow(data) {
 async function createMovieGenre(movies, genreId) {
   try {
 
-    const movieRows = await createMovie(movies);
+    const movieRows = await createMovie(movies, genreId);
 
     console.log(movieRows[0], 'test here');
     // const movieId = movie.id
 
+
+    for (const item of movieRows) {
+      try {
+        await MovieGenre.findOrCreate({
+          where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
+          defaults: item, // data to be used for creating new row
+        });
+
+      } catch (error) {
+        console.error(
+          `Error updating/creating row in createMovieGenre: `,
+          error.message
+        );
+      }
+    }
     // const movieData = movieRows.map((movieRow) => {
     //   // if (movieRow.id && movieRow.id !== null) {
     //     return {

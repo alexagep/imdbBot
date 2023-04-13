@@ -17,55 +17,42 @@ async function updateMovieRow(data) {
 }
 
 // USAGE: createMovie({ data: { name: 'Example', value: 42 }, createdAt: new Date(), updatedAt: new Date() })
-async function createMovie(data) {
+async function createMovie(data, genreId) {
   try {
-    console.log(data.length, 'LENGTH_OF_FOUND_MOVIES');
-    // const movieData = {
-    //   name: row.title,
-    //   rating: row.imDbRating,
-    //   imdbId: row.id,
-    //   imageUrl: row.image,
-    //   actors: [row.stars],
-    //   year: row.description,
-    //   genres: [row.genres],
-    //   runtime: row.runtimeStr,
-    //   contentRating: row.contentRating,
-    //   totalVotes: row.imDbRatingVotes,
-    //   plot: row.plot,
-    // };
+    console.log(data.length, "LENGTH_OF_FOUND_MOVIES");
+    const movieData = {
+      name: row.title,
+      rating: row.imDbRating,
+      imdbId: row.id,
+      imageUrl: row.image,
+      actors: [row.stars],
+      year: row.description,
+      genres: [row.genres],
+      runtime: row.runtimeStr,
+      contentRating: row.contentRating,
+      totalVotes: row.imDbRatingVotes,
+      plot: row.plot,
+    };
 
-    const movieData = data.map((row) => {
-      return {
-        name: row.title,
-        rating: row.imDbRating,
-        imdbId: row.id,
-        imageUrl: row.image,
-        actors: [row.stars],
-        year: row.description,
-        genres: [row.genres],
-        runtime: row.runtimeStr,
-        contentRating: row.contentRating,
-        totalVotes: row.imDbRatingVotes,
-        plot: row.plot,
+    let collector = [];
+    for (const item of movieData) {
+      try {
+        const [row] = await Movie.findOrCreate({
+          where: { imdbId: item.id }, // criteria to find existing row
+          defaults: item, // data to be used for creating new row
+        });
+
+        collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
+      } catch (error) {
+        console.error(
+          `Error updating/creating row in createMovie: `,
+          error.message
+        );
       }
-    });
+    }
 
-    const createdTableRows = await Movie.bulkCreate(movieData, { ignoreDuplicates: true, returning: true });
-    // const row = await Movie.create({
-    //   name: data.title,
-    //   rating: data.imDbRating,
-    //   imdbId: data.id,
-    //   imageUrl: data.image,
-    //   actors: [data.stars],
-    //   year: data.description,
-    //   genres: [data.genres],
-    //   runtime: data.runtimeStr,
-    //   contentRating: data.contentRating,
-    //   totalVotes: data.imDbRatingVotes,
-    //   plot: data.plot,
-    // });
-    console.log("New record created in Movie table", createdTableRows[0]);
-    return createdTableRows;
+    console.log("New record created in Movie table", collector.length);
+    return collector;
   } catch (error) {
     console.error("Error creating new record in Movie table:", error.message);
     // throw error;

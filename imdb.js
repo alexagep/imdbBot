@@ -933,17 +933,6 @@ async function generateRecommendation(genre, chatId) {
     },
   };
 
-  // const createdData = {
-  //   image: movie.image,
-  //   name: movie.name,
-  //   year: movie.year,
-  //   time: movie.runtimeString,
-  //   contentRating: movie.contentRating,
-  //   cast: movie.cast,
-  //   imDbRating: movie.imDbRating,
-  //   imdbId: movie.id,
-  //   genres: movie.genres,
-  // }
 
   await createMovieGenre(res.results, genreId)
 
