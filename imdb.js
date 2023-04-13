@@ -352,7 +352,7 @@ bot.on("message", async (msg) => {
     movieCollector = moviesInDb;
 
     if (moviesInDb.length > 0) {
-      creatingSearchedMoviesButton(moviesInDb);
+      creatingSearchedMoviesButton(moviesInDb, chatId);
     } else {
       const response = await fetch(
         `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
@@ -1039,7 +1039,7 @@ async function generateRecommendation(genre, chatId) {
   });
 }
 
-function creatingSearchedMoviesButton(movies) {
+function creatingSearchedMoviesButton(movies, chatId) {
   const opts = {
     reply_markup: {
       inline_keyboard: [],
