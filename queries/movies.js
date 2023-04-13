@@ -22,15 +22,30 @@ async function createMovie(movieData, genreId) {
     console.log(movieData.length, "LENGTH_OF_FOUND_MOVIES");
 
     let collector = [];
-    let failed = 0
+    let failed = 0;
     for (const item of movieData) {
       try {
-        if (!item.name) {
-          failed += 1
-        }
+        // console.log(item);
+        // if (!item.name) {
+        //   failed += 1
+        // }
+        const movie = {
+          name: item.title,
+          rating: item.imDbRating,
+          imdbId: item.id,
+          imageUrl: item.image,
+          actors: item.stars,
+          genres: item.genres,
+          runtime: item.runtimeStr,
+          contentRating: item.contentRating,
+          totalVotes: item.imDbRatingVotes,
+          year: item.description,
+          plot: item.plot,
+        };
+
         const [row] = await Movie.findOrCreate({
           where: { imdbId: item.id }, // criteria to find existing row
-          defaults: item, // data to be used for creating new row
+          defaults: movie, // data to be used for creating new row
         });
 
         collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
@@ -42,7 +57,7 @@ async function createMovie(movieData, genreId) {
       }
     }
 
-    console.log("New record created in Movie table", collector.length, failed);
+    console.log("New record created in Movie table", collector.length);
     return collector;
   } catch (error) {
     console.error("Error creating new record in Movie table:", error.message);
