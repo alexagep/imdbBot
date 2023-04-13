@@ -41,7 +41,7 @@ require("dotenv").config();
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
-const IMDB_API_KEY = process.env.imdbAPIKEY;
+const IMDB_API_KEY = process.env.imdbAPIKEY2;
 
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
@@ -60,7 +60,7 @@ const limitMessage =
 
 // Schedule the updateTop250TV function to run each day at 00:30 AM
 cron.schedule("30 0 * * *", () => {
-  fetchAndProcessData(IMDB_TOP250_TV, "top250_tv");
+  fetchAndProcessData(IMDB_TOP250_TV, "top250tv");
 });
 
 // Schedule the updateTop250 function to run each day at 1 AM
@@ -898,7 +898,12 @@ function getRandomMovies(movies) {
 
 async function generateRecommendation(genre, chatId) {
 
-  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`
+  
   const urResponse = await fetch(url);
   const res = await urResponse.json();
   const movie = getRandomMovies(res.results);
@@ -960,7 +965,7 @@ async function fetchAndProcessData(url, entity) {
       case "boxAll":
         await updateBoxOfficeAllTimeRow(data);
         break;
-      case "top250_tv":
+      case "top250tv":
         await updateTop250TVRow(data);
       default:
         console.log(`Invalid entity type: ${entity}`);

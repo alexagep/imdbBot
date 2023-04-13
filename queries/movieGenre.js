@@ -41,10 +41,6 @@ async function createMovieGenre(movies, genreId) {
 
     const movieRows = await createMovie(movies, genreId);
 
-    console.log(movieRows[0], 'test here');
-    // const movieId = movie.id
-
-
     for (const item of movieRows) {
       try {
         await MovieGenre.findOrCreate({
@@ -59,33 +55,6 @@ async function createMovieGenre(movies, genreId) {
         );
       }
     }
-    // const movieData = movieRows.map((movieRow) => {
-    //   // if (movieRow.id && movieRow.id !== null) {
-    //     return {
-    //       MovieId: movieRow.dataValues.id,
-    //       GenreId: genreId,
-    //     };
-    //   // }
-    // });
-
-    // const filteredMovieData = movieData.filter((movie) => movie?.MovieId !== null);
-
-    // console.log(filteredMovieData);
-
-    // console.log(movieData);
-
-    // const createdMovieGenreRows = await MovieGenre.bulkCreate(movieData, { ignoreDuplicates: true });
-
-    // const row = await MovieGenre.create({
-    //   MovieId: movieId,
-    //   GenreId: genreId,
-    // });
-
-    // console.log(
-    //   `Created new records in MovieGenre table`,
-    //   createdMovieGenreRows.length
-    // );
-    // return createdMovieGenreRows;
   } catch (error) {
     console.error(
       "Error creating new records in MovieGenre table:",

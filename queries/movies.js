@@ -17,26 +17,17 @@ async function updateMovieRow(data) {
 }
 
 // USAGE: createMovie({ data: { name: 'Example', value: 42 }, createdAt: new Date(), updatedAt: new Date() })
-async function createMovie(data, genreId) {
+async function createMovie(movieData, genreId) {
   try {
-    console.log(data.length, "LENGTH_OF_FOUND_MOVIES");
-    const movieData = {
-      name: row.title,
-      rating: row.imDbRating,
-      imdbId: row.id,
-      imageUrl: row.image,
-      actors: [row.stars],
-      year: row.description,
-      genres: [row.genres],
-      runtime: row.runtimeStr,
-      contentRating: row.contentRating,
-      totalVotes: row.imDbRatingVotes,
-      plot: row.plot,
-    };
+    console.log(movieData.length, "LENGTH_OF_FOUND_MOVIES");
 
     let collector = [];
+    let failed = 0
     for (const item of movieData) {
       try {
+        if (!item.name) {
+          
+        }
         const [row] = await Movie.findOrCreate({
           where: { imdbId: item.id }, // criteria to find existing row
           defaults: item, // data to be used for creating new row
