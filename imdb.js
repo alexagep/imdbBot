@@ -31,7 +31,7 @@ const {
   getAllTop250TV,
   updateTop250TVRow,
 } = require("./queries/top250TV");
-const { getAllMovieGenre, createMovieGenre } = require("./queries/movieGenre");
+const { getAllMovieGenre, createMovieGenre, createMovieGenreWithFetchingGenreId } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
 
 require("dotenv").config();
@@ -358,73 +358,75 @@ bot.on("message", async (msg) => {
 
       bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
     } else {
+      // const response = await fetch(
+      //   `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
+      // );
+
       const response = await fetch(
-        `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?title=${movieTitle}`
       );
+
       const data = await response.json();
 
       const movie = data.results;
 
       if (movie.length > 0) {
-        const imageResponse = await fetch(movie[0].image);
-        const buffer = await imageResponse.buffer();
+        // const imageResponse = await fetch(movie[0].image);
+        // const buffer = await imageResponse.buffer();
 
-        const resizedBuffer = await sharp(buffer)
-          .resize({ width: 1280, height: 1024, fit: "inside" })
-          .toBuffer();
+        // const resizedBuffer = await sharp(buffer)
+        //   .resize({ width: 1280, height: 1024, fit: "inside" })
+        //   .toBuffer();
 
-        // const similarityScore = stringSimilarity.compareTwoStrings(
-        //   movieTitle,
-        //   movie[0].title
-        // );
-
-        const foundMovies = findSimilarityScores(movieTitle, movie)
+        const foundMovies = findSimilarityScores(movieTitle, movie);
 
         if (foundMovies.length > 0) {
-          const movieId = movie[0].id;
+          movieCollector = foundMovies;
 
-          movie_ID = movieId;
+          // const movieId = movie[0].id;
 
+          // movie_ID = movieId;
 
-          const opts = creatingSearchedMoviesFromApi(foundMovies, chatId)
+          const opts = creatingSearchedMoviesFromApi(foundMovies, chatId);
 
-          const ratingsResp = await fetch(
-            `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
-          );
+          bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
 
-          const ratings = await ratingsResp.json();
+          // const ratingsResp = await fetch(
+          //   `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+          // );
 
+          // const ratings = await ratingsResp.json();
 
-          const imdbUrl = `https://www.imdb.com/title/${movieId}`;
-          const keyboard = {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: "User Ratings",
-                    callback_data: "user_ratings",
-                  },
-                ],
-                [
-                  {
-                    text: "More Info",
-                    url: imdbUrl,
-                  },
-                ],
-              ],
-            },
-          };
+          // const imdbUrl = `https://www.imdb.com/title/${movieId}`;
+          // const keyboard = {
+          //   reply_markup: {
+          //     inline_keyboard: [
+          //       [
+          //         {
+          //           text: "User Ratings",
+          //           callback_data: "user_ratings",
+          //         },
+          //       ],
+          //       [
+          //         {
+          //           text: "More Info",
+          //           url: imdbUrl,
+          //         },
+          //       ],
+          //     ],
+          //   },
+          // };
 
-          const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
+          // const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
 
-          genreId = genres.indexOf(movie.genre.split(",")[0]) + 1;
+          // genreId = genres.indexOf(movie.genre.split(",")[0]) + 1;
 
-          await createMovieGenre(movie, genreId);
+          // await createMovieGenre(movie, genreId);
 
-          await bot.sendPhoto(chatId, resizedBuffer, {
-            caption: message,
-            reply_markup: keyboard.reply_markup,
-          });
+          // await bot.sendPhoto(chatId, resizedBuffer, {
+          //   caption: message,
+          //   reply_markup: keyboard.reply_markup,
+          // });
         } else {
           bot.sendMessage(
             chatId,
@@ -967,6 +969,69 @@ bot.on("callback_query", async (callbackQuery) => {
 
     await bot.deleteMessage(chatId, messageId);
   }
+
+  if (callbackQuery.data.startsWith("show_api_movies_")) {
+    const movieId = callbackQuery.data.split("_")[2];
+
+    const movie = movieCollector.find((movie) => {
+      if (movie.id === movieId) {
+        return movie;
+      }
+    });
+
+    const response = await fetch(movie.image);
+    const buffer = await response.buffer();
+
+    const ratingsResp = await fetch(
+      `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+    );
+
+    const ratings = await ratingsResp.json();
+
+    movie_ID = movieId;
+
+    const resizedBuffer = await sharp(buffer)
+      .resize({ width: 1280, height: 1024, fit: "inside" })
+      .toBuffer();
+
+    const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+    const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+
+    let rateMessage = "";
+
+    if (ratings.metacritic) {
+      rateMessage += metacriticRate;
+    }
+    if (ratings.rottenTomatoes) {
+      rateMessage += rottenRate;
+    }
+
+    const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
+
+    const imdbUrl = `https://www.imdb.com/title/${movieId}`;
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "User Ratings",
+              callback_data: "user_ratings",
+            },
+          ],
+          [{ text: "More Info", url: imdbUrl }],
+        ],
+      },
+    };
+
+    await createMovieGenreWithFetchingGenreId(movieCollector);
+
+    await bot.sendPhoto(chatId, resizedBuffer, {
+      caption: message,
+      reply_markup: opts.reply_markup,
+    });
+
+    await bot.deleteMessage(chatId, messageId);
+  }
 });
 
 function getRandomMovies(movies) {
@@ -1057,7 +1122,7 @@ function creatingSearchedMoviesFromApi(movies) {
   movies.map((movie) => {
     opts.reply_markup.inline_keyboard.push([
       {
-        text: `${movie.name} ${movie.year}`,
+        text: `${movie.title} (${movie.description})`,
         callback_data: `show_api_movies_${movie.id}`,
       },
     ]);

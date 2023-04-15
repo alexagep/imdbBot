@@ -38,7 +38,6 @@ async function updateMovieGenreRow(data) {
 
 async function createMovieGenre(movies, genreId) {
   try {
-
     const movieRows = await createMovie(movies, genreId);
 
     for (const item of movieRows) {
@@ -47,7 +46,6 @@ async function createMovieGenre(movies, genreId) {
           where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
           defaults: item, // data to be used for creating new row
         });
-
       } catch (error) {
         console.error(
           `Error updating/creating row in createMovieGenre: `,
@@ -64,8 +62,57 @@ async function createMovieGenre(movies, genreId) {
   }
 }
 
+async function createMovieGenreWithFetchingGenreId(movies) {
+  try {
+    const genres = [
+      "comedy",
+      "sci-fi",
+      "romance",
+      "thriller",
+      "horror",
+      "action",
+      "drama",
+      "fantasy",
+      "adventure",
+      "animation",
+      "crime",
+      "documentary",
+      "family",
+      "history",
+      "music",
+      "mystery",
+      "sport",
+      "war",
+      "western",
+    ];
+
+    for (const movie of movies) {
+      for (const genreName of movie.genres) {
+        const genreId = genres.indexOf(genreName) + 1;
+        const movieRows = await createMovie(movies, genreId);
+
+        for (const item of movieRows) {
+          try {
+            await MovieGenre.findOrCreate({
+              where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
+              defaults: item, // data to be used for creating new row
+            });
+          } catch (error) {}
+        }
+      }
+    }
+  } catch (error) {
+    console.error(
+      "Error creating new records in MovieGenre table:",
+      error.message
+    );
+    // throw error;
+  }
+}
+
 module.exports = {
   getAllMovieGenre,
   updateMovieGenreRow,
   createMovieGenre,
+  createMovieGenreWithFetchingGenreId,
 };

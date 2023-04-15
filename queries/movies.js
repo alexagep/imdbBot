@@ -24,39 +24,32 @@ async function createMovie(movieData, genreId) {
 
     let collector = [];
     for (const item of movieData) {
-      try {
-        const movie = {
-          name: item.title,
-          rating: item.imDbRating,
-          imdbId: item.id,
-          imageUrl: item.image,
-          actors: [item.stars],
-          genres: [item.genres],
-          runtime: item.runtimeStr,
-          contentRating: item.contentRating,
-          totalVotes: item.imDbRatingVotes,
-          year: item.description,
-          plot: item.plot,
-        };
+      const movie = {
+        name: item.title,
+        rating: item.imDbRating,
+        imdbId: item.id,
+        imageUrl: item.image,
+        actors: [item.stars],
+        genres: [item.genres],
+        runtime: item.runtimeStr,
+        contentRating: item.contentRating,
+        totalVotes: item.imDbRatingVotes,
+        year: item.description,
+        plot: item.plot,
+      };
 
-        const [row] = await Movie.findOrCreate({
-          where: { imdbId: item.id }, // criteria to find existing row
-          defaults: movie, // data to be used for creating new row
-        });
+      const [row] = await Movie.findOrCreate({
+        where: { imdbId: item.id }, // criteria to find existing row
+        defaults: movie, // data to be used for creating new row
+      });
 
-        collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
-      } catch (error) {
-        console.error(
-          `Error updating/creating row in createMovie: `,
-          error.message
-        );
-      }
+      collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
     }
 
     console.log("New record created in Movie table", collector.length);
     return collector;
   } catch (error) {
-    console.error("Error creating new record in Movie table:", error.message);
+    console.error("Error updating/creating row in createMovie:", error.message);
     // throw error;
   }
 }
