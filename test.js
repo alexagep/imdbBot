@@ -1,6 +1,7 @@
-// const db = require("./db/models/index");
-// const Movie = db.Movie;
-// const { Op } = require("sequelize");
+const db = require("./db/models/index");
+const Movie = db.Movie;
+const { Op } = require("sequelize");
+const stringSimilarity = require("string-similarity");
 
 // async function getAllMovie() {
 //   const MovieList = await Movie.findAll();
@@ -11,7 +12,7 @@
 // const searchQuery = "Slave";
 // Movie.findAll({
 //   where: {
-//     name: { [Op.like]: `%${searchQuery}%` },
+//     name: { [Op.like]: `${searchQuery}%` },
 //   },
 //   order: [["totalVotes", "DESC"]],
 // })
@@ -24,28 +25,28 @@
 //     console.error("Error:", error);
 //   });
 
-//   // async function findMoviesBySearchQuery(searchQuery) {
-//   //   try {
-//   //     // const searchQuery = "Slave";
-//   //     console.log(searchQuery);
-//   //     const movies = await Movie.findAll({
-//   //       where: {
-//   //         name: { [Op.like]: `%${searchQuery}%` },
-//   //       },
-//   //       order: [["totalVotes", "DESC"]],
-//   //     });
+// async function findMoviesBySearchQuery(searchQuery) {
+//   try {
+//     // const searchQuery = "Slave";
+//     console.log(searchQuery);
+//     const movies = await Movie.findAll({
+//       where: {
+//         name: { [Op.like]: `%${searchQuery}%` },
+//       },
+//       order: [["totalVotes", "DESC"]],
+//     });
 
-//   //     movies.forEach((movie) => {
-//   //       console.log(movie.dataValues);
-//   //     });
+//     movies.forEach((movie) => {
+//       console.log(movie.dataValues);
+//     });
 
-//   //     return movies;
-//   //   } catch (error) {
-//   //     console.error("Error:", error.message);
-//   //   }
-//   // }
+//     return movies;
+//   } catch (error) {
+//     console.error("Error:", error.message);
+//   }
+// }
 
-//   // findMoviesBySearchQuery('batman')
+// findMoviesBySearchQuery('batman')
 
 // const genre = "Action, Adventure, Sci-Fi"
 
@@ -88,10 +89,43 @@ const items = [
   },
 ];
 
-const movie = items.find((movie) => {
-  if (movie.imdbId === "tt1753783") {
-    return movie;
-  }
-});
+function findMovie() {
+  const movieTitle = "Slave";
+  const movies = [];
+  items.map((item) => {
+    const similarityScore = stringSimilarity.compareTwoStrings(
+      movieTitle,
+      item.name
+    );
 
-console.log(movie);
+    console.log(similarityScore);
+    if (similarityScore >= 0.25) {
+      movies.push(item);
+    }
+  });
+
+  if (!(movies.length > 3)) {
+    console.log(movies);
+  }
+}
+findMovie();
+
+// const movie = items.find((movie) => {
+//   if (movie.imdbId === "tt1753783") {
+//     return movie;
+//   }
+// });
+
+// console.log(movie);
+
+// const text = "Slave so";
+
+// const match = text.match(/\bslave[a-zA-Z]*\b/); //  /^slave.*$/
+
+// if (match) {
+//   console.log("match");
+// } else {
+//   console.log("not");
+// }
+
+// _%${searchTerm}%

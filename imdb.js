@@ -25,7 +25,6 @@ const {
   getAllBoxOfficeWeek,
 } = require("./queries/boxOfficeWeek");
 
-
 const cron = require("node-cron");
 const {
   createTop250TV,
@@ -351,10 +350,13 @@ bot.on("message", async (msg) => {
 
   try {
     const moviesInDb = await findMoviesBySearchQuery(movieTitle);
-    movieCollector = moviesInDb;
 
     if (moviesInDb.length > 0) {
-      creatingSearchedMoviesButton(moviesInDb, chatId);
+      movieCollector = moviesInDb;
+
+      const opts = creatingSearchedMoviesButton(moviesInDb, chatId);
+
+      bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
     } else {
       const response = await fetch(
         `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
@@ -371,13 +373,20 @@ bot.on("message", async (msg) => {
           .resize({ width: 1280, height: 1024, fit: "inside" })
           .toBuffer();
 
-        const similarityScore = stringSimilarity.compareTwoStrings(
-          movieTitle,
-          movie[0].title
-        );
-        console.log(similarityScore);
-        if (similarityScore >= 0.3) {
+        // const similarityScore = stringSimilarity.compareTwoStrings(
+        //   movieTitle,
+        //   movie[0].title
+        // );
+
+        const foundMovies = findSimilarityScores(movieTitle, movie)
+
+        if (foundMovies.length > 0) {
           const movieId = movie[0].id;
+
+          movie_ID = movieId;
+
+
+          const opts = creatingSearchedMoviesFromApi(foundMovies, chatId)
 
           const ratingsResp = await fetch(
             `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
@@ -385,7 +394,6 @@ bot.on("message", async (msg) => {
 
           const ratings = await ratingsResp.json();
 
-          movie_ID = movieId;
 
           const imdbUrl = `https://www.imdb.com/title/${movieId}`;
           const keyboard = {
@@ -452,27 +460,6 @@ bot.on("callback_query", async (callbackQuery) => {
   const matchSeries = callbackQuery.data.match(/^next_series_(\d+)$/);
   const matchCS = callbackQuery.data.match(/^next_movies_(\d+)$/);
   const nextAllTime = callbackQuery.data.match(/^next_allTime_movies_(\d+)$/);
-  // const genres = [
-  //   "comedy",
-  //   "sci-fi",
-  //   "romance",
-  //   "thriller",
-  //   "horror",
-  //   "action",
-  //   "drama",
-  //   "fantasy",
-  //   "adventure",
-  //   "animation",
-  //   "crime",
-  //   "documentary",
-  //   "family",
-  //   "history",
-  //   "music",
-  //   "mystery",
-  //   "sport",
-  //   "war",
-  //   "western",
-  // ];
 
   if (match) {
     const startIndex = parseInt(match[1], 10);
@@ -922,7 +909,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (callbackQuery.data.startsWith("show_movie_")) {
     const movieId = callbackQuery.data.split("_")[2];
-    
+
     const movie = movieCollector.find((movie) => {
       if (movie.imdbId === movieId) {
         return movie;
@@ -977,6 +964,8 @@ bot.on("callback_query", async (callbackQuery) => {
       caption: message,
       reply_markup: opts.reply_markup,
     });
+
+    await bot.deleteMessage(chatId, messageId);
   }
 });
 
@@ -988,7 +977,7 @@ function getRandomMovies(movies) {
 }
 
 async function generateRecommendation(genre, chatId) {
-  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
@@ -997,7 +986,7 @@ async function generateRecommendation(genre, chatId) {
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
 
-  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&languages=en&count=250`
+  //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`;
 
   const urResponse = await fetch(url);
   const res = await urResponse.json();
@@ -1041,7 +1030,7 @@ async function generateRecommendation(genre, chatId) {
   });
 }
 
-function creatingSearchedMoviesButton(movies, chatId) {
+function creatingSearchedMoviesButton(movies) {
   const opts = {
     reply_markup: {
       inline_keyboard: [],
@@ -1056,7 +1045,25 @@ function creatingSearchedMoviesButton(movies, chatId) {
     ]);
   });
 
-  bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
+  return opts;
+}
+
+function creatingSearchedMoviesFromApi(movies) {
+  const opts = {
+    reply_markup: {
+      inline_keyboard: [],
+    },
+  };
+  movies.map((movie) => {
+    opts.reply_markup.inline_keyboard.push([
+      {
+        text: `${movie.name} ${movie.year}`,
+        callback_data: `show_api_movies_${movie.id}`,
+      },
+    ]);
+  });
+
+  return opts;
 }
 
 async function fetchAndProcessData(url, entity) {
@@ -1086,6 +1093,54 @@ async function fetchAndProcessData(url, entity) {
   } catch (error) {
     console.error(error);
   }
+}
+
+async function fetchingDataFromApiAndInsertToDB(genres) {
+  for (const genre of genres) {
+    const urls = [
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.3,6.6&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.6,6.9&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.9,7.2&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.2,7.5&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.5,7.8&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.8,8.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.3&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.3,8.6&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.2,9.5&genres=${genre}&languages=en&count=250`,
+    ];
+    for (const url of urls) {
+      const urResponse = await fetch(url);
+      const res = await urResponse.json();
+
+      for (const genreName of res.results.genres) {
+        const genreId = genres.indexOf(genreName) + 1;
+
+        await createMovieGenre(res.results, result.genreId);
+      }
+    }
+  }
+}
+
+fetchingDataFromApiAndInsertToDB(genres, IMDB_API_KEY);
+
+function findSimilarityScores(movieTitle, items) {
+  const movies = [];
+  items.map((item) => {
+    const similarityScore = stringSimilarity.compareTwoStrings(
+      movieTitle,
+      item.title
+    );
+
+    console.log(similarityScore);
+    if (similarityScore >= 0.25) {
+      movies.push(item);
+    }
+  });
+
+  return movies;
 }
 
 console.log("Movie Rating Bot is running...");
