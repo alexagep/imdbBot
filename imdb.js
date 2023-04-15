@@ -25,7 +25,6 @@ const {
   getAllBoxOfficeWeek,
 } = require("./queries/boxOfficeWeek");
 
-const { getGenre } = require("./queries/genres");
 
 const cron = require("node-cron");
 const {
@@ -40,7 +39,7 @@ require("dotenv").config();
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
-const IMDB_API_KEY = process.env.imdbAPIKEY2;
+const IMDB_API_KEY = process.env.imdbAPIKEY;
 
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
@@ -76,6 +75,10 @@ const genres = [
   "western",
 ];
 
+// Schedule the updateTop250TV function to run each day at 00:30 AM
+cron.schedule("30 0 * * *", () => {
+  fetchAndProcessData(IMDB_TOP250_TV, "tvtop250");
+});
 
 // Schedule the updateTop250TV function to run each day at 00:30 AM
 cron.schedule("30 0 * * *", () => {
@@ -326,8 +329,7 @@ bot.onText(/Box Office/, async (msg) => {
 });
 
 let movie_ID = null;
-let movieCollector = null
-
+let movieCollector = null;
 
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
@@ -407,7 +409,7 @@ bot.on("message", async (msg) => {
 
           const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
 
-          genreId = genres.indexOf(movie.genre.split(',')[0]) + 1;
+          genreId = genres.indexOf(movie.genre.split(",")[0]) + 1;
 
           await createMovieGenre(movie, genreId);
 
@@ -696,7 +698,6 @@ bot.on("callback_query", async (callbackQuery) => {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
       const UserRatings = await urResponse.json();
-      // console.log(UserRatings, "************");
 
       const totalVotes = parseInt(
         UserRatings.demographicAll.allAges.votes
@@ -920,16 +921,15 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data.startsWith("show_movie_")) {
-    const movieId = parseInt(callbackQuery.data.split("_")[2]);
-    // Movie.findByPk(movieId).then((movie) => {
-    //   bot.sendMessage(chatId, `You selected: ${movie.name}`);
-    // });
+    const movieId = callbackQuery.data.split("_")[2];
+    
+    const movie = movieCollector.find((movie) => {
+      if (movie.imdbId === movieId) {
+        return movie;
+      }
+    });
 
-    console.log(movieCollector, '****MOVIE_COLLECTOR****', movieId, 'MOVIE_ID', 'LINE_928');
-    const movie = movieCollector.find(movie => movie.dataValues.imdbId === movieId);
-
-    console.log(movie);
-    const response = await fetch(movie.dataValues.image);
+    const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
     const ratingsResp = await fetch(
@@ -944,25 +944,19 @@ bot.on("callback_query", async (callbackQuery) => {
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`
-      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`
+    const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+    const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
-      let rateMessage = ''
+    let rateMessage = "";
 
-      if (ratings.metacritic) {
-        rateMessage += metacriticRate
-      } else if (ratings.rottenTomatoes) {
-        rateMessage += rottenRate
-      }
+    if (ratings.metacritic) {
+      rateMessage += metacriticRate;
+    }
+    if (ratings.rottenTomatoes) {
+      rateMessage += rottenRate;
+    }
 
-      const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${
-        movie.dataValues.runtimeStr
-      }\n🎭 Genres: ${
-        movie.dataValues.genres
-      }\n🔞 Content Rating: ${
-        movie.dataValues.contentRating
-      }\n`;
-
+    const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
@@ -994,11 +988,16 @@ function getRandomMovies(movies) {
 }
 
 async function generateRecommendation(genre, chatId) {
-  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&languages=en&count=250`
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
+
+  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&languages=en&count=250`
 
   const urResponse = await fetch(url);
   const res = await urResponse.json();
