@@ -79,7 +79,7 @@ const genres = [
 
 // Schedule the updateTop250TV function to run each day at 00:30 AM
 cron.schedule("30 0 * * *", () => {
-  fetchAndProcessData(IMDB_TOP250_TV, "top250tv");
+  fetchAndProcessData(IMDB_TOP250_TV, "tvtop250");
 });
 
 // Schedule the updateTop250 function to run each day at 1 AM
@@ -924,10 +924,12 @@ bot.on("callback_query", async (callbackQuery) => {
     // Movie.findByPk(movieId).then((movie) => {
     //   bot.sendMessage(chatId, `You selected: ${movie.name}`);
     // });
-    const movie = movieCollector.find(movie => movie.imdbId === movieId);
+
+    console.log(movieCollector, '****MOVIE_COLLECTOR****', movieId, 'MOVIE_ID', 'LINE_928');
+    const movie = movieCollector.find(movie => movie.dataValues.imdbId === movieId);
 
     console.log(movie);
-    const response = await fetch(movie.image);
+    const response = await fetch(movie.dataValues.image);
     const buffer = await response.buffer();
 
     const ratingsResp = await fetch(
@@ -954,11 +956,11 @@ bot.on("callback_query", async (callbackQuery) => {
       }
 
       const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${
-        movie.runtimeStr
+        movie.dataValues.runtimeStr
       }\n🎭 Genres: ${
-        movie.genres
+        movie.dataValues.genres
       }\n🔞 Content Rating: ${
-        movie.contentRating
+        movie.dataValues.contentRating
       }\n`;
 
 
@@ -1076,7 +1078,7 @@ async function fetchAndProcessData(url, entity) {
       case "boxAll":
         await updateBoxOfficeAllTimeRow(data);
         break;
-      case "top250tv":
+      case "tvtop250":
         await updateTop250TVRow(data);
       default:
         console.log(`Invalid entity type: ${entity}`);
