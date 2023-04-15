@@ -88,7 +88,7 @@ async function createMovieGenreWithFetchingGenreId(movies) {
 
     for (const movie of movies) {
       for (const genreName of movie.genres) {
-        const genreId = genres.indexOf(genreName) + 1;
+        const genreId = genres.indexOf(genreName.toLowerCase()) + 1;
         const movieRows = await createMovie(movies, genreId);
 
         for (const item of movieRows) {
