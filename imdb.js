@@ -685,32 +685,32 @@ bot.on("callback_query", async (callbackQuery) => {
       const UserRatings = await urResponse.json();
 
       const totalVotes = parseInt(
-        UserRatings.demographicAll.allAges.votes
-      ).toLocaleString();
-      const ratingUnder18 = UserRatings.demographicAll.agesUnder18.rating;
+        UserRatings.demographicAll.allAges?.votes
+      ).toLocaleString() || null;
+      const ratingUnder18 = UserRatings.demographicAll.agesUnder18?.rating || null;
       const votesUnder18 = parseInt(
-        UserRatings.demographicAll.agesUnder18.votes
-      ).toLocaleString();
-      const rating18To29 = UserRatings.demographicAll.ages18To29.rating;
+        UserRatings.demographicAll.agesUnder18?.votes
+      ).toLocaleString() || null;
+      const rating18To29 = UserRatings.demographicAll.ages18To29?.rating || null;
       const votes18To29 = parseInt(
-        UserRatings.demographicAll.ages18To29.votes
-      ).toLocaleString();
-      const rating30To44 = UserRatings.demographicAll.ages30To44.rating;
+        UserRatings.demographicAll.ages18To29?.votes
+      ).toLocaleString() || null;
+      const rating30To44 = UserRatings.demographicAll.ages30To44?.rating || null;
       const votes30To44 = parseInt(
-        UserRatings.demographicAll.ages30To44.votes
-      ).toLocaleString();
-      const ratingOver45 = UserRatings.demographicAll.agesOver45.rating;
+        UserRatings.demographicAll.ages30To44?.votes
+      ).toLocaleString() || null;
+      const ratingOver45 = UserRatings.demographicAll.agesOver45?.rating || null;
       const votesOver45 = parseInt(
-        UserRatings.demographicAll.agesOver45.votes
-      ).toLocaleString();
-      const ratingMales = UserRatings.demographicMales.allAges.rating;
+        UserRatings.demographicAll.agesOver45?.votes
+      ).toLocaleString() || null;
+      const ratingMales = UserRatings.demographicMales.allAges?.rating;
       const votesMales = parseInt(
-        UserRatings.demographicMales.allAges.votes
-      ).toLocaleString();
-      const ratingFemales = UserRatings.demographicFemales.allAges.rating;
+        UserRatings.demographicMales.allAges?.votes
+      ).toLocaleString() || null;
+      const ratingFemales = UserRatings.demographicFemales.allAges?.rating || null;
       const votesFemales = parseInt(
         UserRatings.demographicFemales.allAges.votes
-      ).toLocaleString();
+      ).toLocaleString() || null;
 
       const message = `
       Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
