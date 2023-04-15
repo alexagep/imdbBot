@@ -66,9 +66,9 @@ async function findMoviesBySearchQuery(searchQuery) {
       order: [["totalVotes", "DESC"]],
     });
 
-    movies.forEach((movie) => {
-      console.log(movie.dataValues);
-    });
+    // movies.forEach((movie) => {
+    //   console.log(movie.dataValues);
+    // });
 
     return movies;
   } catch (error) {

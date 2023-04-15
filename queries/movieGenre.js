@@ -87,18 +87,24 @@ async function createMovieGenreWithFetchingGenreId(movies) {
     ];
 
     for (const movie of movies) {
-      const genresArr = Array.isArray(movie.genres) ? movie.genres : [movie.genres];
+      const genresArr = Array.isArray(movie.genres)
+        ? movie.genres
+        : [movie.genres];
       for (const genreName of genresArr) {
-        const genreId = genres.indexOf(genreName.toLowerCase()) + 1;
-        const movieRows = await createMovie(movies, genreId);
+        if (genreName !== null) {
+          const genreId = genres.indexOf(genreName.toLowerCase()) + 1;
 
-        for (const item of movieRows) {
-          try {
-            await MovieGenre.findOrCreate({
-              where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
-              defaults: item, // data to be used for creating new row
-            });
-          } catch (error) {}
+          // console.log(genreName);
+          const movieRows = await createMovie(movies, genreId);
+
+          for (const item of movieRows) {
+            try {
+              await MovieGenre.findOrCreate({
+                where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
+                defaults: item, // data to be used for creating new row
+              });
+            } catch (error) {}
+          }
         }
       }
     }
