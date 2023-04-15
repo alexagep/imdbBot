@@ -79,10 +79,6 @@ cron.schedule("30 0 * * *", () => {
   fetchAndProcessData(IMDB_TOP250_TV, "tvtop250");
 });
 
-// Schedule the updateTop250TV function to run each day at 00:30 AM
-cron.schedule("30 0 * * *", () => {
-  fetchAndProcessData(IMDB_TOP250_TV, "tvtop250");
-});
 
 // Schedule the updateTop250 function to run each day at 1 AM
 cron.schedule("0 1 * * *", () => {
@@ -979,8 +975,6 @@ bot.on("callback_query", async (callbackQuery) => {
       }
     });
 
-    console.log(movie);
-
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
@@ -1052,7 +1046,6 @@ async function generateRecommendation(genre, chatId) {
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
-
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`;
 
   const urResponse = await fetch(url);
@@ -1162,36 +1155,36 @@ async function fetchAndProcessData(url, entity) {
   }
 }
 
-async function fetchingDataFromApiAndInsertToDB(genres) {
-  for (const genre of genres) {
-    const urls = [
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.3,6.6&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.6,6.9&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.9,7.2&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.2,7.5&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.5,7.8&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.8,8.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.3&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.3,8.6&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.2,9.5&genres=${genre}&languages=en&count=250`,
-    ];
-    for (const url of urls) {
-      const urResponse = await fetch(url);
-      const res = await urResponse.json();
+// async function fetchingDataFromApiAndInsertToDB(genres) {
+//   for (const genre of genres) {
+//     const urls = [
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.3,6.6&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.6,6.9&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.9,7.2&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.2,7.5&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.5,7.8&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.8,8.0&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.3&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.3,8.6&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
+//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.2,9.5&genres=${genre}&languages=en&count=250`,
+//     ];
+//     for (const url of urls) {
+//       const urResponse = await fetch(url);
+//       const res = await urResponse.json();
 
-      for (const genreName of res.results.genres) {
-        const genreId = genres.indexOf(genreName) + 1;
+//       for (const genreName of res.results.genres) {
+//         const genreId = genres.indexOf(genreName) + 1;
 
-        await createMovieGenre(res.results, result.genreId);
-      }
-    }
-  }
-}
+//         await createMovieGenre(res.results, result.genreId);
+//       }
+//     }
+//   }
+// }
 
-fetchingDataFromApiAndInsertToDB(genres, IMDB_API_KEY);
+// fetchingDataFromApiAndInsertToDB(genres, IMDB_API_KEY);
 
 function findSimilarityScores(movieTitle, items) {
   const movies = [];
