@@ -912,9 +912,9 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data.startsWith("show_movie_")) {
     const movieId = callbackQuery.data.split("_")[2];
 
-    const movie = movieCollector.find((movie) => {
-      if (movie.imdbId === movieId) {
-        return movie;
+    const movie = movieCollector.find((item) => {
+      if (item.imdbId === movieId) {
+        return item;
       }
     });
 
@@ -971,13 +971,15 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data.startsWith("show_api_movies_")) {
-    const movieId = callbackQuery.data.split("_")[2];
+    const movieId = callbackQuery.data.split("_")[3];
 
-    const movie = movieCollector.find((movie) => {
-      if (movie.id === movieId) {
-        return movie;
+    const movie = movieCollector.find((item) => {
+      if (item.id === movieId) {
+        return item;
       }
     });
+
+    console.log(movie);
 
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
@@ -1122,7 +1124,7 @@ function creatingSearchedMoviesFromApi(movies) {
   movies.map((movie) => {
     opts.reply_markup.inline_keyboard.push([
       {
-        text: `${movie.title} (${movie.description})`,
+        text: `${movie.title} ${movie.description}`,
         callback_data: `show_api_movies_${movie.id}`,
       },
     ]);
