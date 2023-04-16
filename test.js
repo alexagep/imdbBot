@@ -168,7 +168,7 @@ const serverDateTime = "2023-04-15 11:44:46";
 
 
 
-const obj = {}
+// const obj = {}
 
-obj.hello = {name: 'ali'}
-console.log(obj);
+// obj.hello = {name: 'ali'}
+// console.log(obj);

@@ -880,12 +880,12 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    const movies = await getAllRating(movie.name);
+    const movies = await getAllRating(movie.id);
 
-    console.log(movies, 'MOVIES************');
+    // console.log(movies, 'MOVIES************');
     const isTimePassed =
-      movies.Ratings.length > 0
-        ? isDatePassedBy7Days(movies.Ratings.updatedAt)
+      movies.length > 0
+        ? isDatePassedBy7Days(movies.updatedAt)
         : true;
 
     let ratings = null;

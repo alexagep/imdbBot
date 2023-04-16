@@ -4,20 +4,15 @@ const { createMovie } = require("./movies");
 const Rating = db.Rating;
 const Movie = db.Movie;
 
-async function getAllRating(movieTitle) {
+async function getAllRating(movieId) {
   try {
-    const Row = await Movie.findAll({
-      where: { name: movieTitle },
-      include: [
-        {
-          model: Rating,
-        },
-      ],
+    const Row = await Rating.findAll({
+      where: { name: movieId },
     });
 
     const data = Row[0].dataValues;
 
-    // console.log(RatingRow, "Rating_FOUND_OR_NOT");
+    console.log(data, "Rating_FOUND_OR_NOT");
     return data;
   } catch (error) {
     console.log(error.message);
@@ -35,7 +30,6 @@ async function updateRatingRow(data) {
 
 async function createRating(ratings, movieId) {
   try {
-    
     const item = {
       metacriticRating: ratings.metacritic,
       rottenRating: ratings.rottenTomatoes,
@@ -49,7 +43,7 @@ async function createRating(ratings, movieId) {
       defaults: item, // data to be used for creating new row
     });
 
-    console.log('********', ratings);
+    console.log("********", ratings);
   } catch (error) {
     console.error("Error creating new records in Rating table:", error.message);
     // throw error;
