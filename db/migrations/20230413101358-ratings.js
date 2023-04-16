@@ -21,17 +21,17 @@ module.exports = {
           },
         },
         imdbRating: {
-          type: Sequelize.FLOAT,
+          type: Sequelize.STRING,
           field: "imdb_rating",
           allowNull: true,
         },
         metacriticRating: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING,
           field: "metacritic_rating",
           allowNull: true,
         },
         rottenRating: {
-          type: Sequelize.INTEGER,
+          type: Sequelize.STRING,
           field: "rotten_rating",
           allowNull: true,
         },

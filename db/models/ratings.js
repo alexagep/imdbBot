@@ -32,17 +32,17 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       imdbRating: {
-        type: DataTypes.FLOAT,
+        type: DataTypes.STRING,
         field: "imdb_rating",
         allowNull: true,
       },
       metacriticRating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         field: "metacritic_rating",
         allowNull: true,
       },
       rottenRating: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         field: "rotten_rating",
         allowNull: true,
       },

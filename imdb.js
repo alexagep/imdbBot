@@ -37,7 +37,7 @@ const {
   createMovieGenreWithFetchingGenreId,
 } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
-const { getAllRating } = require("./queries/ratings");
+const { getAllRating, createRating } = require("./queries/ratings");
 
 require("dotenv").config();
 
@@ -952,7 +952,9 @@ bot.on("callback_query", async (callbackQuery) => {
     const movies = await getAllRating(movieId);
 
     const isTimePassed =
-      movies.Rating.length > 0 ? isDatePassedBy7Days(movies.Rating.updatedAt) : true;
+      movies.Rating.length > 0
+        ? isDatePassedBy7Days(movies.Rating.updatedAt)
+        : true;
 
     let ratings = null;
     let rateMessage = null;
@@ -975,20 +977,22 @@ bot.on("callback_query", async (callbackQuery) => {
       if (ratings.rottenTomatoes) {
         rateMessage += rottenRate;
       }
+
+      await createRating(ratings, movieId)
     } else {
       ratings = movies.Rating;
 
       ratings.fullTitle = `${movies.name} ${movies.year}`;
 
-      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
-      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
 
-      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacriticRating}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenRating}/100`;
 
-      if (ratings.metacritic) {
+      if (ratings.metacriticRating) {
         rateMessage += metacriticRate;
       }
-      if (ratings.rottenTomatoes) {
+      if (ratings.rottenRating) {
         rateMessage += rottenRate;
       }
     }

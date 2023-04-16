@@ -33,32 +33,25 @@ async function updateRatingRow(data) {
   }
 }
 
-async function createRating(movies, genreId) {
+async function createRating(ratings, movieId) {
   try {
-    const movieRows = await createMovie(movies, genreId);
+    const item = {
+      metacriticRating: ratings.metacritic,
+      rottenRating: ratings.rottenTomatoes,
+      imdbRating: ratings.imDb,
+    };
 
-    for (const item of movieRows) {
-      try {
-        await Rating.findOrCreate({
-          where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
-          defaults: item, // data to be used for creating new row
-        });
-      } catch (error) {
-        console.error(
-          `Error updating/creating row in createRating: `,
-          error.message
-        );
-      }
-    }
+    await Rating.findOrCreate({
+      where: {
+        MovieId: movieId,
+      }, // criteria to find existing row
+      defaults: item, // data to be used for creating new row
+    });
   } catch (error) {
-    console.error(
-      "Error creating new records in Rating table:",
-      error.message
-    );
+    console.error("Error creating new records in Rating table:", error.message);
     // throw error;
   }
 }
-
 
 module.exports = {
   getAllRating,
