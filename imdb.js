@@ -358,7 +358,6 @@ bot.on("message", async (msg) => {
 
       bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
     } else {
-
       const response = await fetch(
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?title=${movieTitle}`
       );
@@ -368,7 +367,6 @@ bot.on("message", async (msg) => {
       const movie = data.results;
 
       if (movie.length > 0) {
-
         const foundMovies = findSimilarityScores(movieTitle, movie);
 
         if (foundMovies.length > 0) {
@@ -377,7 +375,6 @@ bot.on("message", async (msg) => {
           const opts = creatingSearchedMoviesFromApi(foundMovies, chatId);
 
           bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
-
         } else {
           bot.sendMessage(
             chatId,
@@ -635,62 +632,61 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
     if (movie_ID !== null) {
-      const movies = await getAllRating(movie_ID);
+      // const movies = await getAllRating(movie_ID);
 
-      const isTimePassed = isDatePassedBy7Days(movies.updatedAt);
-      if (!movies || isTimePassed) {
-        const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
+      // const isTimePassed = isDatePassedBy7Days(movies.updatedAt);
+      // if (!movies || isTimePassed) {
+      const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
-        const UserRatings = await urResponse.json();
+      const UserRatings = await urResponse.json();
 
-        const totalVotes =
-          parseInt(
-            UserRatings.demographicAll.allAges?.votes
-          ).toLocaleString() || null;
-        const ratingUnder18 =
-          UserRatings.demographicAll.agesUnder18?.rating || null;
-        const votesUnder18 =
-          parseInt(
-            UserRatings.demographicAll.agesUnder18?.votes
-          ).toLocaleString() || null;
-        const rating18To29 =
-          UserRatings.demographicAll.ages18To29?.rating || null;
-        const votes18To29 =
-          parseInt(
-            UserRatings.demographicAll.ages18To29?.votes
-          ).toLocaleString() || null;
-        const rating30To44 =
-          UserRatings.demographicAll.ages30To44?.rating || null;
-        const votes30To44 =
-          parseInt(
-            UserRatings.demographicAll.ages30To44?.votes
-          ).toLocaleString() || null;
-        const ratingOver45 =
-          UserRatings.demographicAll.agesOver45?.rating || null;
-        const votesOver45 =
-          parseInt(
-            UserRatings.demographicAll.agesOver45?.votes
-          ).toLocaleString() || null;
-        const ratingMales = UserRatings.demographicMales.allAges?.rating;
-        const votesMales =
-          parseInt(
-            UserRatings.demographicMales.allAges?.votes
-          ).toLocaleString() || null;
-        const ratingFemales =
-          UserRatings.demographicFemales.allAges?.rating || null;
-        const votesFemales =
-          parseInt(
-            UserRatings.demographicFemales.allAges.votes
-          ).toLocaleString() || null;
+      const totalVotes =
+        parseInt(UserRatings.demographicAll.allAges?.votes).toLocaleString() ||
+        null;
+      const ratingUnder18 =
+        UserRatings.demographicAll.agesUnder18?.rating || null;
+      const votesUnder18 =
+        parseInt(
+          UserRatings.demographicAll.agesUnder18?.votes
+        ).toLocaleString() || null;
+      const rating18To29 =
+        UserRatings.demographicAll.ages18To29?.rating || null;
+      const votes18To29 =
+        parseInt(
+          UserRatings.demographicAll.ages18To29?.votes
+        ).toLocaleString() || null;
+      const rating30To44 =
+        UserRatings.demographicAll.ages30To44?.rating || null;
+      const votes30To44 =
+        parseInt(
+          UserRatings.demographicAll.ages30To44?.votes
+        ).toLocaleString() || null;
+      const ratingOver45 =
+        UserRatings.demographicAll.agesOver45?.rating || null;
+      const votesOver45 =
+        parseInt(
+          UserRatings.demographicAll.agesOver45?.votes
+        ).toLocaleString() || null;
+      const ratingMales = UserRatings.demographicMales.allAges?.rating;
+      const votesMales =
+        parseInt(
+          UserRatings.demographicMales.allAges?.votes
+        ).toLocaleString() || null;
+      const ratingFemales =
+        UserRatings.demographicFemales.allAges?.rating || null;
+      const votesFemales =
+        parseInt(
+          UserRatings.demographicFemales.allAges.votes
+        ).toLocaleString() || null;
 
-        const message = `
+      const message = `
       Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
 
-        bot.sendMessage(chatId, message);
-      } else {
-        const message = `
-      Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
-      }
+      bot.sendMessage(chatId, message);
+      // } else {
+      //   const message = `
+      // Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
+      // }
     }
   }
 
@@ -953,31 +949,56 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
-    const ratingsResp = await fetch(
-      `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
-    );
+    const movies = await getAllRating(movieId);
 
-    const ratings = await ratingsResp.json();
+    const isTimePassed =
+      movies.Rating.length > 0 ? isDatePassedBy7Days(movies.Rating.updatedAt) : true;
 
+    let ratings = null;
+    let rateMessage = null;
+
+    if (!movies || isTimePassed) {
+      const ratingsResp = await fetch(
+        `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+      );
+
+      ratings = await ratingsResp.json();
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+
+      if (ratings.metacritic) {
+        rateMessage += metacriticRate;
+      }
+      if (ratings.rottenTomatoes) {
+        rateMessage += rottenRate;
+      }
+    } else {
+      ratings = movies.Rating;
+
+      ratings.fullTitle = `${movies.name} ${movies.year}`;
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+
+      if (ratings.metacritic) {
+        rateMessage += metacriticRate;
+      }
+      if (ratings.rottenTomatoes) {
+        rateMessage += rottenRate;
+      }
+    }
     movie_ID = movieId;
 
     const resizedBuffer = await sharp(buffer)
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-    const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
-    const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
-
-    let rateMessage = "";
-
-    if (ratings.metacritic) {
-      rateMessage += metacriticRate;
-    }
-    if (ratings.rottenTomatoes) {
-      rateMessage += rottenRate;
-    }
-
-    const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
+    const message = `🎬 ${ratings.fullTitle}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
@@ -1129,37 +1150,6 @@ async function fetchAndProcessData(url, entity) {
     console.error(error);
   }
 }
-
-// async function fetchingDataFromApiAndInsertToDB(genres) {
-//   for (const genre of genres) {
-//     const urls = [
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.3,6.6&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.6,6.9&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.9,7.2&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.2,7.5&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.5,7.8&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.8,8.0&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.3&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.3,8.6&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.6,8.9&genres=${genre}&languages=en&count=250`,
-//       `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.2,9.5&genres=${genre}&languages=en&count=250`,
-//     ];
-//     for (const url of urls) {
-//       const urResponse = await fetch(url);
-//       const res = await urResponse.json();
-
-//       for (const genreName of res.results.genres) {
-//         const genreId = genres.indexOf(genreName) + 1;
-
-//         await createMovieGenre(res.results, result.genreId);
-//       }
-//     }
-//   }
-// }
-
-// fetchingDataFromApiAndInsertToDB(genres, IMDB_API_KEY);
 
 function findSimilarityScores(movieTitle, items) {
   const movies = [];
