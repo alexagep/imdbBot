@@ -364,8 +364,6 @@ bot.on("message", async (msg) => {
       const opts = creatingSearchedMoviesButton(moviesInDb, chatId);
 
       bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
-
-      await bot.deleteMessage(chatId, messageId)
     } else {
       const response = await fetch(
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?title=${movieTitle}`
@@ -907,10 +905,10 @@ bot.on("callback_query", async (callbackQuery) => {
 
       // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
-      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
 
-      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
-      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacriticRating}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenRating}/100`;
 
       if (ratings.metacritic) {
         rateMessage += metacriticRate;
@@ -925,10 +923,12 @@ bot.on("callback_query", async (callbackQuery) => {
 
       // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
-      rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
+      
 
-      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacriticRating}/100\n`;
-      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenRating}/100`;
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
       if (ratings.metacriticRating) {
         rateMessage += metacriticRate;
