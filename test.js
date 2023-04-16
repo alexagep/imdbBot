@@ -11,20 +11,19 @@ getAllMovie();
 
 
 
+
 async function getAllRating() {
-  try {
-    const Row = await Movie.findAll();
+ try {
+   const Row = await Movie.findAll();
 
-    // const data = Row[0].dataValues;
-
-    console.log(Row.length, "Rating_FOUND_OR_NOT");
-    // return data;
-  } catch (error) {
-    console.log(error.message);
-  }
+   console.log(Row.length, "Rating_FOUND_OR_NOT");
+ } catch (error) {
+   console.log(error.message);
+ }
 }
 
 getAllRating()
+
 
 // // const searchQuery = "Slave";
 // // Movie.findAll({
