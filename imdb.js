@@ -914,7 +914,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
       await createRating(ratings, movie.id);
     } else {
-      ratings = movies.Rating;
+      ratings = movies;
 
       // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
