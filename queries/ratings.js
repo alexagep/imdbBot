@@ -19,22 +19,43 @@ async function getAllRating(movieId) {
   }
 }
 
-async function getAllRatingByMovieName(movieName) {
+async function createMovieRating(movie, ratings, genreIds) {
   try {
-    console.log(movieName, "Movie_********");
-    const RatingRow = await Movie.findAll({
-      where: { name: movieName },
-      include: [
-        {
-          model: Rating,
-        },
-      ],
-    });
+    const genres = [
+      "comedy",
+      "sci-fi",
+      "romance",
+      "thriller",
+      "horror",
+      "action",
+      "drama",
+      "fantasy",
+      "adventure",
+      "animation",
+      "crime",
+      "documentary",
+      "family",
+      "history",
+      "music",
+      "mystery",
+      "sport",
+      "war",
+      "western",
+    ];
 
-    const data = RatingRow[0].dataValues.Ratings;
+    if (genreIds) {
+      genreIds = genreIds.split(",");
 
-    console.log(RatingRow, "MOVIEGENRE_FOUND_OR_NOT");
-    return data;
+      for (let genreId of genreIds) {
+        genreId = genres.indexOf(genreId.toLowerCase()) + 1;
+
+        const movieRows = await createMovie(movie, genreId);
+
+        const ratingRow = await createRating(ratings, movieRows[0].MovieId);
+
+        console.log(ratingRow, "RATING_CREATED");
+      }
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -75,5 +96,5 @@ module.exports = {
   getAllRating,
   updateRatingRow,
   createRating,
-  getAllRatingByMovieName,
+  createMovieRating,
 };

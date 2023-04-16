@@ -172,3 +172,9 @@ const serverDateTime = "2023-04-15 11:44:46";
 
 // obj.hello = {name: 'ali'}
 // console.log(obj);
+
+
+const genres = [ 'Biography, Drama' ]
+
+
+console.log(genres[0].split(','));

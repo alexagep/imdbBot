@@ -23,34 +23,37 @@ async function createMovie(movieData, genreId) {
     console.log(movieData.length, "LENGTH_OF_FOUND_MOVIES");
 
     let collector = [];
-    for (const item of movieData) {
-      const movie = {
-        name: item.title,
-        rating: item.imDbRating,
-        imdbId: item.id,
-        imageUrl: item.image,
-        actors: [item.stars],
-        genres: [item.genres],
-        runtime: item.runtimeStr,
-        contentRating: item.contentRating,
-        totalVotes: item.imDbRatingVotes,
-        year: item.description,
-        plot: item.plot,
-      };
+    const moviesArr = Array.isArray(movieData) ? movieData : [movieData];
 
-      const [row] = await Movie.findOrCreate({
-        where: { imdbId: item.id }, // criteria to find existing row
-        defaults: movie, // data to be used for creating new row
-      });
+    if (genreId) {
+      for (const item of moviesArr) {
+        const movie = {
+          name: item.title,
+          rating: item.imDbRating,
+          imdbId: item.id,
+          imageUrl: item.image,
+          actors: [item.stars],
+          genres: [item.genres],
+          runtime: item.runtimeStr,
+          contentRating: item.contentRating,
+          totalVotes: item.imDbRatingVotes,
+          year: item.description,
+          plot: item.plot,
+        };
 
-      collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
+        const [row] = await Movie.findOrCreate({
+          where: { imdbId: item.id }, // criteria to find existing row
+          defaults: movie, // data to be used for creating new row
+        });
+
+        collector.push({ MovieId: row.dataValues.id, GenreId: genreId });
+      }
+
+      console.log("New record created in Movie table", collector.length);
+      return collector;
     }
-
-    console.log("New record created in Movie table", collector.length);
-    return collector;
   } catch (error) {
     console.error("Error updating/creating row in createMovie:", error.message);
-    // throw error;
   }
 }
 
