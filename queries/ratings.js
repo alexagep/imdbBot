@@ -10,9 +10,10 @@ async function getAllRating(movieId) {
       where: { MovieId: movieId },
     });
 
-    const data = Row[0].dataValues;
+    console.log(Row, "Rating_FOUND_OR_NOT");
 
-    console.log(data, "Rating_FOUND_OR_NOT");
+    const data = Row;
+
     return data;
   } catch (error) {
     console.log(error.message);
