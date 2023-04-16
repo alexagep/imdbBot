@@ -37,7 +37,7 @@ const {
   createMovieGenreWithFetchingGenreId,
 } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
-const { getAllRating, createRating } = require("./queries/ratings");
+const { getAllRating, createRating, getAllRatingByImdbId } = require("./queries/ratings");
 
 require("dotenv").config();
 
@@ -882,7 +882,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movies = await getAllRating(movie.id);
 
-    // console.log(movies, 'MOVIES************');
+    console.log(movies, 'MOVIES************');
     const isTimePassed =
       movies.length > 0
         ? isDatePassedBy7Days(movies.updatedAt)
@@ -974,11 +974,11 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
-    const movies = await getAllRating(movieId);
+    const movies = await getAllRatingByImdbId(movie.id);
 
     const isTimePassed =
-      movies.Rating.length > 0
-        ? isDatePassedBy7Days(movies.Rating.updatedAt)
+      movies.length > 0
+        ? isDatePassedBy7Days(movies.updatedAt)
         : true;
 
     let ratings = null;
@@ -1005,9 +1005,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
       await createRating(ratings, movieId);
     } else {
-      ratings = movies.Rating;
+      ratings = movies;
 
-      ratings.fullTitle = `${movies.name} ${movies.year}`;
+      // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
       rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
 
@@ -1027,7 +1027,7 @@ bot.on("callback_query", async (callbackQuery) => {
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-    const message = `🎬 ${ratings.fullTitle}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
+    const message = `🎬 ${movie.title} ${movie.description}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {

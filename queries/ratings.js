@@ -7,12 +7,32 @@ const Movie = db.Movie;
 async function getAllRating(movieId) {
   try {
     const Row = await Rating.findAll({
-      where: { name: movieId },
+      where: { MovieId: movieId },
     });
 
     const data = Row[0].dataValues;
 
     console.log(data, "Rating_FOUND_OR_NOT");
+    return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+async function getAllRatingByImdbId(imdbId) {
+  try {
+    const RatingRow = await Movie.findAll({
+      where: { imdbId: imdbId },
+      include: [
+        {
+          model: Rating,
+        },
+      ],
+    });
+
+    const data = RatingRow[0].dataValues.Ratings;
+
+    // console.log(MovieGenreRow, "MOVIEGENRE_FOUND_OR_NOT");
     return data;
   } catch (error) {
     console.log(error.message);
@@ -54,4 +74,5 @@ module.exports = {
   getAllRating,
   updateRatingRow,
   createRating,
+  getAllRatingByImdbId,
 };
