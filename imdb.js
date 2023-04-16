@@ -976,6 +976,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movies = await getAllRatingByImdbId(movie.id);
 
+    console.log(movies, 'MOVIES************');
+    
     const isTimePassed =
       movies.length > 0
         ? isDatePassedBy7Days(movies.updatedAt)

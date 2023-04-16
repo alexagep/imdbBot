@@ -32,7 +32,7 @@ async function getAllRatingByImdbId(imdbId) {
 
     const data = RatingRow[0].dataValues.Ratings;
 
-    // console.log(MovieGenreRow, "MOVIEGENRE_FOUND_OR_NOT");
+    console.log(RatingRow, "MOVIEGENRE_FOUND_OR_NOT");
     return data;
   } catch (error) {
     console.log(error.message);
