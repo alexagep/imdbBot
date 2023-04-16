@@ -1,28 +1,28 @@
-const db = require("./db/models/index");
-const Movie = db.Movie;
-const { Op } = require("sequelize");
-// const stringSimilarity = require("string-similarity");
+// const db = require("./db/models/index");
+// const Movie = db.Movie;
+// const { Op } = require("sequelize");
+// // const stringSimilarity = require("string-similarity");
 
-async function getAllMovie() {
-  const MovieList = await Movie.findAll();
-  console.log(MovieList.length);
-}
-getAllMovie();
-
-
+// async function getAllMovie() {
+//   const MovieList = await Movie.findAll();
+//   console.log(MovieList.length);
+// }
+// getAllMovie();
 
 
-async function getAllRating() {
- try {
-   const Row = await Movie.findAll();
 
-   console.log(Row.length, "Rating_FOUND_OR_NOT");
- } catch (error) {
-   console.log(error.message);
- }
-}
 
-getAllRating()
+// async function getAllRating() {
+//  try {
+//    const Row = await Movie.findAll();
+
+//    console.log(Row.length, "Rating_FOUND_OR_NOT");
+//  } catch (error) {
+//    console.log(error.message);
+//  }
+// }
+
+// getAllRating()
 
 
 // // const searchQuery = "Slave";
@@ -155,13 +155,20 @@ const serverDateTime = "2023-04-15 11:44:46";
 
 // console.log((_dtTxt - _dtSvr) / one_day > 7);
 
-function isDatePassedBy7Days(serverDateTime) {
-  const one_day = 1000 * 60 * 60 * 24;
-  const dateNow = new Date();
+// function isDatePassedBy7Days(serverDateTime) {
+//   const one_day = 1000 * 60 * 60 * 24;
+//   const dateNow = new Date();
 
-  const _dtSvr = Date.parse(serverDateTime);
-  const _dtTxt = Date.parse(dateNow);
+//   const _dtSvr = Date.parse(serverDateTime);
+//   const _dtTxt = Date.parse(dateNow);
 
-  return (_dtTxt - _dtSvr) / one_day > 7
-}
-console.log(isDatePassedBy7Days(serverDateTime));
+//   return (_dtTxt - _dtSvr) / one_day > 7
+// }
+// console.log(isDatePassedBy7Days(serverDateTime));
+
+
+
+const obj = {}
+
+obj.hello = {name: 'ali'}
+console.log(obj);

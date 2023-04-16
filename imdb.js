@@ -880,12 +880,12 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    const movies = await getAllRating(movie.title);
+    const movies = await getAllRating(movie.name);
 
     console.log(movies, 'MOVIES************');
     const isTimePassed =
-      movies.Rating.length > 0
-        ? isDatePassedBy7Days(movies.Rating.updatedAt)
+      movies.Ratings.length > 0
+        ? isDatePassedBy7Days(movies.Ratings.updatedAt)
         : true;
 
     let ratings = null;
@@ -897,6 +897,8 @@ bot.on("callback_query", async (callbackQuery) => {
       );
 
       const ratings = await ratingsResp.json();
+
+      // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
       rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
 
@@ -910,11 +912,11 @@ bot.on("callback_query", async (callbackQuery) => {
         rateMessage += rottenRate;
       }
 
-      await createRating(ratings, movieId);
+      await createRating(ratings, movie.id);
     } else {
       ratings = movies.Rating;
 
-      ratings.fullTitle = `${movies.name} ${movies.year}`;
+      // ratings.fullTitle = `${movies.name} ${movies.year}`;
 
       rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
 
@@ -935,7 +937,7 @@ bot.on("callback_query", async (callbackQuery) => {
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-    const message = `🎬 ${ratings.fullTitle}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
+    const message = `🎬 ${movie.name} ${movie.year}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
