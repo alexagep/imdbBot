@@ -31,8 +31,13 @@ const {
   getAllTop250TV,
   updateTop250TVRow,
 } = require("./queries/top250TV");
-const { getAllMovieGenre, createMovieGenre, createMovieGenreWithFetchingGenreId } = require("./queries/movieGenre");
+const {
+  getAllMovieGenre,
+  createMovieGenre,
+  createMovieGenreWithFetchingGenreId,
+} = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
+const { getAllRating } = require("./queries/ratings");
 
 require("dotenv").config();
 
@@ -78,7 +83,6 @@ const genres = [
 cron.schedule("30 0 * * *", () => {
   fetchAndProcessData(IMDB_TOP250_TV, "tvtop250");
 });
-
 
 // Schedule the updateTop250 function to run each day at 1 AM
 cron.schedule("0 1 * * *", () => {
@@ -354,9 +358,6 @@ bot.on("message", async (msg) => {
 
       bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
     } else {
-      // const response = await fetch(
-      //   `https://imdb-api.com/en/API/SearchMovie/${IMDB_API_KEY}/${movieTitle}`
-      // );
 
       const response = await fetch(
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?title=${movieTitle}`
@@ -367,62 +368,16 @@ bot.on("message", async (msg) => {
       const movie = data.results;
 
       if (movie.length > 0) {
-        // const imageResponse = await fetch(movie[0].image);
-        // const buffer = await imageResponse.buffer();
-
-        // const resizedBuffer = await sharp(buffer)
-        //   .resize({ width: 1280, height: 1024, fit: "inside" })
-        //   .toBuffer();
 
         const foundMovies = findSimilarityScores(movieTitle, movie);
 
         if (foundMovies.length > 0) {
           movieCollector = foundMovies;
 
-          // const movieId = movie[0].id;
-
-          // movie_ID = movieId;
-
           const opts = creatingSearchedMoviesFromApi(foundMovies, chatId);
 
           bot.sendMessage(chatId, `Select a movie:\n\n`, opts);
 
-          // const ratingsResp = await fetch(
-          //   `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
-          // );
-
-          // const ratings = await ratingsResp.json();
-
-          // const imdbUrl = `https://www.imdb.com/title/${movieId}`;
-          // const keyboard = {
-          //   reply_markup: {
-          //     inline_keyboard: [
-          //       [
-          //         {
-          //           text: "User Ratings",
-          //           callback_data: "user_ratings",
-          //         },
-          //       ],
-          //       [
-          //         {
-          //           text: "More Info",
-          //           url: imdbUrl,
-          //         },
-          //       ],
-          //     ],
-          //   },
-          // };
-
-          // const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n🌟 Metacritic Rating: ${ratings.metacritic}/100\n🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100 `;
-
-          // genreId = genres.indexOf(movie.genre.split(",")[0]) + 1;
-
-          // await createMovieGenre(movie, genreId);
-
-          // await bot.sendPhoto(chatId, resizedBuffer, {
-          //   caption: message,
-          //   reply_markup: keyboard.reply_markup,
-          // });
         } else {
           bot.sendMessage(
             chatId,
@@ -680,42 +635,62 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
     if (movie_ID !== null) {
-      const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
+      const movies = await getAllRating(movie_ID);
 
-      const UserRatings = await urResponse.json();
+      const isTimePassed = isDatePassedBy7Days(movies.updatedAt);
+      if (!movies || isTimePassed) {
+        const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
-      const totalVotes = parseInt(
-        UserRatings.demographicAll.allAges?.votes
-      ).toLocaleString() || null;
-      const ratingUnder18 = UserRatings.demographicAll.agesUnder18?.rating || null;
-      const votesUnder18 = parseInt(
-        UserRatings.demographicAll.agesUnder18?.votes
-      ).toLocaleString() || null;
-      const rating18To29 = UserRatings.demographicAll.ages18To29?.rating || null;
-      const votes18To29 = parseInt(
-        UserRatings.demographicAll.ages18To29?.votes
-      ).toLocaleString() || null;
-      const rating30To44 = UserRatings.demographicAll.ages30To44?.rating || null;
-      const votes30To44 = parseInt(
-        UserRatings.demographicAll.ages30To44?.votes
-      ).toLocaleString() || null;
-      const ratingOver45 = UserRatings.demographicAll.agesOver45?.rating || null;
-      const votesOver45 = parseInt(
-        UserRatings.demographicAll.agesOver45?.votes
-      ).toLocaleString() || null;
-      const ratingMales = UserRatings.demographicMales.allAges?.rating;
-      const votesMales = parseInt(
-        UserRatings.demographicMales.allAges?.votes
-      ).toLocaleString() || null;
-      const ratingFemales = UserRatings.demographicFemales.allAges?.rating || null;
-      const votesFemales = parseInt(
-        UserRatings.demographicFemales.allAges.votes
-      ).toLocaleString() || null;
+        const UserRatings = await urResponse.json();
 
-      const message = `
+        const totalVotes =
+          parseInt(
+            UserRatings.demographicAll.allAges?.votes
+          ).toLocaleString() || null;
+        const ratingUnder18 =
+          UserRatings.demographicAll.agesUnder18?.rating || null;
+        const votesUnder18 =
+          parseInt(
+            UserRatings.demographicAll.agesUnder18?.votes
+          ).toLocaleString() || null;
+        const rating18To29 =
+          UserRatings.demographicAll.ages18To29?.rating || null;
+        const votes18To29 =
+          parseInt(
+            UserRatings.demographicAll.ages18To29?.votes
+          ).toLocaleString() || null;
+        const rating30To44 =
+          UserRatings.demographicAll.ages30To44?.rating || null;
+        const votes30To44 =
+          parseInt(
+            UserRatings.demographicAll.ages30To44?.votes
+          ).toLocaleString() || null;
+        const ratingOver45 =
+          UserRatings.demographicAll.agesOver45?.rating || null;
+        const votesOver45 =
+          parseInt(
+            UserRatings.demographicAll.agesOver45?.votes
+          ).toLocaleString() || null;
+        const ratingMales = UserRatings.demographicMales.allAges?.rating;
+        const votesMales =
+          parseInt(
+            UserRatings.demographicMales.allAges?.votes
+          ).toLocaleString() || null;
+        const ratingFemales =
+          UserRatings.demographicFemales.allAges?.rating || null;
+        const votesFemales =
+          parseInt(
+            UserRatings.demographicFemales.allAges.votes
+          ).toLocaleString() || null;
+
+        const message = `
       Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
 
-      bot.sendMessage(chatId, message);
+        bot.sendMessage(chatId, message);
+      } else {
+        const message = `
+      Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
+      }
     }
   }
 
@@ -1201,6 +1176,16 @@ function findSimilarityScores(movieTitle, items) {
   });
 
   return movies;
+}
+
+function isDatePassedBy7Days(serverDateTime) {
+  const one_day = 1000 * 60 * 60 * 24;
+  const dateNow = new Date();
+
+  const _dtSvr = Date.parse(serverDateTime);
+  const _dtTxt = Date.parse(dateNow);
+
+  return (_dtTxt - _dtSvr) / one_day > 7;
 }
 
 console.log("Movie Rating Bot is running...");
