@@ -632,10 +632,6 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
     if (movie_ID !== null) {
-      // const movies = await getAllRating(movie_ID);
-
-      // const isTimePassed = isDatePassedBy7Days(movies.updatedAt);
-      // if (!movies || isTimePassed) {
       const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
       const UserRatings = await urResponse.json();
@@ -683,10 +679,6 @@ bot.on("callback_query", async (callbackQuery) => {
       Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
 
       bot.sendMessage(chatId, message);
-      // } else {
-      //   const message = `
-      // Total Votes: ${totalVotes}\n\nRatings by Age:\n🧒 Under 18: ${ratingUnder18} (${votesUnder18})\n👨🏻‍🎓 18-29: ${rating18To29} (${votes18To29})\n👨🏽‍💼 30-44: ${rating30To44} (${votes30To44})\n👴🏾 Over 45: ${ratingOver45} (${votesOver45})\n\nRatings by Gender:\n👨🏼 Males: ${ratingMales} (${votesMales})\n👩🏻 Females: ${ratingFemales} (${votesFemales})`;
-      // }
     }
   }
 
@@ -888,11 +880,53 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    const ratingsResp = await fetch(
-      `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
-    );
+    const movies = await getAllRating(movieId);
 
-    const ratings = await ratingsResp.json();
+    const isTimePassed =
+      movies.Rating.length > 0
+        ? isDatePassedBy7Days(movies.Rating.updatedAt)
+        : true;
+
+    let ratings = null;
+    let rateMessage = null;
+
+    if (!movies || isTimePassed) {
+      const ratingsResp = await fetch(
+        `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
+      );
+
+      const ratings = await ratingsResp.json();
+
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
+
+      if (ratings.metacritic) {
+        rateMessage += metacriticRate;
+      }
+      if (ratings.rottenTomatoes) {
+        rateMessage += rottenRate;
+      }
+
+      await createRating(ratings, movieId);
+    } else {
+      ratings = movies.Rating;
+
+      ratings.fullTitle = `${movies.name} ${movies.year}`;
+
+      rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
+
+      const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacriticRating}/100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenRating}/100`;
+
+      if (ratings.metacriticRating) {
+        rateMessage += metacriticRate;
+      }
+      if (ratings.rottenRating) {
+        rateMessage += rottenRate;
+      }
+    }
 
     movie_ID = movieId;
 
@@ -900,19 +934,7 @@ bot.on("callback_query", async (callbackQuery) => {
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-    const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
-    const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
-
-    let rateMessage = "";
-
-    if (ratings.metacritic) {
-      rateMessage += metacriticRate;
-    }
-    if (ratings.rottenTomatoes) {
-      rateMessage += rottenRate;
-    }
-
-    const message = `🎬 ${ratings.fullTitle}\n\n⭐️ IMDb Rating: ${ratings.imDb}\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
+    const message = `🎬 ${ratings.fullTitle}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
@@ -978,7 +1000,7 @@ bot.on("callback_query", async (callbackQuery) => {
         rateMessage += rottenRate;
       }
 
-      await createRating(ratings, movieId)
+      await createRating(ratings, movieId);
     } else {
       ratings = movies.Rating;
 

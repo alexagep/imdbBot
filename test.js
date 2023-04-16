@@ -1,13 +1,30 @@
-// const db = require("./db/models/index");
-// const Movie = db.Movie;
-// const { Op } = require("sequelize");
+const db = require("./db/models/index");
+const Movie = db.Movie;
+const { Op } = require("sequelize");
 // const stringSimilarity = require("string-similarity");
 
-// // async function getAllMovie() {
-// //   const MovieList = await Movie.findAll();
-// //   console.log(MovieList.length);
-// // }
-// // getAllMovie();
+async function getAllMovie() {
+  const MovieList = await Movie.findAll();
+  console.log(MovieList.length);
+}
+getAllMovie();
+
+
+
+async function getAllRating() {
+  try {
+    const Row = await Movie.findAll();
+
+    // const data = Row[0].dataValues;
+
+    console.log(Row.length, "Rating_FOUND_OR_NOT");
+    // return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+getAllRating()
 
 // // const searchQuery = "Slave";
 // // Movie.findAll({

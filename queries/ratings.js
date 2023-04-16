@@ -35,6 +35,7 @@ async function updateRatingRow(data) {
 
 async function createRating(ratings, movieId) {
   try {
+    
     const item = {
       metacriticRating: ratings.metacritic,
       rottenRating: ratings.rottenTomatoes,
@@ -47,6 +48,8 @@ async function createRating(ratings, movieId) {
       }, // criteria to find existing row
       defaults: item, // data to be used for creating new row
     });
+
+    console.log('********', ratings);
   } catch (error) {
     console.error("Error creating new records in Rating table:", error.message);
     // throw error;
