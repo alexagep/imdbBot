@@ -4,10 +4,10 @@ const { createMovie } = require("./movies");
 const Rating = db.Rating;
 const Movie = db.Movie;
 
-async function getAllRating(movieId) {
+async function getAllRating(movieTitle) {
   try {
     const Row = await Movie.findAll({
-      where: { imdbId: movieId },
+      where: { name: movieTitle },
       include: [
         {
           model: Rating,
