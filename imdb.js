@@ -37,7 +37,7 @@ const {
   createMovieGenreWithFetchingGenreId,
 } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
-const { getAllRating, createRating, getAllRatingByImdbId } = require("./queries/ratings");
+const { getAllRating, createRating, getAllRatingByImdbId, getAllRatingByMovieName } = require("./queries/ratings");
 
 require("dotenv").config();
 
@@ -974,7 +974,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
-    const movies = await getAllRatingByImdbId(movie.id);
+    const movies = await getAllRatingByMovieName(movie.title);
 
     console.log(movies, 'MOVIES************');
     

@@ -19,10 +19,11 @@ async function getAllRating(movieId) {
   }
 }
 
-async function getAllRatingByImdbId(imdbId) {
+async function getAllRatingByMovieName(movieName) {
   try {
+    console.log(movieName, "Movie_********");
     const RatingRow = await Movie.findAll({
-      where: { imdbId: imdbId },
+      where: { name: movieName },
       include: [
         {
           model: Rating,
@@ -74,5 +75,5 @@ module.exports = {
   getAllRating,
   updateRatingRow,
   createRating,
-  getAllRatingByImdbId,
+  getAllRatingByMovieName,
 };
