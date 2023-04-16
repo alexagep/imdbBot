@@ -882,6 +882,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movies = await getAllRating(movieId);
 
+    console.log(movies);
     const isTimePassed =
       movies.Rating.length > 0
         ? isDatePassedBy7Days(movies.Rating.updatedAt)

@@ -7,7 +7,7 @@ const Movie = db.Movie;
 async function getAllRating(movieId) {
   try {
     const Row = await Movie.findAll({
-      where: { id: movieId },
+      where: { imdbId: movieId },
       include: [
         {
           model: Rating,
