@@ -347,7 +347,7 @@ let movieCollector = null;
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
-  const messageId = msg.message_id;
+  // const messageId = msg.message_id;
 
   if (
     !msg.text ||
@@ -716,7 +716,6 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    // console.log(genre, 'genre in new rec');
     await generateRecommendation(genre, chatId);
     await bot.deleteMessage(chatId, messageId);
   }
@@ -895,7 +894,6 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movies = await getAllRating(movie.id);
 
-    console.log(movies, "MOVIES************");
     const isTimePassed =
       movies.length > 0
         ? isDatePassedBy7Days(movies[0].dataValues.updatedAt)
@@ -998,8 +996,6 @@ bot.on("callback_query", async (callbackQuery) => {
       }
     });
 
-    console.log(movie, "Movie**********");
-
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
 
@@ -1071,36 +1067,34 @@ function getRandomMovies(movies) {
 
 async function generateRecommendation(genre, chatId) {
   try {
-    const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
+    const urls = [
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,8.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.5&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
+      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.0,&genres=${genre}&languages=en&count=250`,
+    ];
 
-    // const urls = [
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,8.0&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.5&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
-    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.0,&genres=${genre}&languages=en&count=250`,
-    // ];
+    let collector = [];
 
-    // let collector = [];
+    for (const url of urls) {
+      const urResponse = await fetch(url);
+      const res = await urResponse.json();
 
-    // for (const url of urls) {
-    const urResponse = await fetch(url);
-    const res = await urResponse.json();
+      console.log(res.results.length, "res.results.length");
 
-    //   console.log(res.results.length, 'res.results.length');
-    //   // collector.push(res.results[0])
-    //   collector = [...collector, ...res.results];
-    // }
-    // console.log(collector.length, 'collector.length');
+      collector = [...collector, ...res.results];
+    }
+    console.log(collector.length, "collector.length");
 
-    const movie = getRandomMovies(res.results);
+    const movie = getRandomMovies(collector);
 
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
@@ -1134,7 +1128,7 @@ async function generateRecommendation(genre, chatId) {
       },
     };
 
-    await createMovieGenre(res.results, genreId);
+    await createMovieGenre(collector, genreId);
 
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
@@ -1147,7 +1141,9 @@ async function generateRecommendation(genre, chatId) {
 
 async function generateRecommendationFromDB(movieGenres, chatId) {
   try {
-    const movie = getRandomMovies(movieGenres);
+    let movie = getRandomMovies(movieGenres);
+    
+    movie = movie.dataValues.Movie.dataValues
 
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
@@ -1271,7 +1267,6 @@ function findSimilarityScores(movieTitle, items) {
 }
 
 function isDatePassedBy7Days(serverDateTime) {
-  console.log(serverDateTime);
   const one_day = 1000 * 60 * 60 * 24;
   const dateNow = new Date();
 

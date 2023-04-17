@@ -59,7 +59,6 @@ async function createMovie(movieData, genreId) {
 
 async function findMoviesBySearchQuery(searchQuery) {
   try {
-    // const searchQuery = "Slave";
     const movies = await Movie.findAll({
       where: Sequelize.where(
         Sequelize.fn("LOWER", Sequelize.col("name")),
@@ -69,9 +68,6 @@ async function findMoviesBySearchQuery(searchQuery) {
       order: [["totalVotes", "DESC"]],
     });
 
-    // movies.forEach((movie) => {
-    //   console.log(movie.dataValues);
-    // });
 
     return movies;
   } catch (error) {
