@@ -1105,8 +1105,8 @@ async function generateRecommendation(genre, chatId) {
       const res = await urResponse.json();
 
       console.log(res.results.length, 'res.results.length');
-      collector.push(res.results)
-      // collector = [...res.results];
+      // collector.push(res.results[0])
+      collector = [...collector, ...res.results];
     }
     console.log(collector.length, 'collector.length');
 

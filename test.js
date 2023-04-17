@@ -203,12 +203,37 @@ const arr = []
 
 const result = [{},{},{}]
 
-const collect = [{}]
+const arra = ['obj', 'obj2']
 
-// for (const res of result) {
-//   collect.push(res)
-// }
+const obj = {
+  res : [{},{},{}]
+}
 
-const col = [...result, ...collect]
+const obj2 = {
+  res : [{},{},{}]
+}
 
-console.log(collect, col);
+const ovj = {
+  obj2 : {
+    res : [{},{},{}]
+  },
+  obj : {
+    res : [{},{},{}]
+  }
+}
+
+
+let collect = []
+
+let collect2 = []
+
+for (const arr of arra) {
+  
+  collect.push(ovj[arr].res)
+
+  collect2 = [...collect2, ...ovj[arr].res]
+}
+
+// const col = [...result, ...collect]
+
+console.log(collect, collect2);
