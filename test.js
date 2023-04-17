@@ -1,16 +1,39 @@
-// const db = require("./db/models/index");
-// const Movie = db.Movie;
+const db = require("./db/models/index");
+const Movie = db.Movie;
+const Genre = db.Genre
+const MovieGenre = db.MovieGenre
 // const { Op } = require("sequelize");
 // // const stringSimilarity = require("string-similarity");
 
-// async function getAllMovie() {
-//   const MovieList = await Movie.findAll();
-//   console.log(MovieList.length);
-// }
-// getAllMovie();
+async function getAllMovie() {
+  const MovieList = await Movie.findAll();
+  console.log(MovieList.length);
+}
+getAllMovie();
 
+async function getAllMovieGenre(genreId) {
+  // console.log(genreId);
+  try {
+    const MovieGenreRow = await Genre.findAll({
+      where: { id: genreId },
+      include: [
+        {
+          model: MovieGenre,
+          include: { model: Movie },
+        },
+      ],
+    });
 
+    const data = MovieGenreRow[0].dataValues.MovieGenres;
 
+    console.log(data.length, "MOVIEGENRE_FOUND_OR_NOT");
+    // return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+getAllMovieGenre(1)
 
 // async function getAllRating() {
 //  try {
@@ -201,39 +224,39 @@ const arr = []
 // console.log();
 
 
-const result = [{},{},{}]
+// const result = [{},{},{}]
 
-const arra = ['obj', 'obj2']
+// const arra = ['obj', 'obj2']
 
-const obj = {
-  res : [{},{},{}]
-}
+// const obj = {
+//   res : [{},{},{}]
+// }
 
-const obj2 = {
-  res : [{},{},{}]
-}
+// const obj2 = {
+//   res : [{},{},{}]
+// }
 
-const ovj = {
-  obj2 : {
-    res : [{},{},{}]
-  },
-  obj : {
-    res : [{},{},{}]
-  }
-}
+// const ovj = {
+//   obj2 : {
+//     res : [{},{},{}]
+//   },
+//   obj : {
+//     res : [{},{},{}]
+//   }
+// }
 
 
-let collect = []
+// let collect = []
 
-let collect2 = []
+// let collect2 = []
 
-for (const arr of arra) {
+// for (const arr of arra) {
   
-  collect.push(ovj[arr].res)
+//   collect.push(ovj[arr].res)
 
-  collect2 = [...collect2, ...ovj[arr].res]
-}
+//   collect2 = [...collect2, ...ovj[arr].res]
+// }
 
-// const col = [...result, ...collect]
+// // const col = [...result, ...collect]
 
-console.log(collect, collect2);
+// console.log(collect, collect2);

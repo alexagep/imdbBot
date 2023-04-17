@@ -1073,7 +1073,7 @@ function getRandomMovies(movies) {
 
 async function generateRecommendation(genre, chatId) {
   try {
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
+    const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
     //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
     // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
     // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
@@ -1083,34 +1083,34 @@ async function generateRecommendation(genre, chatId) {
     // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
     //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`;
 
-    const urls = [
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,8.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.5&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
-      `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.0,&genres=${genre}&languages=en&count=250`,
-    ];
+    // const urls = [
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,8.0&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.5&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
+    //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.0,&genres=${genre}&languages=en&count=250`,
+    // ];
 
-    let collector = [];
+    // let collector = [];
 
-    for (const url of urls) {
-      const urResponse = await fetch(url);
-      const res = await urResponse.json();
+    // for (const url of urls) {
+    //   const urResponse = await fetch(url);
+    //   const res = await urResponse.json();
 
-      console.log(res.results.length, 'res.results.length');
-      // collector.push(res.results[0])
-      collector = [...collector, ...res.results];
-    }
-    console.log(collector.length, 'collector.length');
+    //   console.log(res.results.length, 'res.results.length');
+    //   // collector.push(res.results[0])
+    //   collector = [...collector, ...res.results];
+    // }
+    // console.log(collector.length, 'collector.length');
 
-    const movie = getRandomMovies(collector);
+    const movie = getRandomMovies(res.results);
 
     const response = await fetch(movie.image);
     const buffer = await response.buffer();
@@ -1144,7 +1144,7 @@ async function generateRecommendation(genre, chatId) {
       },
     };
 
-    await createMovieGenre(collector, genreId);
+    await createMovieGenre(res.results, genreId);
 
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
