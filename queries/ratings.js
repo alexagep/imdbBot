@@ -62,9 +62,16 @@ async function createMovieRating(movie, ratings, genreIds) {
   }
 }
 
-async function updateRatingRow(data) {
+async function updateRatingRow(data, movieId) {
   try {
-    const result = await Rating.update({ data }, { where: { id: 1 } });
+    const result = await Rating.update(
+      {
+        metacriticRating: data.metacritic,
+        rottenRating: data.rottenTomatoes,
+        imdbRating: data.imDb,
+      },
+      { where: { MovieId: movieId } }
+    );
     console.log(result);
   } catch (error) {
     console.error(error.message);

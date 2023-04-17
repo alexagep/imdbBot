@@ -43,6 +43,7 @@ const {
   getAllRatingByImdbId,
   getAllRatingByMovieName,
   createMovieRating,
+  updateRatingRow,
 } = require("./queries/ratings");
 
 require("dotenv").config();
@@ -891,7 +892,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
     console.log(movies, "MOVIES************");
     const isTimePassed =
-      movies.length > 0 ? isDatePassedBy7Days(movies.updatedAt) : true;
+      movies.length > 0
+        ? isDatePassedBy7Days(movies[0].dataValues.updatedAt)
+        : true;
 
     let ratings = null;
     let rateMessage = null;
@@ -917,9 +920,15 @@ bot.on("callback_query", async (callbackQuery) => {
         rateMessage += rottenRate;
       }
 
-      await createRating(ratings, movie.id);
+      if (!movies) {
+        await createRating(ratings, movie.id);
+      } else if (isTimePassed) {
+        await updateRatingRow(ratings, movie.id)
+      }
+
+      // await createRating(ratings, movie.id);
     } else {
-      ratings = movies[0];      
+      ratings = movies[0];
 
       rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
 
@@ -1174,6 +1183,7 @@ function findSimilarityScores(movieTitle, items) {
 }
 
 function isDatePassedBy7Days(serverDateTime) {
+  console.log(serverDateTime);
   const one_day = 1000 * 60 * 60 * 24;
   const dateNow = new Date();
 
