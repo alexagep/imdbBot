@@ -707,11 +707,9 @@ bot.on("callback_query", async (callbackQuery) => {
     const movieGenre = await getAllMovieGenre(genreId);
 
     console.log(movieGenre.length, "length of movies in DB");
-    // if (movieGenre.length > 0) {
-    // console.log('here is a movie');
-    // } else {
-    await generateRecommendation(genre, chatId);
-    // }
+
+    await generateRecommendationFromDB(movieGenre, chatId);
+    // await generateRecommendation(genre, chatId);
 
     await bot.deleteMessage(chatId, messageId);
   }
@@ -1074,14 +1072,6 @@ function getRandomMovies(movies) {
 async function generateRecommendation(genre, chatId) {
   try {
     const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
-    //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&languages=en&count=250`
-    // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
-    //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`;
 
     // const urls = [
     //   `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
@@ -1101,8 +1091,8 @@ async function generateRecommendation(genre, chatId) {
     // let collector = [];
 
     // for (const url of urls) {
-      const urResponse = await fetch(url);
-      const res = await urResponse.json();
+    const urResponse = await fetch(url);
+    const res = await urResponse.json();
 
     //   console.log(res.results.length, 'res.results.length');
     //   // collector.push(res.results[0])
@@ -1152,6 +1142,49 @@ async function generateRecommendation(genre, chatId) {
     });
   } catch (error) {
     console.log("error in generateRecommendation", error.message);
+  }
+}
+
+async function generateRecommendationFromDB(movieGenres, chatId) {
+  try {
+    const movie = getRandomMovies(movieGenres);
+
+    const response = await fetch(movie.imageUrl);
+    const buffer = await response.buffer();
+
+    const resizedBuffer = await sharp(buffer)
+      .resize({ width: 1280, height: 1024, fit: "inside" })
+      .toBuffer();
+
+    const message = `🎥 ${movie.name} ${movie.year}\n\n⭐️ IMDb rating: ${
+      movie.rating
+    } (${parseInt(movie.totalVotes).toLocaleString()})\n⏱ Time: ${
+      movie.runtime
+    }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${
+      movie.actors
+    }\n🔞 Content Rating: ${movie.contentRating}\n\n📝 Plot: ${movie.plot}`;
+
+    const imdbUrl = `https://www.imdb.com/title/${movie.imdbId}`;
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "New Recommendation",
+              callback_data: "new_recommendation",
+            },
+          ],
+          [{ text: "More Info", url: imdbUrl }],
+        ],
+      },
+    };
+
+    await bot.sendPhoto(chatId, resizedBuffer, {
+      caption: message,
+      reply_markup: opts.reply_markup,
+    });
+  } catch (error) {
+    console.log("error in generateRecommendationFromDB", error.message);
   }
 }
 

@@ -35,17 +35,49 @@ async function getAllMovieGenre(genreId) {
 
 getAllMovieGenre(1)
 
-// async function getAllRating() {
-//  try {
-//    const Row = await Movie.findAll();
+// async function getAllMovieGenre(genreId, num) {
+//   // console.log(genreId);
+//   try {
+//     const MovieGenreRow = await Genre.findAll({
+//       where: { id: genreId },
+//       include: [
+//         {
+//           model: MovieGenre,
+//           include: { model: Movie },
+//         },
+//       ],
+//     });
 
-//    console.log(Row.length, "Rating_FOUND_OR_NOT");
-//  } catch (error) {
-//    console.log(error.message);
-//  }
+//     const data = MovieGenreRow[0].dataValues.MovieGenres;
+
+//     console.log('genreId: ', num, '=>', data.length, "MOVIEGENRE_FOUND_OR_NOT");
+//     // return data;
+//   } catch (error) {
+//     console.log(error.message);
+//   }
 // }
 
-// getAllRating()
+// getAllMovieGenre(1, '1')
+// getAllMovieGenre(2, '2')
+// getAllMovieGenre(3, '3')
+// getAllMovieGenre(4, '4')
+// getAllMovieGenre(5, '5')
+// getAllMovieGenre(6, '6')
+// getAllMovieGenre(7, '7')
+// getAllMovieGenre(8, '8')
+// getAllMovieGenre(9, '9')
+// getAllMovieGenre(10, '10')
+// getAllMovieGenre(11, '11')
+// getAllMovieGenre(12, '12')
+// getAllMovieGenre(13, '13')
+// getAllMovieGenre(14, '14')
+// getAllMovieGenre(15, '15')
+// getAllMovieGenre(16, '16')
+// getAllMovieGenre(17, '17')
+// getAllMovieGenre(18, '18')
+// getAllMovieGenre(19, '19')
+
+
 
 
 // // const searchQuery = "Slave";
