@@ -11,7 +11,7 @@ Installation
 Clone the repository:
 bash
 Copy code
-git clone https://github.com/your-username/telegram-imdb-bot.git
+git clone https://github.com/alexagep/imdbBot.git
 Install the required packages:
 Copy code
 npm install

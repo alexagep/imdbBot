@@ -2,46 +2,26 @@ const TelegramBot = require("node-telegram-bot-api");
 const fetch = require("node-fetch");
 const stringSimilarity = require("string-similarity");
 const sharp = require("sharp");
-const {
-  updateTop250Row,
-  createTop250,
-  getAllTop250,
-} = require("./queries/top250");
-const {
-  updateUpcomingRow,
-  createUpcoming,
-  getAllUpcoming,
-} = require("./queries/upcoming");
+const { updateTop250Row, getAllTop250 } = require("./queries/top250");
+const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 
 const {
-  createBoxOfficeAllTime,
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
 } = require("./queries/boxOfficeAll");
 
 const {
-  createBoxOfficeWeek,
   updateBoxOfficeWeekRow,
   getAllBoxOfficeWeek,
 } = require("./queries/boxOfficeWeek");
 
 const cron = require("node-cron");
-const {
-  createTop250TV,
-  getAllTop250TV,
-  updateTop250TVRow,
-} = require("./queries/top250TV");
-const {
-  getAllMovieGenre,
-  createMovieGenre,
-  createMovieGenreWithFetchingGenreId,
-} = require("./queries/movieGenre");
+const { getAllTop250TV, updateTop250TVRow } = require("./queries/top250TV");
+const { getAllMovieGenre, createMovieGenre } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
 const {
   getAllRating,
   createRating,
-  getAllRatingByImdbId,
-  getAllRatingByMovieName,
   createMovieRating,
   updateRatingRow,
 } = require("./queries/ratings");
@@ -53,13 +33,10 @@ const OMDB_API_KEY = process.env.omdbAPIKEY;
 const IMDB_API_KEY = process.env.imdbAPIKEY;
 
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
-const IMDB_ARTIST_NAME = `https://imdb-api.com/en/api/SearchName/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE_ALLTIME = `https://imdb-api.com/en/API/BoxOfficeAllTime/${IMDB_API_KEY}`;
 const IMDB_USER_RATINGS = `https://imdb-api.com/en/API/UserRatings/${IMDB_API_KEY}`;
 const IMDB_COMING_SOON = `https://imdb-api.com/en/api/ComingSoon/${IMDB_API_KEY}`;
-const OMDB_SEARCH_GENRES = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=&type=movie&plot=short&r=json&genre=`;
-const IMDB_SEARCH_GENRE = `https://imdb-api.com/API/AdvancedSearch/${OMDB_API_KEY}?user_rating=7.0,&genres=thriller&groups=top_1000&languages=en`;
 const IMDB_TOP250_TV = `https://imdb-api.com/en/API/Top250TVs/${IMDB_API_KEY}`;
 
 const bot = new TelegramBot(TELEGRAM_API_KEY, { polling: true });
@@ -276,6 +253,36 @@ bot.onText(/Recommend Movie/, async (msg) => {
             {
               text: "Family",
               callback_data: "family",
+            },
+          ],
+          [
+            {
+              text: "Crime",
+              callback_data: "crime",
+            },
+          ],
+          [
+            {
+              text: "Documentary",
+              callback_data: "documentary",
+            },
+          ],
+          [
+            {
+              text: "Mystery",
+              callback_data: "mystery",
+            },
+          ],
+          [
+            {
+              text: "Western",
+              callback_data: "western",
+            },
+          ],
+          [
+            {
+              text: "War",
+              callback_data: "war",
             },
           ],
         ],
