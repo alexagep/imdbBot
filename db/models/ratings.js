@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       MovieId: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        unique: true,
         field: "movie_id",
         onUpdate: "CASCADE",
         onDelete: "CASCADE",

@@ -899,47 +899,57 @@ bot.on("callback_query", async (callbackQuery) => {
     let ratings = null;
     let rateMessage = null;
 
-    if (!movies || isTimePassed) {
+    if (isTimePassed) {
       const ratingsResp = await fetch(
         `https://imdb-api.com/en/API/Ratings/${IMDB_API_KEY}/${movieId}`
       );
 
       const ratings = await ratingsResp.json();
 
-      // ratings.fullTitle = `${movies.name} ${movies.year}`;
+      rateMessage = ``;
 
-      rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
-
+      const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
+      if (ratings.imDb) {
+        rateMessage += imdbRate;
+      }
       if (ratings.metacritic) {
         rateMessage += metacriticRate;
       }
       if (ratings.rottenTomatoes) {
         rateMessage += rottenRate;
       }
-
-      if (!movies) {
-        await createRating(ratings, movie.id);
-      } else if (isTimePassed) {
-        await updateRatingRow(ratings, movie.id)
+      if (rateMessage === "") {
+        rateMessage += `❌  No Rating`;
       }
 
-      // await createRating(ratings, movie.id);
+      if (movies.length === 0) {
+        await createRating(ratings, movie.id);
+      } else if (isTimePassed) {
+        await updateRatingRow(ratings, movie.id);
+      }
     } else {
       ratings = movies[0];
 
-      rateMessage = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
+      rateMessage = ``;
 
+      const imdbRate = `⭐️ IMDb Rating: ${ratings.imdbRating}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacriticRating}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenRating}/100`;
 
+      if (ratings.imdbRating) {
+        rateMessage += imdbRate;
+      }
       if (ratings.metacriticRating) {
         rateMessage += metacriticRate;
       }
       if (ratings.rottenRating) {
         rateMessage += rottenRate;
+      }
+      if (rateMessage === "") {
+        rateMessage += `❌  No Rating`;
       }
     }
 
@@ -1000,16 +1010,23 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const ratings = await ratingsResp.json();
 
-    let rateMessage = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+    let rateMessage = ``;
 
+    const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
     const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
     const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
+    if (ratings.imDb) {
+      rateMessage += imdbRate;
+    }
     if (ratings.metacritic) {
       rateMessage += metacriticRate;
     }
     if (ratings.rottenTomatoes) {
       rateMessage += rottenRate;
+    }
+    if (rateMessage === "") {
+      rateMessage += `❌  No Rating`;
     }
 
     const message = `🎬 ${movie.title} ${movie.description}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtimeStr}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;

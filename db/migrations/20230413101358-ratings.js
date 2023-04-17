@@ -12,6 +12,7 @@ module.exports = {
         MovieId: {
           type: Sequelize.INTEGER,
           allowNull: false,
+          unique: true,
           field: "movie_id",
           onUpdate: "CASCADE",
           onDelete: "CASCADE",

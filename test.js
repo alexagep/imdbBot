@@ -147,7 +147,7 @@
 // // _%${searchTerm}%
 
 // const one_day = 1000 * 60 * 60 * 24;
-const serverDateTime = "2023-04-09T05:53:45.467Z";
+// const serverDateTime = "2023-04-09T05:53:45.467Z";
 // const dateNow = new Date();
 
 // var _dtSvr = Date.parse(serverDateTime);
@@ -155,20 +155,20 @@ const serverDateTime = "2023-04-09T05:53:45.467Z";
 
 // console.log((_dtTxt - _dtSvr) / one_day > 7);
 
-function isDatePassedBy7Days(serverDateTime) {
-  const one_day = 1000 * 60 * 60 * 24;
-  const dateNow = new Date();
+// function isDatePassedBy7Days(serverDateTime) {
+//   const one_day = 1000 * 60 * 60 * 24;
+//   const dateNow = new Date();
 
-  const _dtSvr = Date.parse(serverDateTime);
-  const _dtTxt = Date.parse(dateNow);
+//   const _dtSvr = Date.parse(serverDateTime);
+//   const _dtTxt = Date.parse(dateNow);
 
-  return (_dtTxt - _dtSvr) / one_day > 7
-}
-console.log(isDatePassedBy7Days(serverDateTime));
+//   return (_dtTxt - _dtSvr) / one_day > 7
+// }
+// console.log(isDatePassedBy7Days(serverDateTime));
 
 
 
-// const obj = {}
+const arr = []
 
 // obj.hello = {name: 'ali'}
 // console.log(obj);
@@ -178,3 +178,24 @@ console.log(isDatePassedBy7Days(serverDateTime));
 
 
 // console.log(genres[0].split(','));
+
+
+rateMessage = ``;
+
+      const imdbRate = `⭐️ IMDb Rating: \n`
+      const metacriticRate = `🌟 Metacritic Rating: /100\n`;
+      const rottenRate = `🍅 RottenTomatoes Rating: /100`;
+
+      if (arr.length > 1) {
+        rateMessage += imdbRate;
+      }
+      if (arr.length > 1) {
+        rateMessage += metacriticRate;
+      }
+      if (arr.length > 1) {
+        rateMessage += rottenRate;
+      }
+      if (rateMessage == '') {
+        console.log('here');
+      }
+// console.log();
