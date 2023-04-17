@@ -180,22 +180,35 @@ const arr = []
 // console.log(genres[0].split(','));
 
 
-rateMessage = ``;
+// rateMessage = ``;
 
-      const imdbRate = `⭐️ IMDb Rating: \n`
-      const metacriticRate = `🌟 Metacritic Rating: /100\n`;
-      const rottenRate = `🍅 RottenTomatoes Rating: /100`;
+//       const imdbRate = `⭐️ IMDb Rating: \n`
+//       const metacriticRate = `🌟 Metacritic Rating: /100\n`;
+//       const rottenRate = `🍅 RottenTomatoes Rating: /100`;
 
-      if (arr.length > 1) {
-        rateMessage += imdbRate;
-      }
-      if (arr.length > 1) {
-        rateMessage += metacriticRate;
-      }
-      if (arr.length > 1) {
-        rateMessage += rottenRate;
-      }
-      if (rateMessage == '') {
-        console.log('here');
-      }
+//       if (arr.length > 1) {
+//         rateMessage += imdbRate;
+//       }
+//       if (arr.length > 1) {
+//         rateMessage += metacriticRate;
+//       }
+//       if (arr.length > 1) {
+//         rateMessage += rottenRate;
+//       }
+//       if (rateMessage == '') {
+//         console.log('here');
+//       }
 // console.log();
+
+
+const result = [{},{},{}]
+
+const collect = [{}]
+
+// for (const res of result) {
+//   collect.push(res)
+// }
+
+const col = [...result, ...collect]
+
+console.log(collect, col);

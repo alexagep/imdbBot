@@ -1072,7 +1072,7 @@ function getRandomMovies(movies) {
 }
 
 async function generateRecommendation(genre, chatId) {
-  const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
+  // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`;
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`
@@ -1082,9 +1082,33 @@ async function generateRecommendation(genre, chatId) {
   // const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&languages=en&count=250`
   //const url = `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`;
 
-  const urResponse = await fetch(url);
-  const res = await urResponse.json();
-  const movie = getRandomMovies(res.results);
+  const urls = [
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=4.0,5.0&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=5.0,6.0&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=6.0,7.0&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=7.0,8.0&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.0,8.5&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
+    `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY}?user_rating=9.0,&genres=${genre}&languages=en&count=250`,
+  ]
+
+  let collector = []
+
+  for (const url of urls) {
+    const urResponse = await fetch(url);
+    const res = await urResponse.json();
+
+    // collector.push(res.results)
+    collector = [... res.results]
+  }
+  console.log(collector.length);
+
+  const movie = getRandomMovies(collector);
 
   const response = await fetch(movie.image);
   const buffer = await response.buffer();
@@ -1116,7 +1140,7 @@ async function generateRecommendation(genre, chatId) {
     },
   };
 
-  await createMovieGenre(res.results, genreId);
+  await createMovieGenre(collector, genreId);
 
   await bot.sendPhoto(chatId, resizedBuffer, {
     caption: message,
