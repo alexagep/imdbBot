@@ -1,5 +1,6 @@
 const db = require("../db/models/index");
 const { createMovie } = require("./movies");
+const { Op } = require("sequelize");
 
 const MovieGenre = db.MovieGenre;
 const Movie = db.Movie;
@@ -19,6 +20,9 @@ async function getAllMovieGenre(genreId) {
               where: {
                 rating: {
                   [Op.gt]: 6.4, // Only retrieve movies with a rating over 6.3
+                },
+                totalVotes: {
+                  [Op.gt]: 1200, // Only retrieve movies with a runtime over 60 minutes
                 },
               },
             },
