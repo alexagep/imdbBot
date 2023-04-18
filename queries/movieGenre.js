@@ -19,10 +19,10 @@ async function getAllMovieGenre(genreId) {
               model: Movie,
               where: {
                 rating: {
-                  [Op.gt]: 6.4, // Only retrieve movies with a rating over 6.3
+                  [Op.gt]: 6.4, // Only retrieve movies with a rating over 6.4
                 },
                 totalVotes: {
-                  [Op.gt]: 1200, // Only retrieve movies with a runtime over 60 minutes
+                  [Op.gt]: 1200, // Only retrieve movies with a totalVotes over 1200
                 },
               },
             },
