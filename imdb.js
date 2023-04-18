@@ -654,9 +654,9 @@ bot.on("callback_query", async (callbackQuery) => {
       let UserRatings = null;
       // let urCollect_movieId = null;
 
-      console.log(UserRatingDb.UserRatings);
+      // console.log(UserRatingDb.UserRatings);
       if (UserRatingDb.UserRatings.length > 0) {
-        UserRatings = UserRatingDb.UserRatings;
+        UserRatings = UserRatingDb.UserRatings[0];
         // urCollect_movieId = UserRatingDb
       } else {
         const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
@@ -936,7 +936,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
       rateMessage = ``;
 
-      const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb)}\n`;
+      const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb.toFixed(1)}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1038,7 +1038,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     let rateMessage = ``;
 
-    const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb)}\n`;
+    const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb.toFixed(1)}\n`;
     const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
     const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1179,7 +1179,7 @@ async function generateRecommendationFromDB(movieGenres, chatId) {
 
     const message = `🎥 ${movie.name} ${
       movie.year
-    }\n\n⭐️ IMDb rating: ${parseFloat(movie.rating)} (${parseInt(
+    }\n\n⭐️ IMDb rating: ${movie.rating.toFixed(1)} (${parseInt(
       movie.totalVotes
     ).toLocaleString()})\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${
       movie.genres

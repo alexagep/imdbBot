@@ -13,7 +13,16 @@ async function getAllMovieGenre(genreId) {
       include: [
         {
           model: MovieGenre,
-          include: { model: Movie },
+          include: [
+            {
+              model: Movie,
+              where: {
+                rating: {
+                  [Op.gt]: 6.4, // Only retrieve movies with a rating over 6.3
+                },
+              },
+            },
+          ],
         },
       ],
     });
@@ -40,7 +49,7 @@ async function createMovieGenre(movies, genreId) {
   try {
     if (genreId) {
       const movieRows = await createMovie(movies, genreId);
-  
+
       for (const item of movieRows) {
         try {
           await MovieGenre.findOrCreate({
@@ -89,26 +98,26 @@ async function createMovieGenreWithFetchingGenreId(movie) {
     ];
 
     // for (const movie of movies) {
-      const genresArr = Array.isArray(movie.genres)
-        ? movie.genres
-        : [movie.genres];
-      for (const genreName of genresArr) {
-        if (genreName !== null) {
-          const genreId = genres.indexOf(genreName.toLowerCase()) + 1;
+    const genresArr = Array.isArray(movie.genres)
+      ? movie.genres
+      : [movie.genres];
+    for (const genreName of genresArr) {
+      if (genreName !== null) {
+        const genreId = genres.indexOf(genreName.toLowerCase()) + 1;
 
-          // console.log(genreName);
-          const movieRows = await createMovie(movies, genreId);
+        // console.log(genreName);
+        const movieRows = await createMovie(movies, genreId);
 
-          for (const item of movieRows) {
-            try {
-              await MovieGenre.findOrCreate({
-                where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
-                defaults: item, // data to be used for creating new row
-              });
-            } catch (error) {}
-          }
+        for (const item of movieRows) {
+          try {
+            await MovieGenre.findOrCreate({
+              where: { MovieId: item.MovieId, GenreId: item.GenreId }, // criteria to find existing row
+              defaults: item, // data to be used for creating new row
+            });
+          } catch (error) {}
         }
       }
+    }
     // }
   } catch (error) {
     console.error(

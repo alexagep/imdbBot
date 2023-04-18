@@ -1,39 +1,39 @@
-const db = require("./db/models/index");
-const Movie = db.Movie;
-const Genre = db.Genre
-const MovieGenre = db.MovieGenre
+// const db = require("./db/models/index");
+// const Movie = db.Movie;
+// const Genre = db.Genre
+// const MovieGenre = db.MovieGenre
 // const { Op } = require("sequelize");
 // // const stringSimilarity = require("string-similarity");
 
-async function getAllMovie() {
-  const MovieList = await Movie.findAll();
-  console.log(MovieList.length);
-}
-getAllMovie();
+// async function getAllMovie() {
+//   const MovieList = await Movie.findAll();
+//   console.log(MovieList.length);
+// }
+// getAllMovie();
 
-async function getAllMovieGenre(genreId) {
-  // console.log(genreId);
-  try {
-    const MovieGenreRow = await Genre.findAll({
-      where: { id: genreId },
-      include: [
-        {
-          model: MovieGenre,
-          include: { model: Movie },
-        },
-      ],
-    });
+// async function getAllMovieGenre(genreId) {
+//   // console.log(genreId);
+//   try {
+//     const MovieGenreRow = await Genre.findAll({
+//       where: { id: genreId },
+//       include: [
+//         {
+//           model: MovieGenre,
+//           include: { model: Movie },
+//         },
+//       ],
+//     });
 
-    const data = MovieGenreRow[0].dataValues.MovieGenres;
+//     const data = MovieGenreRow[0].dataValues.MovieGenres;
 
-    console.log(data.length, "MOVIEGENRE_FOUND_OR_NOT");
-    // return data;
-  } catch (error) {
-    console.log(error.message);
-  }
-}
+//     console.log(data.length, "MOVIEGENRE_FOUND_OR_NOT");
+//     // return data;
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
 
-getAllMovieGenre(1)
+// getAllMovieGenre(1)
 
 // async function getAllMovieGenre(genreId, num) {
 //   // console.log(genreId);
@@ -223,7 +223,7 @@ getAllMovieGenre(1)
 
 
 
-const arr = []
+// const arr = []
 
 // obj.hello = {name: 'ali'}
 // console.log(obj);
@@ -292,3 +292,8 @@ const arr = []
 // // const col = [...result, ...collect]
 
 // console.log(collect, collect2);
+
+
+const num = 8.1
+
+console.log(num.toFixed(1));
