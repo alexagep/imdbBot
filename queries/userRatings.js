@@ -14,7 +14,7 @@ async function getAllUserRating(imdbId) {
 
     // const data = Row;
 
-    return Row[0].dataValues.UserRating;
+    return Row[0].dataValues;
   } catch (error) {
     console.log(error.message);
   }

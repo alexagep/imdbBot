@@ -652,16 +652,18 @@ bot.on("callback_query", async (callbackQuery) => {
       const UserRatingDb = await getAllUserRating(movie_ID);
 
       let UserRatings = null;
+      // let urCollect_movieId = null;
 
-      console.log(UserRatingDb);
-      if (UserRatingDb.length > 0) {
-        UserRatings = UserRatingDb;
+      console.log(UserRatingDb.UserRatings);
+      if (UserRatingDb.UserRatings.length > 0) {
+        UserRatings = UserRatingDb.UserRatings;
+        // urCollect_movieId = UserRatingDb
       } else {
         const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
         UserRatings = await urResponse.json();
 
-        await createUserRating(UserRatings, movie_ID);
+        await createUserRating(UserRatings, UserRatingDb.id);
       }
 
       const totalVotes =
