@@ -25,6 +25,7 @@ const {
   createMovieRating,
   updateRatingRow,
 } = require("./queries/ratings");
+const { getAllUserRating, createUserRating } = require("./queries/userRatings");
 
 require("dotenv").config();
 
@@ -347,7 +348,6 @@ let movieCollector = null;
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
   const movieTitle = msg.text;
-  // const messageId = msg.message_id;
 
   if (
     !msg.text ||
@@ -648,9 +648,19 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "user_ratings") {
     // Send the user ratings data
     if (movie_ID !== null) {
-      const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
+      const UserRatingDb = await getAllUserRating(movie_ID);
 
-      const UserRatings = await urResponse.json();
+      let UserRatings = null;
+
+      if (UserRatingDb.length > 0) {
+        UserRatings = UserRatingDb;
+      } else {
+        const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
+
+        UserRatings = await urResponse.json();
+
+        await createUserRating(UserRatings, movie_ID);
+      }
 
       const totalVotes =
         parseInt(UserRatings.demographicAll.allAges?.votes).toLocaleString() ||
@@ -740,8 +750,10 @@ bot.on("callback_query", async (callbackQuery) => {
   } else if (callbackQuery.data === "box_office_all_time") {
     const moviesInDb = await getAllBoxOfficeAllTime();
 
-    if (moviesInDb[0].dataValues.data.items.length > 0) {
-      boxAllList = moviesInDb[0].dataValues.data.items;
+    const moviesItems = moviesInDb[0].dataValues.data.items;
+
+    if (moviesItems.length > 0) {
+      boxAllList = moviesItems;
     }
 
     // else {
@@ -785,8 +797,10 @@ bot.on("callback_query", async (callbackQuery) => {
     try {
       const moviesInDb = await getAllTop250();
 
-      if (moviesInDb[0].dataValues.data.items.length > 0) {
-        top250List = moviesInDb[0].dataValues.data.items;
+      const moviesItems = moviesInDb[0].dataValues.data.items;
+
+      if (moviesItems.length > 0) {
+        top250List = moviesItems;
       }
 
       // else {
@@ -836,8 +850,10 @@ bot.on("callback_query", async (callbackQuery) => {
     try {
       const seriesInDb = await getAllTop250TV();
 
-      if (seriesInDb[0].dataValues.data.items.length > 0) {
-        top250SeriesList = seriesInDb[0].dataValues.data.items;
+      const seriesItems = seriesInDb[0].dataValues.data.items;
+
+      if (seriesItems.length > 0) {
+        top250SeriesList = seriesItems;
       }
 
       // else {
@@ -916,7 +932,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
       rateMessage = ``;
 
-      const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+      const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb)}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1018,7 +1034,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     let rateMessage = ``;
 
-    const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb}\n`;
+    const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb)}\n`;
     const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
     const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1157,13 +1173,15 @@ async function generateRecommendationFromDB(movieGenres, chatId) {
       .resize({ width: 1280, height: 1024, fit: "inside" })
       .toBuffer();
 
-    const message = `🎥 ${movie.name} ${movie.year}\n\n⭐️ IMDb rating: ${
-      movie.rating
-    } (${parseInt(movie.totalVotes).toLocaleString()})\n⏱ Time: ${
-      movie.runtime
-    }\n🎭 Genres: ${movie.genres}\n🌟 Cast: ${
-      movie.actors
-    }\n🔞 Content Rating: ${movie.contentRating}\n\n📝 Plot: ${movie.plot}`;
+    const message = `🎥 ${movie.name} ${
+      movie.year
+    }\n\n⭐️ IMDb rating: ${parseFloat(movie.rating)} (${parseInt(
+      movie.totalVotes
+    ).toLocaleString()})\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${
+      movie.genres
+    }\n🌟 Cast: ${movie.actors}\n🔞 Content Rating: ${
+      movie.contentRating
+    }\n\n📝 Plot: ${movie.plot}`;
 
     const imdbUrl = `https://www.imdb.com/title/${movie.imdbId}`;
     const opts = {

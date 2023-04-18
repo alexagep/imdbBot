@@ -8,6 +8,10 @@ module.exports = (sequelize, DataTypes) => {
       Movie.hasMany(models.MovieGenre);
 
       Movie.hasMany(models.Rating);
+
+      Movie.hasMany(models.Trailer);
+
+      Movie.hasMany(models.UserRating);
     }
   }
 
