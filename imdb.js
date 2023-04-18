@@ -417,6 +417,7 @@ let boxAllList = null;
 let top250List = null;
 let top250SeriesList = null;
 let genreId = null;
+let movieGenre = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -704,11 +705,12 @@ bot.on("callback_query", async (callbackQuery) => {
     genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
 
     console.log(genre, genreId, "GENREID");
-    const movieGenre = await getAllMovieGenre(genreId);
+    movieGenre = await getAllMovieGenre(genreId);
 
     console.log(movieGenre.length, "length of movies in DB");
 
     await generateRecommendationFromDB(movieGenre, chatId);
+
     // await generateRecommendation(genre, chatId);
 
     await bot.deleteMessage(chatId, messageId);
@@ -716,7 +718,10 @@ bot.on("callback_query", async (callbackQuery) => {
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    await generateRecommendation(genre, chatId);
+    await generateRecommendationFromDB(movieGenre, chatId);
+
+    // await generateRecommendation(genre, chatId);
+
     await bot.deleteMessage(chatId, messageId);
   }
 
@@ -1142,8 +1147,8 @@ async function generateRecommendation(genre, chatId) {
 async function generateRecommendationFromDB(movieGenres, chatId) {
   try {
     let movie = getRandomMovies(movieGenres);
-    
-    movie = movie.dataValues.Movie.dataValues
+
+    movie = movie.dataValues.Movie.dataValues;
 
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
