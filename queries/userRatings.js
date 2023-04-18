@@ -3,21 +3,23 @@ const db = require("../db/models/index");
 const UserRating = db.UserRating;
 const Movie = db.Movie;
 
-async function getAllUserRating(movieId) {
+async function getAllUserRating(imdbId) {
   try {
-    const Row = await UserRating.findAll({
-      where: { MovieId: movieId },
+    const Row = await Movie.findAll({
+      where: { imdbId: imdbId },
+      include: [{ model: UserRating }],
     });
 
-    console.log(Row, "UserRating_FOUND_OR_NOT");
+    console.log(Row[0].dataValues, "UserRating_FOUND_OR_NOT");
 
     // const data = Row;
 
-    return Row.dataValues;
+    return Row[0].dataValues.UserRating;
   } catch (error) {
     console.log(error.message);
   }
 }
+
 
 async function createMovieUserRating(movie, UserRatings, genreIds) {
   try {
@@ -86,11 +88,10 @@ async function createUserRating(data, movieId) {
       demographicMales: data.demographicMales,
       demographicFemales: data.demographicFemales,
       demographicAll: data.demographicAll,
-      MovieId: movieId
+      MovieId: movieId,
     };
 
     await UserRating.create(item);
-
   } catch (error) {
     console.error(
       "Error creating new records in UserRating table:",

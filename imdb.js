@@ -344,6 +344,7 @@ bot.onText(/Box Office/, async (msg) => {
 
 let movie_ID = null;
 let movieCollector = null;
+// let movieCollectorDB = null
 
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
@@ -652,6 +653,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
       let UserRatings = null;
 
+      console.log(UserRatingDb);
       if (UserRatingDb.length > 0) {
         UserRatings = UserRatingDb;
       } else {
