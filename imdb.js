@@ -942,7 +942,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
       rateMessage = ``;
 
-      const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb.toFixed(1)}\n`;
+      const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(1)}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1044,7 +1044,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
     let rateMessage = ``;
 
-    const imdbRate = `⭐️ IMDb Rating: ${ratings.imDb.toFixed(1)}\n`;
+    const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(1)}\n`;
     const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
     const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1149,7 +1149,7 @@ async function generateRecommendationFromDB(movieGenres, chatId) {
 
     const message = `🎥 ${movie.name} ${
       movie.year
-    }\n\n⭐️ IMDb rating: ${movie.rating.toFixed(1)} (${parseInt(
+    }\n\n⭐️ IMDb rating: ${parseFloat(movie.rating).toFixed(1)} (${parseInt(
       movie.totalVotes
     ).toLocaleString()})\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${
       movie.genres

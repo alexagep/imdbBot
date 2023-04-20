@@ -294,6 +294,6 @@
 // console.log(collect, collect2);
 
 
-const num = 8.1
+const num = "8.1"
 
-console.log(num.toFixed(1));
+console.log(parseFloat(num));
