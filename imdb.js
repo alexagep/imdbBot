@@ -17,7 +17,7 @@ const {
 
 const cron = require("node-cron");
 const { getAllTop250TV, updateTop250TVRow } = require("./queries/top250TV");
-const { getAllMovieGenre, createMovieGenre } = require("./queries/movieGenre");
+const { getAllMovieGenre, createMovieGenre, getAllSeries } = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
 const {
   getAllRating,
@@ -100,6 +100,7 @@ const staticKeyboard = {
     keyboard: [
       ["🎥 Search Movie", "🔝 Top250"],
       ["🎭 Coming Soon", "💰 Box Office"],
+      ["📺 Recommend Series"],
       ["🍿🤖 Recommend Movie"],
     ],
     one_time_keyboard: false,
@@ -306,6 +307,119 @@ bot.onText(/Recommend Movie/, async (msg) => {
   }
 });
 
+let tvRecomFlag = null;
+bot.onText(/📺 Recommend Series/, async (msg) => {
+  const chatId = msg.chat.id;
+  try {
+    const opts = {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Comedy",
+              callback_data: `comedy`,
+            },
+          ],
+          [
+            {
+              text: "Sci-fi",
+              callback_data: `Sci-fi`,
+            },
+          ],
+          [
+            {
+              text: "Romance",
+              callback_data: `romance`,
+            },
+          ],
+          [
+            {
+              text: "Thriller",
+              callback_data: `thriller`,
+            },
+          ],
+          [
+            {
+              text: "Horror",
+              callback_data: `horror`,
+            },
+          ],
+          [
+            {
+              text: "Action",
+              callback_data: `action`,
+            },
+          ],
+          [
+            {
+              text: "Animation",
+              callback_data: "animation",
+            },
+          ],
+          [
+            {
+              text: "Adventure",
+              callback_data: "adventure",
+            },
+          ],
+          [
+            {
+              text: "Drama",
+              callback_data: "drama",
+            },
+          ],
+          [
+            {
+              text: "Family",
+              callback_data: "family",
+            },
+          ],
+          [
+            {
+              text: "Crime",
+              callback_data: "crime",
+            },
+          ],
+          [
+            {
+              text: "Documentary",
+              callback_data: "documentary",
+            },
+          ],
+          [
+            {
+              text: "Mystery",
+              callback_data: "mystery",
+            },
+          ],
+          [
+            {
+              text: "Western",
+              callback_data: "western",
+            },
+          ],
+          [
+            {
+              text: "War",
+              callback_data: "war",
+            },
+          ],
+        ],
+      },
+    };
+
+    tvRecomFlag = true;
+
+    bot.sendMessage(chatId, `Select A Genre You Want To See:\n\n`, opts);
+  } catch (error) {
+    console.error("Error fetching the Coming Soon:", error);
+    bot.sendMessage(
+      chatId,
+      "An error occurred while fetching the Coming Soon. Please try again later."
+    );
+  }
+});
+
 bot.onText(/\/menu/, (msg) => {
   const chatId = msg.chat.id;
 
@@ -350,7 +464,6 @@ bot.onText(/Box Office/, async (msg) => {
 
 let movie_ID = null;
 let movieCollector = null;
-// let movieCollectorDB = null
 
 bot.on("message", async (msg) => {
   const chatId = msg.chat.id;
@@ -366,7 +479,8 @@ bot.on("message", async (msg) => {
     msg.text.startsWith("🔝") ||
     msg.text.startsWith("🎭") ||
     msg.text.startsWith("💰") ||
-    msg.text.startsWith("🍿")
+    msg.text.startsWith("🍿") ||
+    msg.text.startsWith("📺")
   )
     return;
 
@@ -425,6 +539,7 @@ let top250List = null;
 let top250SeriesList = null;
 let genreId = null;
 let movieGenre = null;
+let serieGenre = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -672,6 +787,8 @@ bot.on("callback_query", async (callbackQuery) => {
         await createUserRating(UserRatings, UserRatingDb.id);
       }
 
+      console.log(UserRatings);
+
       const totalVotes =
         parseInt(UserRatings.demographicAll.allAges?.votes).toLocaleString() ||
         null;
@@ -725,22 +842,31 @@ bot.on("callback_query", async (callbackQuery) => {
     genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
 
     console.log(genre, genreId, "GENREID");
-    movieGenre = await getAllMovieGenre(genreId);
 
-    console.log(movieGenre.length, "length of movies in DB");
+    if (tvRecomFlag) {
+      serieGenre = await getAllSeries(genreId);
 
-    await generateRecommendationFromDB(movieGenre, chatId);
+      console.log(serieGenre.length, "length of", genre," series in DB");
 
-    // await generateRecommendation(genre, chatId);
+      await generateRecommendationFromDB(serieGenre, chatId);
+    } else {
+      movieGenre = await getAllMovieGenre(genreId);
+
+      console.log(movieGenre.length, "length of", genre," movies in DB");
+
+      await generateRecommendationFromDB(movieGenre, chatId);
+    }
 
     await bot.deleteMessage(chatId, messageId);
   }
 
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
-    await generateRecommendationFromDB(movieGenre, chatId);
-
-    // await generateRecommendation(genre, chatId);
+    if (tvRecomFlag) {
+      await generateRecommendationFromDB(serieGenre, chatId)
+    } else {
+      await generateRecommendationFromDB(movieGenre, chatId);
+    }
 
     await bot.deleteMessage(chatId, messageId);
   }
@@ -942,7 +1068,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
       rateMessage = ``;
 
-      const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(1)}\n`;
+      const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(
+        1
+      )}\n`;
       const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
       const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 
@@ -1044,7 +1172,9 @@ bot.on("callback_query", async (callbackQuery) => {
 
     let rateMessage = ``;
 
-    const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(1)}\n`;
+    const imdbRate = `⭐️ IMDb Rating: ${parseFloat(ratings.imDb).toFixed(
+      1
+    )}\n`;
     const metacriticRate = `🌟 Metacritic Rating: ${ratings.metacritic}/100\n`;
     const rottenRate = `🍅 RottenTomatoes Rating: ${ratings.rottenTomatoes}/100`;
 

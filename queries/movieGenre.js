@@ -43,6 +43,43 @@ async function getAllMovieGenre(genreId) {
   }
 }
 
+async function getAllSeries(genreId) {
+  // console.log(genreId);
+  try {
+    const MovieGenreRow = await Genre.findAll({
+      where: { id: genreId },
+      include: [
+        {
+          model: MovieGenre,
+          include: [
+            {
+              model: Movie,
+              where: {
+                rating: {
+                  [Op.gt]: 6.7, // Only retrieve movies with a rating over 6.7
+                },
+                totalVotes: {
+                  [Op.gt]: 1200, // Only retrieve movies with a totalVotes over 1200
+                },
+                contentRating: {
+                  [Op.in]: ["TV-Y", "TV-Y7", "TV-G", "TV-PG", "TV-14", "TV-MA"], // Only retrieve movies with these content ratings
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    const data = MovieGenreRow[0].MovieGenres;
+
+    console.log(data.length, "SERIES_FOUND_OR_NOT");
+    return data;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
 async function updateMovieGenreRow(data) {
   try {
     const result = await MovieGenre.update({ data }, { where: { id: 1 } });
@@ -140,4 +177,5 @@ module.exports = {
   updateMovieGenreRow,
   createMovieGenre,
   createMovieGenreWithFetchingGenreId,
+  getAllSeries,
 };
