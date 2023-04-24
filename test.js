@@ -11,6 +11,7 @@ async function getAllMovie() {
 }
 getAllMovie();
 
+/*
 async function getAllMovieGenre(genreId) {
   // console.log(genreId);
   try {
@@ -34,6 +35,7 @@ async function getAllMovieGenre(genreId) {
 }
 
 getAllMovieGenre(1)
+*/
 
 // async function getAllMovieGenre(genreId, num) {
 //   // console.log(genreId);
@@ -223,7 +225,7 @@ getAllMovieGenre(1)
 
 
 
-const arr = []
+// const arr = []
 
 // obj.hello = {name: 'ali'}
 // console.log(obj);
