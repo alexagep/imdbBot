@@ -1256,6 +1256,8 @@ async function generateRecommendation() {
 
         collector = [...collector, ...res.results];
       }
+
+      const genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
       console.log(collector.length, "collector.length");
 
       await createMovieGenre(collector, genreId);
