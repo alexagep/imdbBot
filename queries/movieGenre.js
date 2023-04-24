@@ -19,10 +19,13 @@ async function getAllMovieGenre(genreId) {
               model: Movie,
               where: {
                 rating: {
-                  [Op.gt]: 6.4, // Only retrieve movies with a rating over 6.4
+                  [Op.gt]: 6.7, // Only retrieve movies with a rating over 6.7
                 },
                 totalVotes: {
                   [Op.gt]: 1200, // Only retrieve movies with a totalVotes over 1200
+                },
+                contentRating: {
+                  [Op.in]: ["G", "PG", "PG-13", "R", "NC-17"], // Only retrieve movies with these content ratings
                 },
               },
             },

@@ -90,10 +90,10 @@ cron.schedule("30 2 * * *", () => {
 });
 
 // Schedule the cronjob to run every Friday at 03:00 AM
-cron.schedule("0 3 * * 5", async () => {
-  console.log("Running generateRecommendation cronjob...");
-  await generateRecommendation();
-});
+// cron.schedule("0 3 * * 5", async () => {
+//   console.log("Running generateRecommendation cronjob...");
+//   await generateRecommendation();
+// });
 
 const staticKeyboard = {
   reply_markup: JSON.stringify({
