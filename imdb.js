@@ -1232,10 +1232,11 @@ async function generateRecommendation() {
 
     for (const genre of genres) {
       const urls = [
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:G,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:G,us:PG,&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:G&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:PG&languages=en&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:R,us:NC-17&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:R&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:NC-17&languages=en&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.4,6.7&genres=${genre}&languages=en&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.8,7.0&genres=${genre}&languages=en&count=250`,
