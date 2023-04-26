@@ -1233,7 +1233,7 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "trailer") {
     try {
       // Fetch the YouTube ID from the database (assuming it's stored as `youtubeId`)
-      console.log(movieDbId, 'NOOOOOOO?');
+      console.log(movieDbId,movieFound, 'NOOOOOOO?');
       const movie = await getAllTrailer(movieDbId);
       let youtubeId = null;
 
