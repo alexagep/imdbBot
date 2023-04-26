@@ -29,7 +29,7 @@ const bot = new TelegramBot(token, {polling: true});
 
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
-  const videoUrl = `https://www.youtube.com/watch?v=vi2959588889`;
+  const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
 
   const response = await axios({
     url: videoUrl,

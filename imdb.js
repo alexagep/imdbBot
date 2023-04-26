@@ -4,7 +4,7 @@ const stringSimilarity = require("string-similarity");
 const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
-
+const axios = require('axios')
 const {
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
@@ -31,7 +31,7 @@ require("dotenv").config();
 
 const TELEGRAM_API_KEY = process.env.telegramAPIKEY;
 const OMDB_API_KEY = process.env.omdbAPIKEY;
-const IMDB_API_KEY = process.env.imdbAPIKEY;
+const IMDB_API_KEY = process.env.imdbAPIKEY2;
 
 const IMDB_TOP_250_URL = `https://imdb-api.com/en/API/Top250Movies/${IMDB_API_KEY}`;
 const IMDB_BOX_OFFICE = `https://imdb-api.com/en/api/BoxOffice/${IMDB_API_KEY}`;
@@ -1138,11 +1138,23 @@ bot.on("callback_query", async (callbackQuery) => {
       },
     };
 
+const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+
+  const response2 = await axios({
+    url: videoUrl,
+    method: 'GET',
+    responseType: 'stream',
+  });
+
+  bot.sendVideoStream(chatId, response2.data, {caption: 'VIDEO_CAPTION'});
+
+
+/*
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,
     });
-
+*/
     await bot.deleteMessage(chatId, messageId);
   }
 
@@ -1210,6 +1222,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
     await createMovieRating(movie, ratings, movie.genres);
 
+
+console.log('******%%%%%%%%%%%%*********')
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,

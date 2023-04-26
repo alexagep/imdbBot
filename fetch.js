@@ -30,11 +30,11 @@ async function generateRecommendation() {
 
     for (const genre of genres) {
       const urls = [
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:G&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:PG&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:PG-13&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:R&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:NC-17&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:G&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:PG&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:PG-13&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:R&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:NC-17&languages=tr&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.0,6.3&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.4,6.7&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.8,7.0&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
@@ -70,16 +70,16 @@ generateRecommendation();
 
 async function generateRecommendationTV() {
   try {
-    const IMDB_API_KEY3 = process.env.imdbAPIKEY3;
+    const IMDB_API_KEY3 = process.env.imdbAPIKEY2;
 
     for (const genre of genres) {
       const urls = [
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_movie&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_series&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=,tv_episode&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_special&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_miniseries&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_short&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=en&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_movie&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_series&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=,tv_episode&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_special&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_miniseries&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?title_type=tv_short&user_rating=6.0,&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
       ];
       let collector = [];
 
