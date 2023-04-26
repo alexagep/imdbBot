@@ -31,6 +31,7 @@ const {
 } = require("./queries/ratings");
 const { getAllUserRating, createUserRating } = require("./queries/userRatings");
 const ytdl = require("ytdl-core");
+const { createTrailer } = require("./queries/trailers");
 
 require("dotenv").config();
 
@@ -1055,7 +1056,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    movieDbId = movie.id
+    movieDbId = movie.id;
 
     const movies = await getAllRating(movie.id);
 
@@ -1147,22 +1148,11 @@ bot.on("callback_query", async (callbackQuery) => {
       },
     };
 
-    const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
-
-    const video = ytdl(videoUrl, { filter: "audioandvideo" });
-
-    const filePath = "./video.mp4";
-
-    video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
-      bot.sendVideo(chatId, fs.createReadStream(filePath));
-    });
-
-    /*
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,
     });
-*/
+
     await bot.deleteMessage(chatId, messageId);
   }
 
@@ -1243,10 +1233,21 @@ bot.on("callback_query", async (callbackQuery) => {
     try {
       // Fetch the YouTube ID from the database (assuming it's stored as `youtubeId`)
       const movie = await getAllTrailer(movieDbId);
+      let youtubeId = null;
+
       if (movie.length === 0) {
-        ${youtubeId}
+        const trailersResp = await fetch(
+          `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+        );
+  
+        const trailer = await trailersResp.json();
+
+        youtubeId = trailer.videoUrl;
+        
+        await createTrailer(youtubeId, movieDbId);
+      } else {
+        youtubeId = movie.videoUrl;
       }
-      const youtubeId = movie.videoUrl;
 
       // Construct the video URL
       const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
@@ -1272,46 +1273,6 @@ function getRandomMovies(movies) {
   return randomMovie;
 }
 
-async function generateRecommendation() {
-  try {
-    const IMDB_API_KEY3 = process.env.imdbAPIKEY3;
-
-    for (const genre of genres) {
-      const urls = [
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:G&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:PG&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:PG-13&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:R&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.0,8.0&genres=${genre}&certificates=us:NC-17&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.0,6.3&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.4,6.7&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.8,7.0&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.1,7.4&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.5,7.8&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.9,8.2&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.3,8.5&genres=${genre}&languages=en&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.5,9.0&genres=${genre}&languages=en&count=250`,
-      ];
-      let collector = [];
-
-      for (const url of urls) {
-        const urResponse = await fetch(url);
-        const res = await urResponse.json();
-
-        console.log(res.results.length, "res.results.length");
-
-        collector = [...collector, ...res.results];
-      }
-
-      const genreId = genres.indexOf(genre) + 1; // Get the id of the chosen genre
-      console.log(collector.length, "collector.length");
-
-      await createMovieGenre(collector, genreId);
-    }
-  } catch (error) {
-    console.log("error in generateRecommendation", error.message);
-  }
-}
 
 async function generateRecommendationFromDB(movieGenres, chatId) {
   try {
