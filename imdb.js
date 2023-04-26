@@ -6,7 +6,7 @@ const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
 const ffmpeg = require("ffmpeg");
-
+const fs = require('fs');
 const {
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
@@ -33,7 +33,7 @@ const {
 } = require("./queries/ratings");
 const { getAllUserRating, createUserRating } = require("./queries/userRatings");
 const ytdl = require("ytdl-core");
-const { createTrailer } = require("./queries/trailers");
+const { createTrailer, getAllTrailer } = require("./queries/trailers");
 
 require("dotenv").config();
 

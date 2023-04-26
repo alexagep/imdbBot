@@ -58,16 +58,15 @@ async function updateTrailerRow(data, movieId) {
 
 async function createTrailer(videoUrl, movieId) {
   try {
-    const item = {
-      videoUrl: videoUrl,
-      MovieId: movieId,
-    };
+    // const item = {
+    //   videoUrl: videoUrl,
+    //   MovieId: movieId,
+    // };
+    console.log(videoUrl, movieId, 'HEREEEEEEEEEEEEEEE');
 
-    await Trailer.findOrCreate({
-      where: {
-        MovieId: movieId,
-      }, // criteria to find existing row
-      defaults: item, // data to be used for creating new row
+    await Trailer.create({
+      videoUrl,
+      MovieId: movieId,
     });
 
   } catch (error) {
