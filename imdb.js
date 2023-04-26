@@ -1058,6 +1058,7 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
+    console.log(movie, 'TTTTTTTTTTTTEEEEEEEEEEESSSSSSSSSSSSSSSTTTTTTTT');
     movieDbId = movie.id;
 
     const movies = await getAllRating(movie.id);
