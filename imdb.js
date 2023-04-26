@@ -5,6 +5,8 @@ const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
+const ffmpeg = require("ffmpeg");
+
 const {
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
@@ -547,6 +549,7 @@ let genreId = null;
 let movieGenre = null;
 let serieGenre = null;
 let movieDbId = null;
+let movieFound = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -780,12 +783,9 @@ bot.on("callback_query", async (callbackQuery) => {
       const UserRatingDb = await getAllUserRating(movie_ID);
 
       let UserRatings = null;
-      // let urCollect_movieId = null;
 
-      // console.log(UserRatingDb.UserRatings);
       if (UserRatingDb.UserRatings.length > 0) {
         UserRatings = UserRatingDb.UserRatings[0];
-        // urCollect_movieId = UserRatingDb
       } else {
         const urResponse = await fetch(`${IMDB_USER_RATINGS}/${movie_ID}`);
 
@@ -1053,6 +1053,8 @@ bot.on("callback_query", async (callbackQuery) => {
       }
     });
 
+    movieFound = movie;
+
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
@@ -1220,7 +1222,6 @@ bot.on("callback_query", async (callbackQuery) => {
 
     await createMovieRating(movie, ratings, movie.genres);
 
-    console.log("******%%%%%%%%%%%%*********");
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,
@@ -1235,15 +1236,16 @@ bot.on("callback_query", async (callbackQuery) => {
       const movie = await getAllTrailer(movieDbId);
       let youtubeId = null;
 
+      console.log(movie, "^^^^^^^^^^^^^^^^^^^");
+
       if (movie.length === 0) {
         const trailersResp = await fetch(
           `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
         );
-  
-        const trailer = await trailersResp.json();
 
+        const trailer = await trailersResp.json();
         youtubeId = trailer.videoUrl;
-        
+
         await createTrailer(youtubeId, movieDbId);
       } else {
         youtubeId = movie.videoUrl;
@@ -1255,9 +1257,21 @@ bot.on("callback_query", async (callbackQuery) => {
       // Download the video and save it to a file
       const video = ytdl(videoUrl, { filter: "audioandvideo" });
       const filePath = `./downloads/video.mp4`;
-      video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
-        // Send the video to the user
-        bot.sendVideo(chatId, fs.createReadStream(filePath));
+
+      const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
+
+      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+        // Compress the video
+        await compressVideo();
+
+        // Send the compressed video to the user
+        bot.sendVideo(chatId, fs.createReadStream(`./compressed/video.mp4`), {
+          caption: message,
+        });
+
+        // Remove the downloaded and compressed files
+        fs.unlinkSync(filePath);
+        fs.unlinkSync(`./compressed/video.mp4`);
       });
     } catch (err) {
       console.error(err);
@@ -1272,7 +1286,6 @@ function getRandomMovies(movies) {
 
   return randomMovie;
 }
-
 
 async function generateRecommendationFromDB(movieGenres, chatId) {
   try {
@@ -1411,6 +1424,18 @@ function isDatePassedBy7Days(serverDateTime) {
   const _dtTxt = Date.parse(dateNow);
 
   return (_dtTxt - _dtSvr) / one_day > 7;
+}
+
+async function compressVideo() {
+  try {
+    const input = await ffmpeg(`./compressed/video.mp4`);
+    await input
+      .setVideoBitrate("500k") // set the video bitrate to 500k
+      .setAudioBitrate("128k") // set the audio bitrate to 128k
+      .save(`./compressed/video.mp4`);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 console.log("Movie Rating Bot is running...");

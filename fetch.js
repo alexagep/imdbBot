@@ -35,14 +35,14 @@ async function generateRecommendation() {
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:PG-13&languages=tr&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:R&languages=tr&count=250`,
         `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.5,&genres=${genre}&num_votes=2000,&certificates=us:NC-17&languages=tr&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.0,6.3&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.4,6.7&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.8,7.0&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.1,7.4&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.5,7.8&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.9,8.2&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.3,8.5&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
-        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.5,9.0&genres=${genre}&num_votes=2000,&languages=ko&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.0,6.3&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.4,6.7&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=6.8,7.0&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.1,7.4&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.5,7.8&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=7.9,8.2&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.3,8.5&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
+        `https://imdb-api.com/API/AdvancedSearch/${IMDB_API_KEY3}?user_rating=8.5,9.0&genres=${genre}&num_votes=2000,&languages=tr&count=250`,
       ];
 
       let collector = [];

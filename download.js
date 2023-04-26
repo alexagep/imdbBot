@@ -1,41 +1,57 @@
-const axios = require('axios');
-const fs = require('fs');
+const ffmpeg = require('ffmpeg');
 
-async function downloadVideo(url) {
-  const response = await axios({
-    url: url,
-    method: 'GET',
-    responseType: 'stream',
-  });
-
-  response.data.pipe(fs.createWriteStream('video.mp4'));
-
-  return new Promise((resolve, reject) => {
-    response.data.on('end', () => {
-      resolve('video.mp4');
-    });
-
-    response.data.on('error', (err) => {
-      reject(err);
-    });
-  });
+async function compressVideo() {
+  try {
+    const input = await ffmpeg(`./compressed/video.mp4`);
+    await input
+      .setVideoBitrate('500k') // set the video bitrate to 500k
+      .setAudioBitrate('128k') // set the audio bitrate to 128k
+      .save(`./compressed/video.mp4`);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-const TelegramBot = require('node-telegram-bot-api');
+// callback query for downloading trailer
+if (callbackQuery.data === "trailer") {
+  try {
+    // Fetch the YouTube ID from the database (assuming it's stored as `youtubeId`)
+    const movie = await getAllTrailer(movieDbId);
+    let youtubeId = null;
 
-const token = 'YOUR_TELEGRAM_BOT_TOKEN';
+    if (movie.length === 0) {
+      const trailersResp = await fetch(
+        `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+      );
 
-const bot = new TelegramBot(token, {polling: true});
+      const trailer = await trailersResp.json();
 
-bot.on('message', async (msg) => {
-  const chatId = msg.chat.id;
-  const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+      youtubeId = trailer.videoUrl;
 
-  const response = await axios({
-    url: videoUrl,
-    method: 'GET',
-    responseType: 'stream',
-  });
+      await createTrailer(youtubeId, movieDbId);
+    } else {
+      youtubeId = movie.videoUrl;
+    }
 
-  bot.sendVideoStream(chatId, response.data, {caption: 'VIDEO_CAPTION'});
-});
+    // Construct the video URL
+    const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+    // Download the video and save it to a file
+    const video = ytdl(videoUrl, { filter: "audioandvideo" });
+    const filePath = `./downloads/video.mp4`;
+    video.pipe(fs.createWriteStream(filePath)).on("finish", async () => { 
+      // Compress the video
+      await compressVideo();
+
+      // Send the compressed video to the user
+      bot.sendVideo(chatId, fs.createReadStream(`./compressed/video.mp4`));
+
+      // Remove the downloaded and compressed files
+      fs.unlinkSync(filePath);
+      fs.unlinkSync(`./compressed/video.mp4`);
+    });
+  } catch (err) {
+    console.error(err);
+    bot.sendMessage(chatId, "Error downloading the movie.");
+  }
+}
