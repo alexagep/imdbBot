@@ -545,6 +545,7 @@ let top250SeriesList = null;
 let genreId = null;
 let movieGenre = null;
 let serieGenre = null;
+let movieDbId = null;
 
 bot.on("callback_query", async (callbackQuery) => {
   const chatId = callbackQuery.message.chat.id;
@@ -1054,6 +1055,8 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
+    movieDbId = movie.id
+
     const movies = await getAllRating(movie.id);
 
     const isTimePassed =
@@ -1137,6 +1140,7 @@ bot.on("callback_query", async (callbackQuery) => {
               text: "User Ratings",
               callback_data: "user_ratings",
             },
+            { text: "Watch Trailer", callback_data: "trailer" },
           ],
           [{ text: "More Info", url: imdbUrl }],
         ],
@@ -1233,6 +1237,31 @@ bot.on("callback_query", async (callbackQuery) => {
     });
 
     await bot.deleteMessage(chatId, messageId);
+  }
+
+  if (callbackQuery.data === "trailer") {
+    try {
+      // Fetch the YouTube ID from the database (assuming it's stored as `youtubeId`)
+      const movie = await getAllTrailer(movieDbId);
+      if (movie.length === 0) {
+        ${youtubeId}
+      }
+      const youtubeId = movie.videoUrl;
+
+      // Construct the video URL
+      const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+
+      // Download the video and save it to a file
+      const video = ytdl(videoUrl, { filter: "audioandvideo" });
+      const filePath = `./downloads/video.mp4`;
+      video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
+        // Send the video to the user
+        bot.sendVideo(chatId, fs.createReadStream(filePath));
+      });
+    } catch (err) {
+      console.error(err);
+      bot.sendMessage(chatId, "Error downloading the movie.");
+    }
   }
 });
 
