@@ -1053,15 +1053,15 @@ bot.on("callback_query", async (callbackQuery) => {
       }
     });
 
-    movieFound = movie;
+    movieFound = movie.dataValues;
 
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
     console.log(movie, 'TTTTTTTTTTTTEEEEEEEEEEESSSSSSSSSSSSSSSTTTTTTTT');
-    movieDbId = movie.id;
+    movieDbId = movie.dataValues.id;
 
-    const movies = await getAllRating(movie.id);
+    const movies = await getAllRating(movie.dataValues.id);
 
     const isTimePassed =
       movies.length > 0
