@@ -84,3 +84,8 @@ async function getAllMovieGenre() {
 }
 
 getAllMovieGenre();
+
+
+
+
+

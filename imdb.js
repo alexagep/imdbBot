@@ -4,7 +4,7 @@ const stringSimilarity = require("string-similarity");
 const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
-const axios = require('axios')
+const axios = require("axios");
 const {
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
@@ -17,7 +17,11 @@ const {
 
 const cron = require("node-cron");
 const { getAllTop250TV, updateTop250TVRow } = require("./queries/top250TV");
-const { getAllMovieGenre, createMovieGenre, getAllSeries } = require("./queries/movieGenre");
+const {
+  getAllMovieGenre,
+  createMovieGenre,
+  getAllSeries,
+} = require("./queries/movieGenre");
 const { findMoviesBySearchQuery } = require("./queries/movies");
 const {
   getAllRating,
@@ -26,6 +30,7 @@ const {
   updateRatingRow,
 } = require("./queries/ratings");
 const { getAllUserRating, createUserRating } = require("./queries/userRatings");
+const ytdl = require("ytdl-core");
 
 require("dotenv").config();
 
@@ -846,13 +851,13 @@ bot.on("callback_query", async (callbackQuery) => {
     if (tvRecomFlag) {
       serieGenre = await getAllSeries(genreId);
 
-      console.log(serieGenre.length, "length of", genre," series in DB");
+      console.log(serieGenre.length, "length of", genre, " series in DB");
 
       await generateRecommendationFromDB(serieGenre, chatId);
     } else {
       movieGenre = await getAllMovieGenre(genreId);
 
-      console.log(movieGenre.length, "length of", genre," movies in DB");
+      console.log(movieGenre.length, "length of", genre, " movies in DB");
 
       await generateRecommendationFromDB(movieGenre, chatId);
     }
@@ -863,7 +868,7 @@ bot.on("callback_query", async (callbackQuery) => {
   // New recommendation callback query handling
   if (callbackQuery.data === "new_recommendation") {
     if (tvRecomFlag) {
-      await generateRecommendationFromDB(serieGenre, chatId)
+      await generateRecommendationFromDB(serieGenre, chatId);
     } else {
       await generateRecommendationFromDB(movieGenre, chatId);
     }
@@ -1138,18 +1143,17 @@ bot.on("callback_query", async (callbackQuery) => {
       },
     };
 
-const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+    const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
 
-  const response2 = await axios({
-    url: videoUrl,
-    method: 'GET',
-    responseType: 'stream',
-  });
+    const video = ytdl(videoUrl, { filter: "audioandvideo" });
 
-  bot.sendVideoStream(chatId, response2.data, {caption: 'VIDEO_CAPTION'});
+    const filePath = "./video.mp4";
 
+    video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
+      bot.sendVideo(chatId, fs.createReadStream(filePath));
+    });
 
-/*
+    /*
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,
@@ -1222,8 +1226,7 @@ const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
 
     await createMovieRating(movie, ratings, movie.genres);
 
-
-console.log('******%%%%%%%%%%%%*********')
+    console.log("******%%%%%%%%%%%%*********");
     await bot.sendPhoto(chatId, resizedBuffer, {
       caption: message,
       reply_markup: opts.reply_markup,
