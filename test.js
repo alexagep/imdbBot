@@ -88,4 +88,36 @@ getAllMovieGenre();
 
 
 
+// video.pipe(fs.createWriteStream(filePath)).on('finish', () => {
+//   // Send the video to the user
+//   bot.sendVideo(chatId, fs.createReadStream(filePath)).then(() => {
+//     // Remove the file from the folder
+//     fs.unlink(filePath, (err) => {
+//       if (err) {
+//         console.error(err);
+//       } else {
+//         console.log(`File ${filePath} has been deleted.`);
+//       }
+//     });
+//   });
+// });
+
+
+// const ffmpeg = require('ffmpeg');
+
+// async function compressVideo(filePath) {
+//   try {
+//     const input = await ffmpeg(`./downloads/${filePath}`);
+//     await input
+//       .setVideoBitrate('500k') // set the video bitrate to 500k
+//       .setAudioBitrate('128k') // set the audio bitrate to 128k
+//       .save(`./compressed/${filePath}`);
+//   } catch (err) {
+//     console.error(err);
+//   }
+// }
+
+// // usage
+// const filePath = 'video.mp4';
+// compressVideo(filePath);
 
