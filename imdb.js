@@ -1417,34 +1417,31 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     const filePath = `./video.mp4`;
     const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-    // await new Promise((resolve, reject) => {
-      video
-        // .on("error", reject)
-        .pipe(fs.createWriteStream(filePath))
-        .on("finish", async () => {
-          await compressVideo();
-          await bot.sendVideo(
-            chatId,
-            fs.createReadStream(`./compressed-video.mp4`),
-            {
-              caption: message,
-            }
-          );
-          fs.unlinkSync(filePath);
-          fs.unlinkSync(`./compressed-video.mp4`);
-          // resolve();
-        })
-        // .on("error", reject);
-    // });
+    video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+      // Compress the video
+      await compressVideo();
 
-    console.log("Movie trailer downloaded successfully!");
+      // Send the compressed video to the user
+      bot.sendVideo(chatId, fs.createReadStream(`./compressed-video.mp4`), {
+        caption: message,
+      });
+
+      // Remove the downloaded and compressed files
+      fs.unlinkSync(filePath);
+      fs.unlinkSync(`./compressed-video.mp4`);
+      
+      console.log("Movie trailer downloaded successfully!");
+    });
+
   } catch (error) {
     console.error(error);
     // Handle the error in some way, e.g. send an error message to the user
-    await bot.sendMessage(chatId, "An error occurred while downloading the trailer. Please try again later.");
+    await bot.sendMessage(
+      chatId,
+      "An error occurred while downloading the trailer. Please try again later."
+    );
   }
 }
-
 
 async function compressVideo() {
   try {
