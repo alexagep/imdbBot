@@ -1253,6 +1253,8 @@ bot.on("callback_query", async (callbackQuery) => {
         if (videoUrl) {
           const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
+          console.log(videoUrl);
+
           const video = ytdl(videoUrl, { format: "mp4" });
 
           video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
@@ -1272,7 +1274,7 @@ bot.on("callback_query", async (callbackQuery) => {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
-      fs.existsSync(filePath) && fs.unlinkSync(filePath);
+      fs.unlinkSync(filePath);
       fs.existsSync(compressed_path) && fs.unlinkSync(compressed_path);
     }
   }
@@ -1295,7 +1297,7 @@ bot.on("callback_query", async (callbackQuery) => {
   //     bot.sendMessage(chatId, "Error downloading the movie.");
   //   } finally {
   //     console.log('i don\'t know how to handle this');
-  //     existsSync(filePath) && unlinkSync(filePath)
+  //     fs.unlinkSync(filePath)
   //   }
   // }
 });
