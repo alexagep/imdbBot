@@ -1408,7 +1408,7 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
       if (videoUrl) {
         const youtubeId = videoUrl.split("=")[1];
         // const video = ytdl(youtubeId, { filter: "audioandvideo" });
-        const filePath = `./video.mp4`;
+        const filePath = `./${movieFound.name}.mp4`;
         const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
         const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
