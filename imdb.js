@@ -1408,15 +1408,17 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
       if (videoUrl) {
         const youtubeId = videoUrl.split("=")[1];
         // const video = ytdl(youtubeId, { filter: "audioandvideo" });
-        const filePath = `./movie.mp4`;
+        const filePath = `movie.mp4`;
         const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
         const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
 
-        const video = ytdl(videoUrl2, { filter: "audioandvideo" });
+        const video = ytdl(videoUrl2, {format: 'mp4'});
 
-        video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
-          bot.sendVideo(chatId, fs.createReadStream(filePath));
+        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+          await bot.sendVideo(chatId, fs.createReadStream(filePath));
+
+          fs.unlinkSync(filePath);
         });
 
         // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
