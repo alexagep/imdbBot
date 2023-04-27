@@ -1419,7 +1419,7 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
 
     // await new Promise((resolve, reject) => {
       video
-        .on("error", reject)
+        // .on("error", reject)
         .pipe(fs.createWriteStream(filePath))
         .on("finish", async () => {
           await compressVideo();
