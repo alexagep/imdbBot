@@ -6,7 +6,7 @@ const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
 const ffmpeg = require("ffmpeg");
-const fs = require('fs');
+const fs = require("fs");
 const {
   updateBoxOfficeAllTimeRow,
   getAllBoxOfficeAllTime,
@@ -1058,7 +1058,10 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    console.log(movie, 'TTTTTTTTTTTTEEEEEEEEEEESSSSSSSSSSSSSSSTTTTTTTT');
+    console.log(
+      movie.dataValues.id,
+      "TTTTTTTTTTTTEEEEEEEEEEESSSSSSSSSSSSSSSTTTTTTTT"
+    );
     movieDbId = movie.dataValues.id;
 
     const movies = await getAllRating(movie.dataValues.id);
@@ -1234,52 +1237,54 @@ bot.on("callback_query", async (callbackQuery) => {
   if (callbackQuery.data === "trailer") {
     try {
       // Fetch the YouTube ID from the database (assuming it's stored as `youtubeId`)
-      console.log(movieDbId,movieFound, 'NOOOOOOO?');
-      const movie = await getAllTrailer(movieDbId);
-      let youtubeId = null;
+      if (movie_ID != null && movieDbId != null && movieFound != null) {
+        const movie = await getAllTrailer(movieDbId);
+        let youtubeId = null;
 
-      console.log(movie, "^^^^^^^^^^^^^^^^^^^");
+        // console.log(movie, "^^^^^^^^^^^^^^^^^^^");
+        let videoUrl = null;
 
-      if (movie.length === 0) {
-        const trailersResp = await fetch(
-          `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
-        );
+        if (movie.length === 0) {
+          const trailersResp = await fetch(
+            `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+          );
 
-        const trailer = await trailersResp.json();
-        youtubeId = trailer.videoUrl;
+          const trailer = await trailersResp.json();
+          videoUrl = trailer.videoUrl;
 
-        console.log(trailer, 'YYEEEEEEEEEEEESSS????');
+          await createTrailer(youtubeId, movieDbId);
+        } else {
+          videoUrl = movie.videoUrl;
+        }
 
-        await createTrailer(youtubeId, movieDbId);
-      } else {
-        youtubeId = movie.videoUrl;
-      }
+        // Construct the video URL
+        // const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
 
-      // Construct the video URL
-      const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+        // Download the video and save it to a file
+        const video = ytdl(videoUrl, { filter: "audioandvideo" });
+        const filePath = `./downloads/video.mp4`;
 
-      // Download the video and save it to a file
-      const video = ytdl(videoUrl, { filter: "audioandvideo" });
-      const filePath = `./downloads/video.mp4`;
+        const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-      const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
+        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+          // Compress the video
+          await compressVideo();
 
-      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-        // Compress the video
-        await compressVideo();
+          // Send the compressed video to the user
+          bot.sendVideo(chatId, fs.createReadStream(`./compressed/video.mp4`), {
+            caption: message,
+          });
 
-        // Send the compressed video to the user
-        bot.sendVideo(chatId, fs.createReadStream(`./compressed/video.mp4`), {
-          caption: message,
+          // Remove the downloaded and compressed files
+          fs.unlinkSync(filePath);
+          fs.unlinkSync(`./compressed/video.mp4`);
         });
-
-        // Remove the downloaded and compressed files
-        fs.unlinkSync(filePath);
-        fs.unlinkSync(`./compressed/video.mp4`);
-      });
+      }
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
+    } finally {
+      console.log('here finished');
     }
   }
 });
