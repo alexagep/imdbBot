@@ -1391,7 +1391,9 @@ function isDatePassedBy7Days(serverDateTime) {
 async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
   try {
     if (movie_ID == null || movieDbId == null || movieFound == null) {
-      throw new Error("Missing parameters");
+      // throw new Error("Missing parameters");
+      console.log("Missing parameters");
+      return
     }
 
     const movie = await getAllTrailer(movieDbId);
@@ -1409,7 +1411,9 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     }
 
     if (!videoUrl) {
-      throw new Error("No trailer found for the movie");
+      // throw new Error("No trailer found for the movie");
+      console.log("No trailer found for the movie");
+      return
     }
 
     const youtubeId = videoUrl.split("=")[1];
