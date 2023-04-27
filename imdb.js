@@ -1390,60 +1390,52 @@ function isDatePassedBy7Days(serverDateTime) {
 
 async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
   try {
-    if (movie_ID == null || movieDbId == null || movieFound == null) {
-      // throw new Error("Missing parameters");
-      console.log("Missing parameters");
-      return
+    if (movie_ID != null || movieDbId != null || movieFound != null) {
+      const movie = await getAllTrailer(movieDbId);
+      let videoUrl = null;
+
+      if (movie.length === 0) {
+        const trailersResp = await fetch(
+          `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+        );
+        const trailer = await trailersResp.json();
+        videoUrl = trailer.videoUrl;
+        await createTrailer(videoUrl, movieDbId);
+      } else {
+        videoUrl = movie[0].dataValues.videoUrl;
+      }
+
+      if (videoUrl) {
+        const youtubeId = videoUrl.split("=")[1];
+        // const video = ytdl(youtubeId, { filter: "audioandvideo" });
+        const filePath = `./video.mp4`;
+        const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
+
+        // const videoUrl2 = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+
+        const video = ytdl(videoUrl, { filter: "audioandvideo" });
+
+        video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
+          bot.sendVideo(chatId, fs.createReadStream(filePath));
+        });
+
+        // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+        //   // Compress the video
+        //   // await compressVideo();
+
+        //   // Send the compressed video to the user
+        //   await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
+        //     caption: message,
+        //   });
+
+        //   // Remove the downloaded and compressed files
+        //   fs.unlinkSync(filePath);
+        //   // fs.unlinkSync(`./compressed-video.mp4`);
+
+        //   console.log("Movie trailer downloaded successfully!");
+        // });
+      }
     }
-
-    const movie = await getAllTrailer(movieDbId);
-    let videoUrl = null;
-
-    if (movie.length === 0) {
-      const trailersResp = await fetch(
-        `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
-      );
-      const trailer = await trailersResp.json();
-      videoUrl = trailer.videoUrl;
-      await createTrailer(videoUrl, movieDbId);
-    } else {
-      videoUrl = movie[0].dataValues.videoUrl;
-    }
-
-    if (!videoUrl) {
-      // throw new Error("No trailer found for the movie");
-      console.log("No trailer found for the movie");
-      return
-    }
-
-    const youtubeId = videoUrl.split("=")[1];
-    // const video = ytdl(youtubeId, { filter: "audioandvideo" });
-    const filePath = `./video.mp4`;
-    const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
-
-    const videoUrl2 = `https://www.youtube.com/watch?v=Jvurpf91omw`;
-
-    const video = ytdl(videoUrl2, { filter: "audioandvideo" });
-
-    video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
-      bot.sendVideo(chatId, fs.createReadStream(filePath));
-    });
-
-    // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-    //   // Compress the video
-    //   // await compressVideo();
-
-    //   // Send the compressed video to the user
-    //   await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
-    //     caption: message,
-    //   });
-
-    //   // Remove the downloaded and compressed files
-    //   fs.unlinkSync(filePath);
-    //   // fs.unlinkSync(`./compressed-video.mp4`);
-
-    //   console.log("Movie trailer downloaded successfully!");
-    // });
   } catch (error) {
     console.error(error);
     // Handle the error in some way, e.g. send an error message to the user
