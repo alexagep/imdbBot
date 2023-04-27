@@ -5,6 +5,8 @@ const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
+const youtubedl = require('youtube-dl-exec')
+
 const ffmpeg = require("ffmpeg");
 const fs = require("fs");
 const {
@@ -1289,21 +1291,67 @@ bot.on("callback_query", async (callbackQuery) => {
       const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
       // const filePath = `movie.mp4`;
 
-      const video = ytdl(videoUrl2, {format: 'mp4'});
+      const video = youtubedl(videoUrl2);
 
-      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+      // Will be called when the download starts.
+      video.on("info", function (info) {
+        console.log("Download started");
+
+        // info.size will be the amount to download, add
+        let total = info.size + downloaded;
+        console.log("size: " + total);
+
+        if (downloaded > 0) {
+          // size will be the amount already downloaded
+          console.log("resuming from: " + downloaded);
+
+          // display the remaining bytes to download
+          console.log("remaining bytes: " + info.size);
+        }
+      });
+
+      video.pipe(fs.createWriteStream(filePath, { flags: "a" }));
+
+      // Will be called if download was already completed and there is nothing more to download.
+      video.on("complete", function complete(info) {
+        "use strict";
+        console.log("filename: " + info._filename + " already downloaded.");
+      });
+
+      video.on("end", async () => {
+        console.log("finished downloading!");
         await bot.sendVideo(chatId, fs.createReadStream(filePath));
       });
-      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
-      console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
-      console.log('i don\'t know how to handle this');
+      console.log("i don't know how to handle this");
       // fs.unlinkSync(filePath)
     }
   }
+
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = `movie.mp4`;
+  //   try {
+  //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+  //     // const filePath = `movie.mp4`;
+
+  //     const video = ytdl(videoUrl2, {format: 'mp4'});
+
+  //     video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+  //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //     });
+  //     // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+  //     console.log("Movie trailer downloaded successfully!");
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   } finally {
+  //     console.log('i don\'t know how to handle this');
+  //     // fs.unlinkSync(filePath)
+  //   }
+  // }
 });
 
 function getRandomMovies(movies) {
