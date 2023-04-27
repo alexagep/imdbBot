@@ -1233,7 +1233,17 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (callbackQuery.data === "trailer") {
     try {
-      await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+      const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
+      const filePath = `movie.mp4`;
+
+        const video = ytdl(videoUrl2, {format: 'mp4'});
+
+        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+          await bot.sendVideo(chatId, fs.createReadStream(filePath));
+
+          fs.unlinkSync(filePath);
+        });
+      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
