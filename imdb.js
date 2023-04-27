@@ -1289,35 +1289,11 @@ bot.on("callback_query", async (callbackQuery) => {
     const filePath = `movie.mp4`;
     try {
       const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
-      // const filePath = `movie.mp4`;
-
-      const video = youtubedl(videoUrl2);
-
-      // Will be called when the download starts.
-      video.on("info", function (info) {
-        console.log("Download started");
-
-        // info.size will be the amount to download, add
-        let total = info.size + downloaded;
-        console.log("size: " + total);
-
-        if (downloaded > 0) {
-          // size will be the amount already downloaded
-          console.log("resuming from: " + downloaded);
-
-          // display the remaining bytes to download
-          console.log("remaining bytes: " + info.size);
-        }
-      });
-
-      video.pipe(fs.createWriteStream(filePath, { flags: "a" }));
-
-      // Will be called if download was already completed and there is nothing more to download.
-      video.on("complete", function complete(info) {
-        "use strict";
-        console.log("filename: " + info._filename + " already downloaded.");
-      });
-
+  
+      const video = youtubedl(videoUrl2, [], { cwd: __dirname });
+  
+      video.pipe(fs.createWriteStream(filePath));
+  
       video.on("end", async () => {
         console.log("finished downloading!");
         await bot.sendVideo(chatId, fs.createReadStream(filePath));
@@ -1325,11 +1301,9 @@ bot.on("callback_query", async (callbackQuery) => {
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
-    } finally {
-      console.log("i don't know how to handle this");
-      // fs.unlinkSync(filePath)
     }
   }
+  
 
   // if (callbackQuery.data === "trailer") {
   //   const filePath = `movie.mp4`;
