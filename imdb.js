@@ -6,8 +6,10 @@ const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
 const youtubedl = require('youtube-dl-exec')
+const ffmpeg = require('fluent-ffmpeg');
 
-const ffmpeg = require("ffmpeg");
+// Set the path to ffmpeg
+// const ffmpeg = require("ffmpeg");
 const fs = require("fs");
 const {
   updateBoxOfficeAllTimeRow,
@@ -1304,25 +1306,67 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = "movie.mp4";
+  //   try {
+  //     const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
+  //     const response = await axios({
+  //       method: "GET",
+  //       url: videoUrl,
+  //       responseType: "stream",
+  //     });
+  
+  //     // Save the video to a file
+  //     const writer = fs.createWriteStream(filePath);
+  //     response.data.pipe(writer);
+  
+  //     // Send the video to the user when it's finished downloading
+  //     writer.on("finish", async () => {
+  //       console.log("finished downloading!");
+  //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   }
+  // }
+
+
   if (callbackQuery.data === "trailer") {
+    const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
     const filePath = "movie.mp4";
+  
     try {
-      const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
       const response = await axios({
         method: "GET",
         url: videoUrl,
         responseType: "stream",
       });
   
-      // Save the video to a file
-      const writer = fs.createWriteStream(filePath);
-      response.data.pipe(writer);
+      const writer = response.data.pipe(fs.createWriteStream(filePath));
   
-      // Send the video to the user when it's finished downloading
       writer.on("finish", async () => {
         console.log("finished downloading!");
-        await bot.sendVideo(chatId, fs.createReadStream(filePath));
+        // Convert the video to MP4 using ffmpeg
+        const outputFilePath = "movie_converted.mp4";
+        ffmpeg(fs.createReadStream(filePath))
+          .outputOptions("-c:v", "libx264")
+          .outputOptions("-c:a", "aac")
+          .outputOptions("-strict", "experimental")
+          .outputOptions("-b:a", "192k")
+          .outputOptions("-movflags", "+faststart")
+          .on("error", err => {
+            console.error(err);
+            bot.sendMessage(chatId, "Error converting the video.");
+          })
+          .on("end", async () => {
+            console.log("finished converting!");
+            // Send the converted video to the user
+            await bot.sendVideo(chatId, fs.createReadStream(outputFilePath));
+          })
+          .save(outputFilePath);
       });
+      
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
