@@ -1417,7 +1417,7 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     const filePath = `./video.mp4`;
     const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-    await new Promise((resolve, reject) => {
+    // await new Promise((resolve, reject) => {
       video
         .on("error", reject)
         .pipe(fs.createWriteStream(filePath))
@@ -1432,10 +1432,10 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
           );
           fs.unlinkSync(filePath);
           fs.unlinkSync(`./compressed-video.mp4`);
-          resolve();
+          // resolve();
         })
-        .on("error", reject);
-    });
+        // .on("error", reject);
+    // });
 
     console.log("Movie trailer downloaded successfully!");
   } catch (error) {
