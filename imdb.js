@@ -1415,39 +1415,44 @@ async function downloadMovieTrailerSync(
 
           await createTrailer(youtubeId, movieDbId);
         } else {
+          console.log(movie.dataValues.videoUrl, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4');
           youtubeId = movie.videoUrl;
         }
 
-        // Construct the video URL
-        const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+        console.log(youtubeId, 'HOOOOOOOOOOOOHHHOOOOOOOOOOHHH');
 
-        // Download the video and save it to a file
-        const video = await ytdl(videoUrl, { filter: "audioandvideo" });
-        const filePath = `./video.mp4`;
-
-        const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
-
-        video
-          .pipe(await fs.createWriteStream(filePath))
-          .on("finish", async () => {
-            // Compress the video
-            await compressVideo();
-
-            // Send the compressed video to the user
-            await bot.sendVideo(
-              chatId,
-              fs.createReadStream(`./compressed-video.mp4`),
-              {
-                caption: message,
-              }
-            );
-
-            // Remove the downloaded and compressed files
-            fs.unlinkSync(filePath);
-            fs.unlinkSync(`./compressed-video.mp4`);
-
-            resolve();
-          });
+        if (youtubeId) {
+          // Construct the video URL
+          const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+  
+          // Download the video and save it to a file
+          const video = await ytdl(videoUrl, { filter: "audioandvideo" });
+          const filePath = `./video.mp4`;
+  
+          const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
+  
+          video
+            .pipe(await fs.createWriteStream(filePath))
+            .on("finish", async () => {
+              // Compress the video
+              await compressVideo();
+  
+              // Send the compressed video to the user
+              await bot.sendVideo(
+                chatId,
+                fs.createReadStream(`./compressed-video.mp4`),
+                {
+                  caption: message,
+                }
+              );
+  
+              // Remove the downloaded and compressed files
+              fs.unlinkSync(filePath);
+              fs.unlinkSync(`./compressed-video.mp4`);
+  
+              resolve();
+            });
+        }
       }
     } catch (error) {
       reject(error);
