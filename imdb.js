@@ -1232,19 +1232,19 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data === "trailer") {
-    // const filePath = `movie.mp4`;
+    const filePath = `movie.mp4`;
     try {
-      const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
+      const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
       // const filePath = `movie.mp4`;
 
-      // const video = ytdl(videoUrl2, {format: 'mp4'});
+      const video = ytdl(videoUrl2, {format: 'mp4'});
 
-      // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-      //   await bot.sendVideo(chatId, fs.createReadStream(filePath));
+      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+        await bot.sendVideo(chatId, fs.createReadStream(filePath));
 
-      //   fs.unlinkSync(filePath);
-      // });
-      await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+        fs.unlinkSync(filePath);
+      });
+      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
