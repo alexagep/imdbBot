@@ -1415,18 +1415,16 @@ async function downloadMovieTrailerSync(
 
           await createTrailer(videoUrl, movieDbId);
         } else {
-          console.log(movie[0].dataValues.videoUrl, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4');
           videoUrl = movie[0].dataValues.videoUrl;
         }
 
         console.log(videoUrl, 'HOOOOOOOOOOOOHHHOOOOOOOOOOHHH');
 
-        if (videoUrl) {
-          // Construct the video URL
-          // const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
-  
+        if (videoUrl) {  
           // Download the video and save it to a file
-          const video = await ytdl(videoUrl, { filter: "audioandvideo" });
+          const youtubeId = videoUrl.split('=')[1]
+          
+          const video = await ytdl(youtubeId, { filter: "audioandvideo" });
           const filePath = `./video.mp4`;
   
           const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
