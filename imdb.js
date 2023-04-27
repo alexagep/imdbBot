@@ -1349,7 +1349,7 @@ bot.on("callback_query", async (callbackQuery) => {
         console.log("finished downloading!");
         // Convert the video to MP4 using ffmpeg
         const outputFilePath = "movie_converted.mp4";
-        ffmpeg(fs.createReadStream(filePath))
+        ffmpeg(fs.createReadStream(filePath)).inputFormat('mp4')
           .outputOptions("-c:v", "libx264")
           .outputOptions("-c:a", "aac")
           .outputOptions("-strict", "experimental")
