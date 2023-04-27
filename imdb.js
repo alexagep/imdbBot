@@ -1232,9 +1232,10 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data === "trailer") {
+    const filePath = `movie.mp4`;
     try {
       const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
-      const filePath = `movie.mp4`;
+      // const filePath = `movie.mp4`;
 
         const video = ytdl(videoUrl2, {format: 'mp4'});
 
@@ -1248,6 +1249,9 @@ bot.on("callback_query", async (callbackQuery) => {
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
+    } finally {
+      // any code that needs to be executed after the try/catch block, regardless of whether an error occurred or not
+      fs.unlinkSync(filePath);
     }
   }
 });
