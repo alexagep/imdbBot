@@ -1259,14 +1259,11 @@ bot.on("callback_query", async (callbackQuery) => {
           videoUrl = movie[0].dataValues.videoUrl;
         }
 
-        await redirectUserTo(movieUrl, videoUrl, movieFound.name);
+        await redirectUserTo(chatId, videoUrl, movieFound.name);
       }
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
-    } finally {
-      fs.existsSync(compressed_path) && fs.unlinkSync(filePath);
-      fs.existsSync(compressed_path) && fs.unlinkSync(compressed_path);
     }
   }
 
