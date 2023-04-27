@@ -5,11 +5,11 @@ const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
-const youtubedl = require("youtube-dl-exec");
+// const youtubedl = require("youtube-dl-exec");
+const youtubedl = require('youtubedl-core');
+
 const ffmpeg = require("fluent-ffmpeg");
 
-// Set the path to ffmpeg
-// const ffmpeg = require("ffmpeg");
 const fs = require("fs");
 const {
   updateBoxOfficeAllTimeRow,
@@ -1415,18 +1415,18 @@ bot.on("callback_query", async (callbackQuery) => {
   
     try {
       const video = youtubedl(videoUrl, [], { cwd: __dirname });
-      
+  
       video.on('info', (info) => {
         console.log('Download started');
         console.log(`filename: ${info._filename}`);
         console.log(`size: ${info.size}`);
       });
-      
+  
       video.pipe(fs.createWriteStream(filePath)).on('finish', async () => {
         console.log('Download finished');
         // await bot.sendVideo(chatId, fs.createReadStream(filePath));
       });
-      
+  
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
@@ -1436,6 +1436,7 @@ bot.on("callback_query", async (callbackQuery) => {
       // fs.unlinkSync(filePath)
     }
   }
+  
 });
 
 function getRandomMovies(movies) {
