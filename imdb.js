@@ -1402,7 +1402,7 @@ async function downloadMovieTrailerSync(
 
       console.log(movie, movie.length, movie_ID, "^^^^^^^^^^^^^^^^^^^");
 
-      if (movie.length === 0) {
+      if (movie.length == 0 && movie_ID != null && movieDbId != null) {
         const trailersResp = await fetch(
           `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
         );
