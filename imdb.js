@@ -1419,6 +1419,7 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
 
     await new Promise((resolve, reject) => {
       video
+        .on("error", reject)
         .pipe(fs.createWriteStream(filePath))
         .on("finish", async () => {
           await compressVideo();
@@ -1439,8 +1440,11 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     console.log("Movie trailer downloaded successfully!");
   } catch (error) {
     console.error(error);
+    // Handle the error in some way, e.g. send an error message to the user
+    await bot.sendMessage(chatId, "An error occurred while downloading the trailer. Please try again later.");
   }
 }
+
 
 async function compressVideo() {
   try {
