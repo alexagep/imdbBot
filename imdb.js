@@ -1388,63 +1388,57 @@ function isDatePassedBy7Days(serverDateTime) {
   return (_dtTxt - _dtSvr) / one_day > 7;
 }
 
-async function downloadMovieTrailerSync(
-  movieDbId,
-  movie_ID,
-  movieFound,
-  chatId
-) {
-  // return new Promise(async (resolve, reject) => {
+async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
   try {
-    if (movie_ID != null && movieDbId != null && movieFound != null) {
-      const movie = await getAllTrailer(movieDbId);
-      let videoUrl = null;
-
-      if (movie.length == 0 && movie_ID != null && movieDbId != null) {
-        const trailersResp = await fetch(
-          `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
-        );
-
-        const trailer = await trailersResp.json();
-        videoUrl = trailer.videoUrl;
-
-        await createTrailer(videoUrl, movieDbId);
-      } else {
-        videoUrl = movie[0].dataValues.videoUrl;
-      }
-
-      if (videoUrl) {
-        // Download the video and save it to a file
-        const youtubeId = videoUrl.split("=")[1];
-
-        const video = await ytdl(youtubeId, { filter: "audioandvideo" });
-        const filePath = `./video.mp4`;
-
-        const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
-
-        video
-          .pipe(await fs.createWriteStream(filePath))
-          .on("finish", async () => {
-            // Compress the video
-            await compressVideo();
-
-            // Send the compressed video to the user
-            await bot.sendVideo(
-              chatId,
-              fs.createReadStream(`./compressed-video.mp4`),
-              {
-                caption: message,
-              }
-            );
-
-            // Remove the downloaded and compressed files
-            fs.unlinkSync(filePath);
-            fs.unlinkSync(`./compressed-video.mp4`);
-          });
-      }
+    if (movie_ID == null || movieDbId == null || movieFound == null) {
+      throw new Error("Missing parameters");
     }
+
+    const movie = await getAllTrailer(movieDbId);
+    let videoUrl = null;
+
+    if (movie.length === 0) {
+      const trailersResp = await fetch(
+        `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+      );
+      const trailer = await trailersResp.json();
+      videoUrl = trailer.videoUrl;
+      await createTrailer(videoUrl, movieDbId);
+    } else {
+      videoUrl = movie[0].dataValues.videoUrl;
+    }
+
+    if (!videoUrl) {
+      throw new Error("No trailer found for the movie");
+    }
+
+    const youtubeId = videoUrl.split("=")[1];
+    const video = await ytdl(youtubeId, { filter: "audioandvideo" });
+    const filePath = `./video.mp4`;
+    const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
+
+    await new Promise((resolve, reject) => {
+      video
+        .pipe(fs.createWriteStream(filePath))
+        .on("finish", async () => {
+          await compressVideo();
+          await bot.sendVideo(
+            chatId,
+            fs.createReadStream(`./compressed-video.mp4`),
+            {
+              caption: message,
+            }
+          );
+          fs.unlinkSync(filePath);
+          fs.unlinkSync(`./compressed-video.mp4`);
+          resolve();
+        })
+        .on("error", reject);
+    });
+
+    console.log("Movie trailer downloaded successfully!");
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }
 
