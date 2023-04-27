@@ -1394,7 +1394,7 @@ async function downloadMovieTrailerSync(
   movieFound,
   chatId
 ) {
-  return new Promise(async (resolve, reject) => {
+  // return new Promise(async (resolve, reject) => {
     try {
       if (movie_ID != null && movieDbId != null && movieFound != null) {
         console.log(movieDbId, movieFound, "NOOOOOOO?");
@@ -1423,7 +1423,7 @@ async function downloadMovieTrailerSync(
         if (videoUrl) {  
           // Download the video and save it to a file
           const youtubeId = videoUrl.split('=')[1]
-          
+
           const video = await ytdl(youtubeId, { filter: "audioandvideo" });
           const filePath = `./video.mp4`;
   
@@ -1448,12 +1448,13 @@ async function downloadMovieTrailerSync(
               fs.unlinkSync(filePath);
               fs.unlinkSync(`./compressed-video.mp4`);
   
-              resolve();
+              // resolve();
             });
-        }
+        // }
       }
     } catch (error) {
-      reject(error);
+      // reject(error);
+      console.log(error);
     }
   });
 }
