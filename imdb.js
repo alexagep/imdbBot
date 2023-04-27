@@ -1301,7 +1301,7 @@ bot.on("callback_query", async (callbackQuery) => {
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
       console.log('i don\'t know how to handle this');
-      fs.unlinkSync(filePath)
+      // fs.unlinkSync(filePath)
     }
   }
 });
