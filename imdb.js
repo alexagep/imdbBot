@@ -1416,7 +1416,7 @@ async function downloadMovieTrailerSync(
           await createTrailer(youtubeId, movieDbId);
         } else {
           console.log(movie[0].dataValues.videoUrl,movie[0].videoUrl, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4');
-          youtubeId = movie.videoUrl;
+          youtubeId = movie[0].dataValues.videoUrl;
         }
 
         console.log(youtubeId, 'HOOOOOOOOOOOOHHHOOOOOOOOOOHHH');
