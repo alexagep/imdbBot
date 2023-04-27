@@ -1372,39 +1372,67 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = `./downloads/movie.mp4`;
+  //   try {
+  //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+  //     // const filePath = `movie.mp4`;
+
+  //     const video = ytdl(videoUrl2);
+
+  //     video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+  //       // fs.stat(filePath, (err, stats) => {
+  //       //   const fileSizeInBytes = stats.size;
+  //       //   const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+
+  //       //   console.log(
+  //       //     `The file size is ${fileSizeInBytes} bytes (${fileSizeInMegabytes.toFixed(
+  //       //       2
+  //       //     )} MB).`
+  //       //   );
+  //       // });
+  //       // await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //       console.log("finish event received");
+  //     }).on("end", async () => {
+  //       console.log('here end');
+  //     }).on("close", () => {
+  //       console.log("and then close");
+  //     })
+  //     // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+  //     console.log("Movie trailer downloaded successfully!");
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   } finally {
+  //     console.log("i don't know how to handle this");
+  //     // fs.unlinkSync(filePath)
+  //   }
+  // }
+
   if (callbackQuery.data === "trailer") {
     const filePath = `./downloads/movie.mp4`;
+    const videoUrl = 'https://www.youtube.com/watch?v=dxWvtMOGAhw';
+  
     try {
-      const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
-      // const filePath = `movie.mp4`;
-
-      const video = ytdl(videoUrl2);
-
-      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-        // fs.stat(filePath, (err, stats) => {
-        //   const fileSizeInBytes = stats.size;
-        //   const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
-
-        //   console.log(
-        //     `The file size is ${fileSizeInBytes} bytes (${fileSizeInMegabytes.toFixed(
-        //       2
-        //     )} MB).`
-        //   );
-        // });
+      const video = youtubedl(videoUrl, [], { cwd: __dirname });
+      
+      video.on('info', (info) => {
+        console.log('Download started');
+        console.log(`filename: ${info._filename}`);
+        console.log(`size: ${info.size}`);
+      });
+      
+      video.pipe(fs.createWriteStream(filePath)).on('finish', async () => {
+        console.log('Download finished');
         // await bot.sendVideo(chatId, fs.createReadStream(filePath));
-        console.log("finish event received");
-      }).on("end", async () => {
-        console.log('here end');
-      }).on("close", () => {
-        console.log("and then close");
-      })
-      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+      });
+      
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
-      console.log("i don't know how to handle this");
+      console.log("I don't know how to handle this");
       // fs.unlinkSync(filePath)
     }
   }
