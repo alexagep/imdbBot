@@ -1249,6 +1249,8 @@ bot.on("callback_query", async (callbackQuery) => {
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
+    } finally {
+      console.log('i don\'t know how to handle this');
     }
   }
 });
