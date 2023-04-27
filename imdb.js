@@ -43,7 +43,7 @@ const pythonPath = "/usr/bin/python3";
 
 const YoutubeDlWrap = require("youtube-dl-wrap");
 const youtubeDlWrap = new YoutubeDlWrap("/usr/local/bin/youtube-dl", {
-  args: [`--python=${pythonPath}`]
+  pythonPath: pythonPath
 });
 
 require("dotenv").config();
