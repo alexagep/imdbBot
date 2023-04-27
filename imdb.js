@@ -1238,7 +1238,7 @@ bot.on("callback_query", async (callbackQuery) => {
       const movie = await getAllTrailer(movieDbId);
       let youtubeId = null;
 
-      console.log(movie, "^^^^^^^^^^^^^^^^^^^");
+      console.log(movie, movie.length,movie_ID, "^^^^^^^^^^^^^^^^^^^");
 
       if (movie.length === 0) {
         const trailersResp = await fetch(
@@ -1248,7 +1248,7 @@ bot.on("callback_query", async (callbackQuery) => {
         const trailer = await trailersResp.json();
         youtubeId = trailer.videoUrl;
 
-        console.log(trailer, 'YYEEEEEEEEEEEESSS????');
+        console.log(trailer, movie_ID, 'YYEEEEEEEEEEEESSS????');
 
         await createTrailer(youtubeId, movieDbId);
       } else {
