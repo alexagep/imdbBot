@@ -1401,7 +1401,7 @@ async function downloadMovieTrailerSync(
         const movie = await getAllTrailer(movieDbId);
         let youtubeId = null;
 
-        console.log(movie, movie.length, movie_ID, "^^^^^^^^^^^^^^^^^^^");
+        console.log(movieDbId, movie, movie.length, movie_ID, "^^^^^^^^^^^^^^^^^^^");
 
         if (movie.length == 0 && movie_ID != null && movieDbId != null) {
           const trailersResp = await fetch(
@@ -1423,7 +1423,7 @@ async function downloadMovieTrailerSync(
 
         // Download the video and save it to a file
         const video = await ytdl(videoUrl, { filter: "audioandvideo" });
-        const filePath = `./downloads/video.mp4`;
+        const filePath = `./video.mp4`;
 
         const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
@@ -1436,7 +1436,7 @@ async function downloadMovieTrailerSync(
             // Send the compressed video to the user
             await bot.sendVideo(
               chatId,
-              fs.createReadStream(`./compressed/video.mp4`),
+              fs.createReadStream(`./compressed-video.mp4`),
               {
                 caption: message,
               }
@@ -1444,7 +1444,7 @@ async function downloadMovieTrailerSync(
 
             // Remove the downloaded and compressed files
             fs.unlinkSync(filePath);
-            fs.unlinkSync(`./compressed/video.mp4`);
+            fs.unlinkSync(`./compressed-video.mp4`);
 
             resolve();
           });
@@ -1457,11 +1457,11 @@ async function downloadMovieTrailerSync(
 
 async function compressVideo() {
   try {
-    const input = await ffmpeg(`./compressed/video.mp4`);
+    const input = await ffmpeg(`./compressed-video.mp4`);
     await input
       .setVideoBitrate("500k") // set the video bitrate to 500k
       .setAudioBitrate("128k") // set the audio bitrate to 128k
-      .save(`./compressed/video.mp4`);
+      .save(`./compressed-video.mp4`);
   } catch (err) {
     console.error(err);
   }
