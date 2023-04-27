@@ -1233,7 +1233,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (callbackQuery.data === "trailer") {
     try {
-      await downloadMovieTrailerSync(movieDbId, movie_ID, movieFound, chatId);
+      await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
