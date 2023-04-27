@@ -5,8 +5,8 @@ const sharp = require("sharp");
 const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
-const youtubedl = require('youtube-dl-exec')
-const ffmpeg = require('fluent-ffmpeg');
+const youtubedl = require("youtube-dl-exec");
+const ffmpeg = require("fluent-ffmpeg");
 
 // Set the path to ffmpeg
 // const ffmpeg = require("ffmpeg");
@@ -1291,11 +1291,11 @@ bot.on("callback_query", async (callbackQuery) => {
   //   const filePath = `movie.mp4`;
   //   try {
   //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
-  
+
   //     const video = youtubedl(videoUrl2, [], { cwd: __dirname });
-  
+
   //     video.pipe(fs.createWriteStream(filePath));
-  
+
   //     video.on("end", async () => {
   //       console.log("finished downloading!");
   //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
@@ -1315,11 +1315,11 @@ bot.on("callback_query", async (callbackQuery) => {
   //       url: videoUrl,
   //       responseType: "stream",
   //     });
-  
+
   //     // Save the video to a file
   //     const writer = fs.createWriteStream(filePath);
   //     response.data.pipe(writer);
-  
+
   //     // Send the video to the user when it's finished downloading
   //     writer.on("finish", async () => {
   //       console.log("finished downloading!");
@@ -1331,70 +1331,83 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 
-
-  if (callbackQuery.data === "trailer") {
-    const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
-    const filePath = "movie.mp4";
-  
-    try {
-      const response = await axios({
-        method: "GET",
-        url: videoUrl,
-        responseType: "stream",
-      });
-  
-      const writer = response.data.pipe(fs.createWriteStream(filePath));
-  
-      writer.on("finish", async () => {
-        console.log("finished downloading!");
-        // Convert the video to MP4 using ffmpeg
-        const outputFilePath = "movie_converted.mp4";
-        ffmpeg(fs.createReadStream(filePath)).inputFormat('mp4')
-          .outputOptions("-c:v", "libx264")
-          .outputOptions("-c:a", "aac")
-          .outputOptions("-strict", "experimental")
-          .outputOptions("-b:a", "192k")
-          .outputOptions("-movflags", "+faststart")
-          .on("error", err => {
-            console.error(err);
-            bot.sendMessage(chatId, "Error converting the video.");
-          })
-          .on("end", async () => {
-            console.log("finished converting!");
-            // Send the converted video to the user
-            await bot.sendVideo(chatId, fs.createReadStream(outputFilePath));
-          })
-          .save(outputFilePath);
-      });
-      
-    } catch (err) {
-      console.error(err);
-      bot.sendMessage(chatId, "Error downloading the movie.");
-    }
-  }
-  
-
   // if (callbackQuery.data === "trailer") {
-  //   const filePath = `movie.mp4`;
+  //   const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
+  //   const filePath = "movie.mp4";
+
   //   try {
-  //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
-  //     // const filePath = `movie.mp4`;
-
-  //     const video = ytdl(videoUrl2, {format: 'mp4'});
-
-  //     video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-  //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //     const response = await axios({
+  //       method: "GET",
+  //       url: videoUrl,
+  //       responseType: "stream",
   //     });
-  //     // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
-  //     console.log("Movie trailer downloaded successfully!");
+
+  //     const writer = response.data.pipe(fs.createWriteStream(filePath));
+
+  //     writer.on("finish", async () => {
+  //       console.log("finished downloading!");
+  //       // Convert the video to MP4 using ffmpeg
+  //       const outputFilePath = "movie_converted.mp4";
+  //       ffmpeg(fs.createReadStream(filePath)).inputFormat('mp4')
+  //         .outputOptions("-c:v", "libx264")
+  //         .outputOptions("-c:a", "aac")
+  //         .outputOptions("-strict", "experimental")
+  //         .outputOptions("-b:a", "192k")
+  //         .outputOptions("-movflags", "+faststart")
+  //         .on("error", err => {
+  //           console.error(err);
+  //           bot.sendMessage(chatId, "Error converting the video.");
+  //         })
+  //         .on("end", async () => {
+  //           console.log("finished converting!");
+  //           // Send the converted video to the user
+  //           await bot.sendVideo(chatId, fs.createReadStream(outputFilePath));
+  //         })
+  //         .save(outputFilePath);
+  //     });
+
   //   } catch (err) {
   //     console.error(err);
   //     bot.sendMessage(chatId, "Error downloading the movie.");
-  //   } finally {
-  //     console.log('i don\'t know how to handle this');
-  //     // fs.unlinkSync(filePath)
   //   }
   // }
+
+  if (callbackQuery.data === "trailer") {
+    const filePath = `./downloads/movie.mp4`;
+    try {
+      const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+      // const filePath = `movie.mp4`;
+
+      const video = ytdl(videoUrl2, { format: "mp4" });
+
+      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+        fs.stat(filePath, (err, stats) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+
+          const fileSizeInBytes = stats.size;
+          const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+
+          console.log(
+            `The file size is ${fileSizeInBytes} bytes (${fileSizeInMegabytes.toFixed(
+              2
+            )} MB).`
+          );
+        });
+        await bot.sendVideo(chatId, fs.createReadStream(filePath));
+      });
+      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+      console.log("Movie trailer downloaded successfully!");
+    } catch (err) {
+      console.error(err);
+      bot.sendMessage(chatId, "Error downloading the movie.");
+    } finally {
+      console.log("i don't know how to handle this");
+      // fs.unlinkSync(filePath)
+    }
+  }
 });
 
 function getRandomMovies(movies) {
