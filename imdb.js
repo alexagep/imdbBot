@@ -1417,14 +1417,12 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     const filePath = `./video.mp4`;
     const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-    // const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+    const videoUrl2 = `https://www.youtube.com/watch?v=Jvurpf91omw`;
 
-    const video = ytdl(videoUrl, { filter: "audioandvideo" });
+    const video = ytdl(videoUrl2, { filter: "audioandvideo" });
 
     video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
-      bot.sendVideo(chatId, fs.createReadStream(filePath),{
-        caption: message
-      });
+      bot.sendVideo(chatId, fs.createReadStream(filePath));
     });
 
     // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
