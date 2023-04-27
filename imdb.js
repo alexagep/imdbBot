@@ -1254,7 +1254,7 @@ bot.on("callback_query", async (callbackQuery) => {
 
           await createTrailer(youtubeId, movieDbId);
         } else {
-          videoUrl = movie.videoUrl;
+          videoUrl = movie[0].dataValues.videoUrl;
         }
 
         // Construct the video URL
