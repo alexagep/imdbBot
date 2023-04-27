@@ -1378,26 +1378,26 @@ bot.on("callback_query", async (callbackQuery) => {
       const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
       // const filePath = `movie.mp4`;
 
-      const video = ytdl(videoUrl2, { format: "mp4" });
+      const video = ytdl(videoUrl2);
 
       video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-        fs.stat(filePath, (err, stats) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
+        // fs.stat(filePath, (err, stats) => {
+        //   const fileSizeInBytes = stats.size;
+        //   const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
 
-          const fileSizeInBytes = stats.size;
-          const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
-
-          console.log(
-            `The file size is ${fileSizeInBytes} bytes (${fileSizeInMegabytes.toFixed(
-              2
-            )} MB).`
-          );
-        });
-        await bot.sendVideo(chatId, fs.createReadStream(filePath));
-      });
+        //   console.log(
+        //     `The file size is ${fileSizeInBytes} bytes (${fileSizeInMegabytes.toFixed(
+        //       2
+        //     )} MB).`
+        //   );
+        // });
+        // await bot.sendVideo(chatId, fs.createReadStream(filePath));
+        console.log("finish event received");
+      }).on("end", async () => {
+        console.log('here end');
+      }).on("close", () => {
+        console.log("and then close");
+      })
       // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
