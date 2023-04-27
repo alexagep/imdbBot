@@ -43,7 +43,7 @@ const pythonPath = "/usr/bin/python3";
 
 const YoutubeDlWrap = require("youtube-dl-wrap");
 const youtubeDlWrap = new YoutubeDlWrap("/usr/local/bin/youtube-dl", {
-  pythonPath: pythonPath
+  pythonPath: pythonPath,
 });
 
 require("dotenv").config();
@@ -1069,7 +1069,6 @@ bot.on("callback_query", async (callbackQuery) => {
     const response = await fetch(movie.imageUrl);
     const buffer = await response.buffer();
 
-    console.log(movie, "TTTTTTTTTTTTEEEEEEEEEEESSSSSSSSSSSSSSSTTTTTTTT");
     movieDbId = movie.dataValues.id;
 
     const movies = await getAllRating(movie.dataValues.id);
@@ -1226,6 +1225,7 @@ bot.on("callback_query", async (callbackQuery) => {
               text: "User Ratings",
               callback_data: "user_ratings",
             },
+            { text: "Watch Trailer", callback_data: "trailer" },
           ],
           [{ text: "More Info", url: imdbUrl }],
         ],
@@ -1240,6 +1240,34 @@ bot.on("callback_query", async (callbackQuery) => {
     });
 
     await bot.deleteMessage(chatId, messageId);
+  }
+
+  if (callbackQuery.data === "trailer") {
+    try {
+      if (movie_ID != null || movieDbId != null || movieFound != null) {
+        const movie = await getAllTrailer(movieDbId);
+        let videoUrl = null;
+
+        if (movie.length === 0) {
+          const trailersResp = await fetch(
+            `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+          );
+          const trailer = await trailersResp.json();
+          videoUrl = trailer.videoUrl;
+          await createTrailer(videoUrl, movieDbId);
+        } else {
+          videoUrl = movie[0].dataValues.videoUrl;
+        }
+
+        await redirectUserTo(movieUrl, videoUrl, movieFound.name);
+      }
+    } catch (err) {
+      console.error(err);
+      bot.sendMessage(chatId, "Error downloading the movie.");
+    } finally {
+      fs.existsSync(compressed_path) && fs.unlinkSync(filePath);
+      fs.existsSync(compressed_path) && fs.unlinkSync(compressed_path);
+    }
   }
 
   // if (callbackQuery.data === "trailer") {
@@ -1416,42 +1444,42 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 
-  if (callbackQuery.data === "trailer") {
-    const filePath = `./downloads/movie.mp4`;
-    const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = `./downloads/movie.mp4`;
+  //   const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
 
-    try {
-      let youtubeDlEventEmitter = youtubeDlWrap
-        .exec([
-          videoUrl,
-          "-f",
-          "best",
-          "-o",
-          "output.mp4",
-        ])
-        .on("progress", (progress) =>
-          console.log(
-            progress.percent,
-            progress.totalSize,
-            progress.currentSpeed,
-            progress.eta
-          )
-        )
-        .on("youtubeDlEvent", (eventType, eventData) =>
-          console.log(eventType, eventData)
-        )
-        .on("error", (error) => console.error(error))
-        .on("close", () => console.log("all done"));
+  //   try {
+  //     let youtubeDlEventEmitter = youtubeDlWrap
+  //       .exec([
+  //         videoUrl,
+  //         "-f",
+  //         "best",
+  //         "-o",
+  //         "output.mp4",
+  //       ])
+  //       .on("progress", (progress) =>
+  //         console.log(
+  //           progress.percent,
+  //           progress.totalSize,
+  //           progress.currentSpeed,
+  //           progress.eta
+  //         )
+  //       )
+  //       .on("youtubeDlEvent", (eventType, eventData) =>
+  //         console.log(eventType, eventData)
+  //       )
+  //       .on("error", (error) => console.error(error))
+  //       .on("close", () => console.log("all done"));
 
-      console.log(youtubeDlEventEmitter.youtubeDlProcess.pid);
-    } catch (err) {
-      console.error(err);
-      bot.sendMessage(chatId, "Error downloading the movie.");
-    } finally {
-      console.log("I don't know how to handle this");
-      // fs.unlinkSync(filePath)
-    }
-  }
+  //     console.log(youtubeDlEventEmitter.youtubeDlProcess.pid);
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   } finally {
+  //     console.log("I don't know how to handle this");
+  //     // fs.unlinkSync(filePath)
+  //   }
+  // }
 });
 
 function getRandomMovies(movies) {
@@ -1460,6 +1488,34 @@ function getRandomMovies(movies) {
 
   return randomMovie;
 }
+
+async function redirectUserTo(chatId, url, movieName) {
+  // Use the answerCallbackQuery method to send a response to the callback query with the URL to redirect the user to
+  await bot.answerCallbackQuery({
+    callback_query_id: chatId,
+    text: `Redirecting to ${movieName} trailer`,
+    url: url,
+  });
+}
+
+// async function handleCallbackQuery(callbackQuery) {
+//   // Check if the movie ID exists in the database
+//   const movie = await getAllTrailer(movieDbId);
+//   let videoUrl = null;
+
+//   if (movie.length === 0) {
+//     const trailersResp = await fetch(
+//       `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+//     );
+//     const trailer = await trailersResp.json();
+//     videoUrl = trailer.videoUrl;
+//     await createTrailer(videoUrl, movieDbId);
+//   } else {
+//     videoUrl = movie[0].dataValues.videoUrl;
+//   }
+
+//   await redirectUserTo(movieUrl, videoUrl, movieFound.name);
+// }
 
 async function generateRecommendationFromDB(movieGenres, chatId) {
   try {
