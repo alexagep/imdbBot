@@ -1266,6 +1266,10 @@ bot.on("callback_query", async (callbackQuery) => {
               caption: message,
             });
 
+            fs.unlinkSync(filePath);
+
+            fs.unlinkSync(compressed_path);
+
             console.log("Movie trailer downloaded successfully!");
           });
         }
@@ -1274,7 +1278,7 @@ bot.on("callback_query", async (callbackQuery) => {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
-      fs.unlinkSync(filePath);
+      fs.existsSync(compressed_path) && fs.unlinkSync(filePath);
       fs.existsSync(compressed_path) && fs.unlinkSync(compressed_path);
     }
   }
