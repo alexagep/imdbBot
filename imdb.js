@@ -1232,26 +1232,23 @@ bot.on("callback_query", async (callbackQuery) => {
   }
 
   if (callbackQuery.data === "trailer") {
-    const filePath = `movie.mp4`;
+    // const filePath = `movie.mp4`;
     try {
       const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
       // const filePath = `movie.mp4`;
 
-        const video = ytdl(videoUrl2, {format: 'mp4'});
+      // const video = ytdl(videoUrl2, {format: 'mp4'});
 
-        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-          await bot.sendVideo(chatId, fs.createReadStream(filePath));
+      // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+      //   await bot.sendVideo(chatId, fs.createReadStream(filePath));
 
-          fs.unlinkSync(filePath);
-        });
-      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+      //   fs.unlinkSync(filePath);
+      // });
+      await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
       console.log("Movie trailer downloaded successfully!");
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
-    } finally {
-      // any code that needs to be executed after the try/catch block, regardless of whether an error occurred or not
-      fs.unlinkSync(filePath);
     }
   }
 });
@@ -1403,6 +1400,8 @@ function isDatePassedBy7Days(serverDateTime) {
 }
 
 async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
+  const filePath = `movie.mp4`;
+
   try {
     if (movie_ID != null || movieDbId != null || movieFound != null) {
       const movie = await getAllTrailer(movieDbId);
@@ -1422,34 +1421,34 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
       if (videoUrl) {
         const youtubeId = videoUrl.split("=")[1];
         // const video = ytdl(youtubeId, { filter: "audioandvideo" });
-        const filePath = `movie.mp4`;
+        // const filePath = `movie.mp4`;
         const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-        const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
+        // const videoUrl2 = `https://www.youtube.com/watch?v=neY2xVmOfUM`;
 
-        const video = ytdl(videoUrl2, {format: 'mp4'});
-
-        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-          await bot.sendVideo(chatId, fs.createReadStream(filePath));
-
-          fs.unlinkSync(filePath);
-        });
+        const video = ytdl(videoUrl, { format: "mp4" });
 
         // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-        //   // Compress the video
-        //   // await compressVideo();
+        //   await bot.sendVideo(chatId, fs.createReadStream(filePath));
 
-        //   // Send the compressed video to the user
-        //   await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
-        //     caption: message,
-        //   });
-
-        //   // Remove the downloaded and compressed files
         //   fs.unlinkSync(filePath);
-        //   // fs.unlinkSync(`./compressed-video.mp4`);
-
-        //   console.log("Movie trailer downloaded successfully!");
         // });
+
+        video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+          // Compress the video
+          await compressVideo();
+
+          // Send the compressed video to the user
+          await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
+            caption: message,
+          });
+
+          // Remove the downloaded and compressed files
+          fs.unlinkSync(filePath);
+          fs.unlinkSync(`./compressed-video.mp4`);
+
+          console.log("Movie trailer downloaded successfully!");
+        });
       }
     }
   } catch (error) {
@@ -1459,6 +1458,9 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
       chatId,
       "An error occurred while downloading the trailer. Please try again later."
     );
+  } finally {
+    // any code that needs to be executed after the try/catch block, regardless of whether an error occurred or not
+    fs.unlinkSync(filePath);
   }
 }
 
