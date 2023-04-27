@@ -1145,6 +1145,8 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const message = `🎬 ${movie.name} ${movie.year}\n\n${rateMessage}\n\n⏱ Time: ${movie.runtime}\n🎭 Genres: ${movie.genres}\n🔞 Content Rating: ${movie.contentRating}\n`;
 
+    const movieUrl = await handleMovieUrl(movie_ID, movieDbId, movieFound)
+
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
       reply_markup: {
@@ -1154,7 +1156,7 @@ bot.on("callback_query", async (callbackQuery) => {
               text: "User Ratings",
               callback_data: "user_ratings",
             },
-            { text: "Watch Trailer", callback_data: "trailer" },
+            { text: "Watch Trailer", url: movieUrl },
           ],
           [{ text: "More Info", url: imdbUrl }],
         ],
@@ -1493,6 +1495,32 @@ async function redirectUserTo(chatId, url, movieName) {
     text: `Redirecting to ${movieName} trailer`,
     url: url,
   });
+}
+
+async function handleMovieUrl(movie_ID, movieDbId, movieFound) {
+  try {
+    if (movie_ID != null || movieDbId != null || movieFound != null) {
+      const movie = await getAllTrailer(movieDbId);
+      let videoUrl = null;
+
+      if (movie.length === 0) {
+        const trailersResp = await fetch(
+          `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+        );
+        const trailer = await trailersResp.json();
+        videoUrl = trailer.videoUrl;
+        await createTrailer(videoUrl, movieDbId);
+      } else {
+        videoUrl = movie[0].dataValues.videoUrl;
+      }
+
+      // await redirectUserTo(chatId, videoUrl, movieFound.name);
+      return videoUrl
+    }
+  } catch (err) {
+    console.error(err);
+    bot.sendMessage(chatId, "Error downloading the movie.");
+  }
 }
 
 // async function handleCallbackQuery(callbackQuery) {
