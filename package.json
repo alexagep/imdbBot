@@ -27,6 +27,7 @@
     "sharp": "^0.32.0",
     "string-similarity": "^4.0.4",
     "youtube-dl-exec": "^2.4.1",
+    "youtube-dl-wrap": "^2.1.1",
     "youtubedl-core": "^4.11.4",
     "ytdl-core": "^4.11.4"
   },

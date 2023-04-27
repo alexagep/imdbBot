@@ -6,7 +6,7 @@ const { updateTop250Row, getAllTop250 } = require("./queries/top250");
 const { updateUpcomingRow, getAllUpcoming } = require("./queries/upcoming");
 const axios = require("axios");
 // const youtubedl = require("youtube-dl-exec");
-const youtubedl = require('youtubedl-core');
+const youtubedl = require("youtubedl-core");
 
 const ffmpeg = require("fluent-ffmpeg");
 
@@ -38,6 +38,9 @@ const {
 const { getAllUserRating, createUserRating } = require("./queries/userRatings");
 const ytdl = require("ytdl-core");
 const { createTrailer, getAllTrailer } = require("./queries/trailers");
+const path = require("path");
+const YoutubeDlWrap = require("youtube-dl-wrap");
+const youtubeDlWrap = new YoutubeDlWrap("/usr/local/bin/youtube-dl");
 
 require("dotenv").config();
 
@@ -1411,23 +1414,32 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (callbackQuery.data === "trailer") {
     const filePath = `./downloads/movie.mp4`;
-    const videoUrl = 'https://www.youtube.com/watch?v=dxWvtMOGAhw';
-  
+    const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
+
     try {
-      const video = youtubedl(videoUrl, [], { cwd: __dirname });
-  
-      video.on('info', (info) => {
-        console.log('Download started');
-        console.log(`filename: ${info._filename}`);
-        console.log(`size: ${info.size}`);
-      });
-  
-      video.pipe(fs.createWriteStream(filePath)).on('finish', async () => {
-        console.log('Download finished');
-        // await bot.sendVideo(chatId, fs.createReadStream(filePath));
-      });
-  
-      console.log("Movie trailer downloaded successfully!");
+      let youtubeDlEventEmitter = youtubeDlWrap
+        .exec([
+          videoUrl,
+          "-f",
+          "best",
+          "-o",
+          "output.mp4",
+        ])
+        .on("progress", (progress) =>
+          console.log(
+            progress.percent,
+            progress.totalSize,
+            progress.currentSpeed,
+            progress.eta
+          )
+        )
+        .on("youtubeDlEvent", (eventType, eventData) =>
+          console.log(eventType, eventData)
+        )
+        .on("error", (error) => console.error(error))
+        .on("close", () => console.log("all done"));
+
+      console.log(youtubeDlEventEmitter.youtubeDlProcess.pid);
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
@@ -1436,7 +1448,6 @@ bot.on("callback_query", async (callbackQuery) => {
       // fs.unlinkSync(filePath)
     }
   }
-  
 });
 
 function getRandomMovies(movies) {
