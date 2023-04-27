@@ -1419,17 +1419,17 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
 
     video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
       // Compress the video
-      await compressVideo();
+      // await compressVideo();
 
       // Send the compressed video to the user
-      bot.sendVideo(chatId, fs.createReadStream(`./compressed-video.mp4`), {
+      await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
         caption: message,
       });
 
       // Remove the downloaded and compressed files
       fs.unlinkSync(filePath);
-      fs.unlinkSync(`./compressed-video.mp4`);
-      
+      // fs.unlinkSync(`./compressed-video.mp4`);
+
       console.log("Movie trailer downloaded successfully!");
     });
 
