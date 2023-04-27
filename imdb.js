@@ -1399,7 +1399,7 @@ async function downloadMovieTrailerSync(
       if (movie_ID != null && movieDbId != null && movieFound != null) {
         console.log(movieDbId, movieFound, "NOOOOOOO?");
         const movie = await getAllTrailer(movieDbId);
-        let youtubeId = null;
+        let videoUrl = null;
 
         console.log(movieDbId, movie, movie.length, movie_ID, "^^^^^^^^^^^^^^^^^^^");
 
@@ -1409,21 +1409,21 @@ async function downloadMovieTrailerSync(
           );
 
           const trailer = await trailersResp.json();
-          youtubeId = trailer.videoUrl;
+          videoUrl = trailer.videoUrl;
 
           console.log(trailer, movie_ID, "YYEEEEEEEEEEEESSS????");
 
-          await createTrailer(youtubeId, movieDbId);
+          await createTrailer(videoUrl, movieDbId);
         } else {
-          console.log(movie[0].dataValues.videoUrl,movie[0].videoUrl, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4');
-          youtubeId = movie[0].dataValues.videoUrl;
+          console.log(movie[0].dataValues.videoUrl, '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4');
+          videoUrl = movie[0].dataValues.videoUrl;
         }
 
-        console.log(youtubeId, 'HOOOOOOOOOOOOHHHOOOOOOOOOOHHH');
+        console.log(videoUrl, 'HOOOOOOOOOOOOHHHOOOOOOOOOOHHH');
 
-        if (youtubeId) {
+        if (videoUrl) {
           // Construct the video URL
-          const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
+          // const videoUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
   
           // Download the video and save it to a file
           const video = await ytdl(videoUrl, { filter: "audioandvideo" });
