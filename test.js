@@ -85,9 +85,6 @@
 
 // getAllMovieGenre();
 
-
-
-
 // video.pipe(fs.createWriteStream(filePath)).on('finish', () => {
 //   // Send the video to the user
 //   bot.sendVideo(chatId, fs.createReadStream(filePath)).then(() => {
@@ -101,7 +98,6 @@
 //     });
 //   });
 // });
-
 
 // const ffmpeg = require('ffmpeg');
 
@@ -121,7 +117,16 @@
 // const filePath = 'video.mp4';
 // compressVideo(filePath);
 
-const videoUrl = 'https://www.youtube.com/watch?v=neY2xVmOfUM'
+// const videoUrl = 'https://www.youtube.com/watch?v=neY2xVmOfUM'
 
-console.log(videoUrl.split('=')[1]);
+// console.log(videoUrl.split('=')[1]);
 
+const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
+
+const video = ytdl(videoUrl, { filter: "audioandvideo" });
+
+const filePath = "./video.mp4";
+
+video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
+  bot.sendVideo(chatId, fs.createReadStream(filePath));
+});

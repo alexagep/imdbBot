@@ -1413,26 +1413,35 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
     }
 
     const youtubeId = videoUrl.split("=")[1];
-    const video = ytdl(youtubeId, { filter: "audioandvideo" });
+    // const video = ytdl(youtubeId, { filter: "audioandvideo" });
     const filePath = `./video.mp4`;
     const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-    video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-      // Compress the video
-      // await compressVideo();
+    // const videoUrl = `https://www.youtube.com/watch?v=Jvurpf91omw`;
 
-      // Send the compressed video to the user
-      await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
-        caption: message,
+    const video = ytdl(videoUrl, { filter: "audioandvideo" });
+
+    video.pipe(fs.createWriteStream(filePath)).on("finish", () => {
+      bot.sendVideo(chatId, fs.createReadStream(filePath),{
+        caption: message
       });
-
-      // Remove the downloaded and compressed files
-      fs.unlinkSync(filePath);
-      // fs.unlinkSync(`./compressed-video.mp4`);
-
-      console.log("Movie trailer downloaded successfully!");
     });
 
+    // video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+    //   // Compress the video
+    //   // await compressVideo();
+
+    //   // Send the compressed video to the user
+    //   await bot.sendVideo(chatId, fs.createReadStream(`./video.mp4`), {
+    //     caption: message,
+    //   });
+
+    //   // Remove the downloaded and compressed files
+    //   fs.unlinkSync(filePath);
+    //   // fs.unlinkSync(`./compressed-video.mp4`);
+
+    //   console.log("Movie trailer downloaded successfully!");
+    // });
   } catch (error) {
     console.error(error);
     // Handle the error in some way, e.g. send an error message to the user
