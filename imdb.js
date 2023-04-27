@@ -39,8 +39,12 @@ const { getAllUserRating, createUserRating } = require("./queries/userRatings");
 const ytdl = require("ytdl-core");
 const { createTrailer, getAllTrailer } = require("./queries/trailers");
 const path = require("path");
+const pythonPath = "/usr/bin/python3";
+
 const YoutubeDlWrap = require("youtube-dl-wrap");
-const youtubeDlWrap = new YoutubeDlWrap("/usr/local/bin/youtube-dl");
+const youtubeDlWrap = new YoutubeDlWrap("/usr/local/bin/youtube-dl", {
+  args: [`--python=${pythonPath}`]
+});
 
 require("dotenv").config();
 
