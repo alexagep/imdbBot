@@ -1285,16 +1285,41 @@ bot.on("callback_query", async (callbackQuery) => {
   //   }
   // }
 
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = `movie.mp4`;
+  //   try {
+  //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+  
+  //     const video = youtubedl(videoUrl2, [], { cwd: __dirname });
+  
+  //     video.pipe(fs.createWriteStream(filePath));
+  
+  //     video.on("end", async () => {
+  //       console.log("finished downloading!");
+  //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   }
+  // }
+
   if (callbackQuery.data === "trailer") {
-    const filePath = `movie.mp4`;
+    const filePath = "movie.mp4";
     try {
-      const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+      const videoUrl = "https://www.youtube.com/watch?v=dxWvtMOGAhw";
+      const response = await axios({
+        method: "GET",
+        url: videoUrl,
+        responseType: "stream",
+      });
   
-      const video = youtubedl(videoUrl2, [], { cwd: __dirname });
+      // Save the video to a file
+      const writer = fs.createWriteStream(filePath);
+      response.data.pipe(writer);
   
-      video.pipe(fs.createWriteStream(filePath));
-  
-      video.on("end", async () => {
+      // Send the video to the user when it's finished downloading
+      writer.on("finish", async () => {
         console.log("finished downloading!");
         await bot.sendVideo(chatId, fs.createReadStream(filePath));
       });
