@@ -1147,6 +1147,11 @@ bot.on("callback_query", async (callbackQuery) => {
 
     const movieUrl = await handleMovieUrl(movie_ID, movieDbId, movieFound)
 
+    let clause = null
+    if (movieUrl) {
+      clause = { text: "Watch Trailer", url: movieUrl }
+    } 
+ 
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
       reply_markup: {
@@ -1156,7 +1161,7 @@ bot.on("callback_query", async (callbackQuery) => {
               text: "User Ratings",
               callback_data: "user_ratings",
             },
-            { text: "Watch Trailer", url: movieUrl },
+            clause,
           ],
           [{ text: "More Info", url: imdbUrl }],
         ],
