@@ -1233,26 +1233,71 @@ bot.on("callback_query", async (callbackQuery) => {
 
   if (callbackQuery.data === "trailer") {
     const filePath = `movie.mp4`;
+    const compressed_path = "compressedMovie.mp4";
     try {
-      const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
-      // const filePath = `movie.mp4`;
+      if (movie_ID != null || movieDbId != null || movieFound != null) {
+        const movie = await getAllTrailer(movieDbId);
+        let videoUrl = null;
 
-      const video = ytdl(videoUrl2, {format: 'mp4'});
+        if (movie.length === 0) {
+          const trailersResp = await fetch(
+            `https://imdb-api.com/en/API/YouTubeTrailer/${IMDB_API_KEY}/${movie_ID}`
+          );
+          const trailer = await trailersResp.json();
+          videoUrl = trailer.videoUrl;
+          await createTrailer(videoUrl, movieDbId);
+        } else {
+          videoUrl = movie[0].dataValues.videoUrl;
+        }
 
-      video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
-        await bot.sendVideo(chatId, fs.createReadStream(filePath));
+        if (videoUrl) {
+          const message = `🎬 ${movieFound.name} ${movieFound.year}\n\n📝 Plot: ${movieFound.plot}`;
 
-        fs.unlinkSync(filePath);
-      });
-      // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
-      console.log("Movie trailer downloaded successfully!");
+          const video = ytdl(videoUrl, { format: "mp4" });
+
+          video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+            // Compress the video
+            await compressVideo();
+
+            // Send the compressed video to the user
+            await bot.sendVideo(chatId, fs.createReadStream(filePath), {
+              caption: message,
+            });
+
+            console.log("Movie trailer downloaded successfully!");
+          });
+        }
+      }
     } catch (err) {
       console.error(err);
       bot.sendMessage(chatId, "Error downloading the movie.");
     } finally {
-      console.log('i don\'t know how to handle this');
+      existsSync(filePath) && unlinkSync(filePath);
+      existsSync(compressed_path) && unlinkSync(compressed_path);
     }
   }
+
+  // if (callbackQuery.data === "trailer") {
+  //   const filePath = `movie.mp4`;
+  //   try {
+  //     const videoUrl2 = `https://www.youtube.com/watch?v=dxWvtMOGAhw`;
+  //     // const filePath = `movie.mp4`;
+
+  //     const video = ytdl(videoUrl2, {format: 'mp4'});
+
+  //     video.pipe(fs.createWriteStream(filePath)).on("finish", async () => {
+  //       await bot.sendVideo(chatId, fs.createReadStream(filePath));
+  //     });
+  //     // await downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId);
+  //     console.log("Movie trailer downloaded successfully!");
+  //   } catch (err) {
+  //     console.error(err);
+  //     bot.sendMessage(chatId, "Error downloading the movie.");
+  //   } finally {
+  //     console.log('i don\'t know how to handle this');
+  //     existsSync(filePath) && unlinkSync(filePath)
+  //   }
+  // }
 });
 
 function getRandomMovies(movies) {
@@ -1468,11 +1513,11 @@ async function downloadMovieTrailer(movieDbId, movie_ID, movieFound, chatId) {
 
 async function compressVideo() {
   try {
-    const input = await ffmpeg(`./compressed-video.mp4`);
+    const input = await ffmpeg(`./compressed_path.mp4`);
     await input
       .setVideoBitrate("500k") // set the video bitrate to 500k
       .setAudioBitrate("128k") // set the audio bitrate to 128k
-      .save(`./compressed-video.mp4`);
+      .save(`./compressed_path.mp4`);
   } catch (err) {
     console.error(err);
   }
