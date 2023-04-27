@@ -853,6 +853,13 @@ bot.on("callback_query", async (callbackQuery) => {
     }
   }
 
+  if (callbackQuery.data === "no_trailer") {
+    const message = "🙁 I'm sorry, there is no trailer available for this movie at the moment. Please check back later or try searching for another movie.";
+  
+    bot.sendMessage(chatId, message);
+  }
+  
+
   // Initial callback query handling
   if (genres.includes(callbackQuery.data.toLowerCase())) {
     genre = callbackQuery.data.toLowerCase();
@@ -1150,7 +1157,9 @@ bot.on("callback_query", async (callbackQuery) => {
     let clause = null
     if (movieUrl) {
       clause = { text: "Watch Trailer", url: movieUrl }
-    } 
+    } else {
+      clause = { text: "Watch Trailer", callback_data: "no_trailer" }
+    }
  
     const imdbUrl = `https://www.imdb.com/title/${movieId}`;
     const opts = {
